@@ -1,5 +1,7 @@
 # makefile compiled from *.pro file, does not need to be monitored
 Makefile
+.qmake.stash
 
 # Compiled build files do not need to be watched
 build/
+nodeeditor/build/
