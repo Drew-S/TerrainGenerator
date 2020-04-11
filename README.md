@@ -9,6 +9,24 @@
 - Qmake (should be included with QT)
 - Make (built in with Linux, included with [MingGW](http://mingw.org/))
 
+## Installing Nodeeditor 3rd party
+
+Clone the repository into the root of the project:
+
+```
+git clone https://github.com/paceholder/nodeeditor.git
+```
+
+Then build the library:
+
+```
+cd nodeeditor
+mkdir build
+cd build
+cmake ..
+make -j
+```
+
 ## Building
 
 **Makefile**:
