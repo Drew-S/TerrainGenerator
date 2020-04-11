@@ -1,4 +1,4 @@
 [submodule "nodeeditor"]
 	path = nodeeditor
 	url = https://github.com/paceholder/nodeeditor
-    ignore = dirty
+    ignore = all
