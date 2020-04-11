@@ -7,3 +7,5 @@ build/
 nodeeditor/build/
 
 .vscode/
+
+src/UI/ui_*.h
