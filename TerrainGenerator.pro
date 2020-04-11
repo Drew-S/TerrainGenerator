@@ -19,16 +19,22 @@ QMAKE_CXXFLAGS += -std=c++17
 QMAKE_CXXFLAGS += -Wl,-rpath,$$PWD/nodeeditor/build/lib
 
 # The QT libraries to be included
-QT += widgets
+QT += core gui opengl widgets
 
 # Include third party libraries (nodeeditor)
-LIBS += -L$$PWD/nodeeditor/build/lib -lnodes
+LIBS += -L$$PWD/nodeeditor/build/lib,-lnodes
 
 # Include and depend on having nodeeditor
-INCLUDEPATH += $$PWD/nodeeditor/build/include
-DEPENDPATH += $$PWD/nodeeditor/build/include
+INCLUDEPATH += $$PWD/nodeeditor/build/include/
+DEPENDPATH += $$PWD/nodeeditor/build/include/
 
-# Configuration modes (CONFIG=debug environment variable)
+# Where the QT Designer *.ui files are stored (xml files)
+FORMS += $$files("src/UI/*.ui", true)
+
+# Where to place the compiled ui files (header files)
+UI_DIR = src/UI
+
+# Configuration modes (CONFIG+=debug environment variable)
 CONFIG(debug) {
     # Enable all debug messages
     QMAKE_CXXFLAGS += -Wall
