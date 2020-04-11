@@ -5,3 +5,5 @@ Makefile
 # Compiled build files do not need to be watched
 build/
 nodeeditor/build/
+
+.vscode/
