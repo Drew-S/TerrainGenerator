@@ -1,8 +1,12 @@
 # Directory and project structure
 
-## Root /
+## Root
 
 Contains the base control files, the `TerrainGenerator.pro` file (QMake) compiles into a Make file for building the application, it defines how the c++ compiler (g++) works. Contains git control files (.git, .gitignore, .gitmodules) that manages version control and submodules (nodeeditor). The `README.md` is for information on compiling and using the program from source.
+
+## UI Files `src/UI/*.ui`
+
+These are the `xml` files created by QT Designer that define an interface that will be attached to the program. The compiled files are outputted as header files in the same directory.
 
 ## Directory Structure
 
