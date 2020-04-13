@@ -3,15 +3,17 @@
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QWheelEvent>
 
 #include "./Terrain/terrain.h"
+#include "./Camera/camera.h"
 
 // Custom OPenGL widget that manages and renders the OpenGL context to the window
 class OpenGL : public QOpenGLWidget
 {
 public:
     explicit OpenGL(QWidget *parent = 0);
-    ~OpenGL();
+    ~OpenGL(){};
 
     // TODO: Add event handlers for pan/zoom camera and pan/zoom light
 protected:
@@ -22,8 +24,11 @@ protected:
     // Paint the scene
     void paintGL() override;
 
+    // On mouse wheel scroll, zoom in/out
+    void wheelEvent(QWheelEvent *event) override;
+
 private:
     Terrain *_terrain;
-    // Camera *_camera;
+    Camera *_camera;
     // Light *_light;
 };
