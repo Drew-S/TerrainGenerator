@@ -20,7 +20,7 @@ public:
     // Initialize the OpenGL shader, pointers, etc.
     void initializeGL();
     // Draw the terrain using the supplied functions
-    void paintGL(QOpenGLFunctions *f);
+    void paintGL(QOpenGLFunctions *f, QMatrix4x4 camera);
 
 private:
     // Plane vertices
@@ -33,5 +33,6 @@ private:
 
     // TODO: remove/change these location names, used for temp testing triangle
     int _vertex_location;
+    int _camera_location;
     int _color_location;
 };
