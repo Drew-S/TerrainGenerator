@@ -1,6 +1,7 @@
 #include "terrain.h"
 
 #include <QOpenGLShader>
+#include <QOpenGLBuffer>
 #include <QColor>
 
 #include <GL/gl.h>
@@ -11,6 +12,15 @@ Terrain::Terrain(int resolution)
 {
     // When created set the supplied resolution
     this->setResolution(resolution);
+
+    // Translate the plane over to center it to (0, 0, 0)
+    this->_transform.translate(-0.5f, 0.0f, -0.5f);
+}
+
+Terrain::~Terrain()
+{
+    this->_vertex_buffer.destroy();
+    this->_vao.destroy();
 }
 
 void Terrain::initializeGL()
@@ -25,41 +35,50 @@ void Terrain::initializeGL()
     // Link and bind the shader program for use
     this->_program.link();
 
-    // Get the location of the pointers in the shader program
-    this->_vertex_location = this->_program.attributeLocation("vertex");
-    this->_camera_location = this->_program.uniformLocation("camera");
-    this->_color_location = this->_program.uniformLocation("color");
+    // Create and bind vertex array object
+    this->_vao.create();
+    this->_vao.bind();
+
+    // Create, bind, and allocate vertex buffer data
+    this->_vertex_buffer.create();
+    this->_vertex_buffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    this->_vertex_buffer.bind();
+    this->_vertex_buffer.allocate(this->_vertices.constData(), this->_vertices.size() * sizeof(QVector3D));
+
+    // Set constant vertex buffer data on the shader
+    this->_program.enableAttributeArray("vertex");
+    this->_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
 }
 
 void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera)
 {
-    // TODO: Remove, testing triangle
-    QVector3D triangle[] = {
-        QVector3D(-1.0f, 0.0f, -1.0f),
-        QVector3D(-1.0f, 0.0f, 1.0f),
-        QVector3D(1.0f, 0.0f, 1.0f),
-        QVector3D(-1.0f, 0.0f, -1.0f),
-        QVector3D(1.0f, 0.0f, 1.0f),
-        QVector3D(1.0f, 0.0f, -1.0f)};
-
     // TODO: Remove, testing color
     QColor color(255, 255, 255, 255);
 
     this->_program.bind();
 
-    // Enable and attach data to the shader program
-    // TODO: Rename/remove, use _vertices and _indexes for terrain data
-    this->_program.enableAttributeArray(this->_vertex_location);
-    this->_program.setAttributeArray(this->_vertex_location, triangle, 0);
-    this->_program.setUniformValue(this->_camera_location, camera);
-    this->_program.setUniformValue(this->_color_location, color);
+    // Attach uniform values
+    // TODO: include light param
+    // Attach model tranform matrix M(VP)
+    this->_program.setUniformValue("model", this->_transform);
+
+    // Attach combined view and projection matrix (M)VP
+    this->_program.setUniformValue("camera", camera);
+
+    // Attach model color value
+    this->_program.setUniformValue("color", color);
+
+    // TODO: Include UI switch to enable/disable wireframe mode
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Draw the terrain
-    f->glDrawArrays(GL_TRIANGLES, 0, 6);
+    // f->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, this->_indexes.constData());
+    f->glDrawElements(GL_TRIANGLES, this->_indexes.size(), GL_UNSIGNED_SHORT, this->_indexes.constData());
+}
 
-    // Disable the attribute pointer
-    this->_program.disableAttributeArray(this->_vertex_location);
-    this->_program.release();
+static int getIndex(int row, int col, int resolution)
+{
+    return row * resolution + col;
 }
 
 void Terrain::setResolution(int resolution)
@@ -69,17 +88,26 @@ void Terrain::setResolution(int resolution)
     this->_indexes.clear();
 
     // Generate terrain
-    for (int z = 0; z < resolution; z++)
+    for (int z = 0; z < resolution; z++) // row
     {
-        for (int x = 0; x < resolution; x++)
+        for (int x = 0; x < resolution; x++) // col
         {
-            this->_vertices.push_back(
-                glm::vec3(
-                    (float)x / (float)resolution,
-                    0.0f,
-                    (float)z / (float)resolution));
-            // TODO: Fix index population to be triples of triangle faces to be drawn with GL_TRIANGLES
-            this->_indexes.push_back(z * resolution + x);
+            this->_vertices << QVector3D(
+                (float)x / (float)(resolution - 1),
+                0.0f,
+                (float)z / (float)(resolution - 1));
+
+            if (x < resolution - 1 && z > 0)
+            {
+                // index = row * resolution + col
+                this->_indexes << getIndex(z, x, resolution);         // a   b+-+c
+                this->_indexes << getIndex(z - 1, x, resolution);     // b    |/
+                this->_indexes << getIndex(z - 1, x + 1, resolution); // c   a+
+
+                this->_indexes << getIndex(z, x, resolution);         // a      +c
+                this->_indexes << getIndex(z - 1, x + 1, resolution); // d     /|
+                this->_indexes << getIndex(z, x + 1, resolution);     // d   a+-+d
+            }
         }
     }
 }

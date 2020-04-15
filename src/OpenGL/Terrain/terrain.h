@@ -1,13 +1,15 @@
 #pragma once
 
-#include <vector>
-
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
 #include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
+#include <QVector> // Used here as QT replacement for std::vector
+#include <QVector3D>
 
 class Terrain
 {
@@ -23,16 +25,17 @@ public:
     void paintGL(QOpenGLFunctions *f, QMatrix4x4 camera);
 
 private:
+    // Plane transform (translate -0.5, 0, -0.5)
+    QMatrix4x4 _transform;
     // Plane vertices
-    std::vector<glm::vec3> _vertices;
+    QVector<QVector3D> _vertices;
     // Indexes for drawing plane with GL_TRIANGLES
-    std::vector<int> _indexes;
+    QVector<GLushort> _indexes;
 
-    // Shader program, for vertex and color shader
+    // Vertex array object
+    QOpenGLVertexArrayObject _vao;
+    // Vertex buffer data
+    QOpenGLBuffer _vertex_buffer{QOpenGLBuffer::VertexBuffer};
+    // Shader program
     QOpenGLShaderProgram _program;
-
-    // TODO: remove/change these location names, used for temp testing triangle
-    int _vertex_location;
-    int _camera_location;
-    int _color_location;
 };
