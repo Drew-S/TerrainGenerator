@@ -6,10 +6,11 @@
 
 #include <GL/gl.h>
 
+// TODO: Added openGL support checks and warning information to user
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
     // TODO: create light object
-    this->_terrain = new Terrain(1);
+    this->_terrain = new Terrain(8);
     this->_camera = new Camera;
 
     // Set default camera location
@@ -27,7 +28,6 @@ void OpenGL::initializeGL()
     // QT's currentContext functions produce a generic set of functions that should be compatible with
     // many different versions of openGL independent of the users graphics card (within reason)
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-    // f->initializeOpenGLFunctions();
     f->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Initialize terrain, lights, and camera

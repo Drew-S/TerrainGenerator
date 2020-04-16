@@ -68,7 +68,15 @@
           </size>
          </property>
         </widget>
-        <widget class="QWidget" name="NodeEditorContainerWidget" native="true"/>
+        <widget class="QWidget" name="NodeEditorContainerWidget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QGridLayout" name="NodeEditorLayout"/>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="widget" native="true"/>
