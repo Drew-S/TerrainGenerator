@@ -22,11 +22,10 @@ QMAKE_CXXFLAGS += -Wl,-rpath,$$PWD/nodeeditor/build/lib
 QT += core gui opengl widgets
 
 # Include third party libraries (nodeeditor)
-LIBS += -L$$PWD/nodeeditor/build/lib,-lnodes
+LIBS += -L"$$PWD/nodeeditor/build/lib" -lnodes
 
 # Include and depend on having nodeeditor
-INCLUDEPATH += $$PWD/nodeeditor/build/include/
-DEPENDPATH += $$PWD/nodeeditor/build/include/
+INCLUDEPATH += $$PWD/nodeeditor/include/nodes
 
 # Where the QT Designer *.ui files are stored (xml files)
 FORMS += $$files("src/UI/*.ui", true)
