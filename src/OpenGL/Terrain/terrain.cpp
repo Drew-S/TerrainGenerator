@@ -76,11 +76,14 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera)
     f->glDrawElements(GL_TRIANGLES, this->_indexes.size(), GL_UNSIGNED_SHORT, this->_indexes.constData());
 }
 
+// Convert row and col index 2D vector into 1D vector index
 static int getIndex(int row, int col, int resolution)
 {
     return row * resolution + col;
 }
 
+// Sets the resolution of the terrain (vertices), resolution is vertices along row and
+// and along col. Vertices = resolution^2
 void Terrain::setResolution(int resolution)
 {
     // Clear existing vertex data
