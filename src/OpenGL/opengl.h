@@ -7,13 +7,14 @@
 
 #include "./Terrain/terrain.h"
 #include "./Camera/camera.h"
+#include "./Light/light.h"
 
 // Custom OPenGL widget that manages and renders the OpenGL context to the window
 class OpenGL : public QOpenGLWidget
 {
 public:
     explicit OpenGL(QWidget *parent = 0);
-    ~OpenGL(){};
+    ~OpenGL();
 
     // TODO: Add event handlers for pan/zoom camera and pan/zoom light
 protected:
@@ -30,5 +31,5 @@ protected:
 private:
     Terrain *_terrain;
     Camera *_camera;
-    // Light *_light;
+    Light *_light;
 };

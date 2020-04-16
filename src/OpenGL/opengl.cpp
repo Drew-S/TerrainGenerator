@@ -9,14 +9,25 @@
 // TODO: Added openGL support checks and warning information to user
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
-    // TODO: create light object
     this->_terrain = new Terrain(8);
     this->_camera = new Camera;
+    this->_light = new Light;
 
     // Set default camera location
     this->_camera->setRotationX(45.0f);
     this->_camera->setRotationY(45.0f);
     this->_camera->setZoom(8.0f);
+
+    // Set default light angle
+    this->_light->setRotationX(45.0f);
+    this->_light->setRotationY(90.0f);
+}
+
+OpenGL::~OpenGL()
+{
+    delete this->_terrain;
+    delete this->_camera;
+    delete this->_light;
 }
 
 // Initialize OpenGL functions and objects
