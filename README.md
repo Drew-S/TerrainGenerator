@@ -17,7 +17,7 @@ Clone the repository into the root of the project:
 git clone https://github.com/paceholder/nodeeditor.git
 ```
 
-Then build the library:
+Then build the library (as presented from [nodeeditor](https://github.com/paceholder/nodeeditor)):
 
 ```
 cd nodeeditor
@@ -26,6 +26,15 @@ cd build
 cmake ..
 make -j
 ```
+
+Additional steps I needed to make it work on my system:
+
+```
+sudo ln -s $(pwd)/nodeeditor/build/lib/libnodes.so /usr/lib/
+sudo ldconfig
+```
+
+I created a symlink to the shared library for my entire system and reloaded ld to recognize it for programs.
 
 ## Building
 
