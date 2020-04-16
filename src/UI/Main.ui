@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>848</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -34,15 +34,27 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter_3">
+     <widget class="QSplitter" name="splitter_left_right_1">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QSplitter" name="splitter_2">
+      <widget class="QSplitter" name="splitter_top_bottom">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
        <widget class="OpenGL" name="OpenGLWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>600</width>
@@ -50,7 +62,13 @@
          </size>
         </property>
        </widget>
-       <widget class="QSplitter" name="splitter">
+       <widget class="QSplitter" name="splitter_left_right_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -61,6 +79,12 @@
          <enum>Qt::Horizontal</enum>
         </property>
         <widget class="QWidget" name="NodePropertiesContainerWidget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="maximumSize">
           <size>
            <width>200</width>
@@ -75,7 +99,17 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <layout class="QGridLayout" name="NodeEditorLayout"/>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>100</height>
+          </size>
+         </property>
+         <layout class="QGridLayout" name="NodeEditorLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
+         </layout>
         </widget>
        </widget>
       </widget>
@@ -89,7 +123,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>848</width>
      <height>28</height>
     </rect>
    </property>

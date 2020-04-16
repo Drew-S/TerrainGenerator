@@ -7,9 +7,6 @@
 #include <nodeeditor/include/nodes/FlowScene>
 #include <nodeeditor/include/nodes/FlowView>
 #include <nodeeditor/include/nodes/DataModelRegistry>
-// #include <nodes/FlowScene>
-// #include <nodes/FlowView>
-// #include <nodes/DataModelRegistry>
 
 static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 {
@@ -31,6 +28,8 @@ int main(int argc, char *argv[])
     QtNodes::FlowView *view = new QtNodes::FlowView(scene);
 
     ui.NodeEditorLayout->addWidget(view);
+
+    ui.splitter_top_bottom->setSizes({300, 150});
 
     main_window.show();
 
