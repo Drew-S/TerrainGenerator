@@ -9,6 +9,7 @@
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
 #include <QVector> // Used here as QT replacement for std::vector
+#include <QVector2D>
 #include <QVector3D>
 
 class Terrain
@@ -28,7 +29,7 @@ private:
     // Plane transform (translate -0.5, 0, -0.5)
     QMatrix4x4 _transform;
     // Plane vertices
-    QVector<QVector3D> _vertices;
+    QVector<GLfloat> _vertices;
     // Indexes for drawing plane with GL_TRIANGLES
     QVector<GLushort> _indexes;
 

@@ -45,9 +45,13 @@ void Terrain::initializeGL()
     this->_vertex_buffer.bind();
     this->_vertex_buffer.allocate(this->_vertices.constData(), this->_vertices.size() * sizeof(QVector3D));
 
-    // Set constant vertex buffer data on the shader
+    // Set vertex buffer data on the shader
     this->_program.enableAttributeArray("vertex");
-    this->_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
+    this->_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+
+    // Set uv buffer data on the shader
+    this->_program.enableAttributeArray("uv");
+    this->_program.setAttributeBuffer("uv", GL_FLOAT, 3, 2, 5 * sizeof(GLfloat));
 }
 
 void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera)
@@ -95,10 +99,12 @@ void Terrain::setResolution(int resolution)
     {
         for (int x = 0; x < resolution; x++) // col
         {
-            this->_vertices << QVector3D(
-                (float)x / (float)(resolution - 1),
-                0.0f,
-                (float)z / (float)(resolution - 1));
+            this->_vertices
+                << (float)x / (float)(resolution - 1)
+                << 0.0f
+                << (float)z / (float)(resolution - 1)
+                << (float)x / (float)(resolution - 1)
+                << (float)z / (float)(resolution - 1);
 
             if (x < resolution - 1 && z > 0)
             {
