@@ -3,25 +3,31 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 
-static const QVector3D UP(0.0f, 1.0f, 0.0f);
-static const QVector3D ZERO(0.0f, 0.0f, 0.0f);
+// TODO: Move all function implementations to *.cpp files globally (all files)
 
+// Camera class manages the QMatrix4x4 projection and view matrix and the QVector3D position for use
+// in the OpenGL shaders.
 class Camera
 {
 public:
     Camera(){};
     ~Camera(){};
 
-    // Return the generated lookat matrix
+    // Return the generated combined projection and view matrix
     QMatrix4x4 matrix();
 
-    // TODO: implement rotation and zoom limits
+    // Returns the generated camera world position
+    QVector3D position();
 
     // Rotate the camera (turntable) around the terrain
     void rotateY(float v) { this->_rotation_y += v; };
 
     // Rotate the camera over the terrain
-    void rotateX(float v) { this->_rotation_x += v; };
+    void rotateX(float v)
+    {
+        this->_rotation_x += v;
+        this->_clampRotationX(); // Limits rotation
+    };
 
     // Zoom the camera into/out of the terrain
     void zoom(float v)
@@ -35,10 +41,14 @@ public:
     };
 
     // Set the rotation (turntable) around the terrain
-    void setRotationY(float v) { this->_rotation_y = v; };
+    void setRotationZ(float v) { this->_rotation_y = v; };
 
     // Set the rotation over the terrain
-    void setRotationX(float v) { this->_rotation_x = v; };
+    void setRotationX(float v)
+    {
+        this->_rotation_x = v;
+        this->_clampRotationX(); // limits rotation
+    };
 
     // Set the zoom level into the terrain
     void setZoom(float v) { this->_zoom = v; }
@@ -47,6 +57,17 @@ public:
     void resize(int w, int h);
 
 private:
+    // Get the view matrix (no projection)
+    QMatrix4x4 _matrix();
+
+    // Applies rotation limits above the terrain
+    void _clampRotationX()
+    {
+        if (this->_rotation_x < 0.0)
+            this->_rotation_x = 0.0;
+        if (this->_rotation_x > 90.0)
+            this->_rotation_x = 90.0;
+    };
     // Rotation over the terrain
     float _rotation_x = 0.0f;
     // Rotation around the terrain (turntable)
