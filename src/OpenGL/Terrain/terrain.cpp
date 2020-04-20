@@ -3,34 +3,42 @@
 #include <QOpenGLShader>
 #include <QOpenGLBuffer>
 #include <QColor>
+#include <QImage>
 
 #include <GL/gl.h>
 
-static const glm::vec3 UP(0.0f, 1.0f, 0.0f);
-
+// Create a terrain class with a set resolution, resolution is the
+// number of vertices in the x and z coordinates, this results in resolution^2 vertices
 Terrain::Terrain(int resolution)
 {
     // When created set the supplied resolution
     this->setResolution(resolution);
 
     // Translate the plane over to center it to (0, 0, 0)
-    this->_transform.translate(-0.5f, 0.0f, -0.5f);
+    this->_transform.scale(2.0f);
+    this->_transform.translate(-0.5f, 0.0, -0.5f);
 }
 
-Terrain::~Terrain()
-{
-    this->_vertex_buffer.destroy();
-    this->_vao.destroy();
-}
-
+// Initialize OpenGL items
 void Terrain::initializeGL()
 {
+    // Attach a height map, used for testing shader code
+    // TODO: remove file height map, use generated height map
+    this->_height = new QOpenGLTexture(QImage("assets/textures/height.png").mirrored());
+    this->_height->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_height->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
+    // TODO: remove file normal map, use generated normal map
+    this->_normal = new QOpenGLTexture(QImage("assets/textures/normal.png").mirrored());
+    this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
     // Initialize the vertex shader
     // TODO: Long term include absolute path management
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "assets/shaders/shader.vert");
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "assets/shaders/terrain.vert");
 
     // Initialize the frag shader (color)
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "assets/shaders/shader.frag");
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "assets/shaders/terrain.frag");
 
     // Link and bind the shader program for use
     this->_program.link();
@@ -43,41 +51,87 @@ void Terrain::initializeGL()
     this->_vertex_buffer.create();
     this->_vertex_buffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     this->_vertex_buffer.bind();
-    this->_vertex_buffer.allocate(this->_vertices.constData(), this->_vertices.size() * sizeof(QVector3D));
+    this->_vertex_buffer.allocate(this->_vertices.constData(), this->_vertices.size() * sizeof(GLfloat));
 
     // Set vertex buffer data on the shader
     this->_program.enableAttributeArray("vertex");
-    this->_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+    this->_program.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
 
-    // Set uv buffer data on the shader
-    this->_program.enableAttributeArray("uv");
-    this->_program.setAttributeBuffer("uv", GL_FLOAT, 3, 2, 5 * sizeof(GLfloat));
+    // Release buffers
+    this->_vertex_buffer.release();
+    this->_vao.release();
 }
 
-void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera)
+// Draw the terrain (technically, it can be drawn twice)
+void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity)
 {
-    // TODO: Remove, testing color
-    QColor color(255, 255, 255, 255);
+    // Draw the terrain
+    // TODO: Add terrain color selector and line color selector
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(0.75f, 0.75f, 0.75f));
 
+    // Draw the lines that make up the terrain faces
+    // TODO: Include a switch to toggle lines
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
+}
+
+// Draws the terrain givent the provided information
+void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color)
+{
+    // Bind the buffers
+    this->_vao.bind();
+    this->_vertex_buffer.bind();
+
+    // Bind the shader
     this->_program.bind();
 
     // Attach uniform values
-    // TODO: include light param
     // Attach model tranform matrix M(VP)
     this->_program.setUniformValue("model", this->_transform);
 
     // Attach combined view and projection matrix (M)VP
-    this->_program.setUniformValue("camera", camera);
+    this->_program.setUniformValue("camera", camera_matrix);
+
+    this->_program.setUniformValue("camera_pos", camera_pos);
 
     // Attach model color value
     this->_program.setUniformValue("color", color);
 
-    // TODO: Include UI switch to enable/disable wireframe mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // Attach sun light direction
+    this->_program.setUniformValue("light_pos", light_pos);
+    // Attach sun light color
+    this->_program.setUniformValue("light_color", light_color);
+    // Attach sun light intensity
+    this->_program.setUniformValue("light_intensity", light_intensity);
+
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    // Attach textures
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->_height->textureId());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, this->_normal->textureId());
+
+    this->_program.setUniformValue("height_map", GL_TEXTURE0);
+    this->_program.setUniformValue("normal_map", GL_TEXTURE1 - GL_TEXTURE0);
 
     // Draw the terrain
-    // f->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, this->_indexes.constData());
     f->glDrawElements(GL_TRIANGLES, this->_indexes.size(), GL_UNSIGNED_SHORT, this->_indexes.constData());
+
+    // Release the textures
+    this->_height->release();
+    this->_normal->release();
+
+    // Release the shader
+    this->_program.release();
+
+    // Release the buffers
+    this->_vertex_buffer.release();
+    this->_vao.release();
 }
 
 // Convert row and col index 2D vector into 1D vector index
@@ -99,13 +153,14 @@ void Terrain::setResolution(int resolution)
     {
         for (int x = 0; x < resolution; x++) // col
         {
+            // Does not include additional uv values as they are encoded in the x and z components
+            // since the terrain is generated as a range from 0 to 1
             this->_vertices
                 << (float)x / (float)(resolution - 1)
                 << 0.0f
-                << (float)z / (float)(resolution - 1)
-                << (float)x / (float)(resolution - 1)
                 << (float)z / (float)(resolution - 1);
 
+            // Generates the indexes for drawing triangles
             if (x < resolution - 1 && z > 0)
             {
                 // index = row * resolution + col
