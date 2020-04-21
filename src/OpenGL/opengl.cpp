@@ -1,11 +1,20 @@
 #include "opengl.h"
 
+#include "ui_OpenGLControls.h"
+
 #include <QOpenGLFunctions>
 #include <QOpenGLContext>
 #include <QSurfaceFormat>
 #include <QPoint>
+#include <QPointF>
+#include <QMatrix>
 
 #include <GL/gl.h>
+
+static float mapRange(float start_min, float start_max, float end_min, float end_max, float value)
+{
+    return ((value - start_min) / (start_max - start_min)) * (end_max - end_min) + end_min;
+}
 
 // TODO: add ui support for selecting sky color
 #define SKY 0.77f, 0.84f, 0.99f, 1.0f
@@ -38,11 +47,46 @@ OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
     this->_light = new Light;
 
     // Set default camera rotation and zoom
-    this->_camera->setRotationX(45.0f);
-    this->_camera->setZoom(4.243f);
+    float cam_rotation_x = this->_camera->setRotationX(45.0f);
+    float cam_rotation_y = this->_camera->setRotationY(0.0f);
+    float cam_zoom = this->_camera->setZoom(4.25f);
 
     // Set default light rotation
-    this->_light->setRotationX(45.0f);
+    float sun_rotation_x = this->_light->setRotationX(45.0f);
+    float sun_rotation_y = this->_light->setRotationY(0.0f);
+
+    // Attach overlay controls
+    this->_controls = new QWidget(this);
+
+    Ui::OpenGLControls ui;
+    ui.setupUi(this->_controls);
+
+    // Get camera's current settings
+    this->_control_cam_zoom = ui.cam_zoom;
+    this->_control_cam_rotation_x = ui.cam_rotation_x;
+    this->_control_cam_rotation_y = ui.cam_rotation_y;
+
+    // Get lights current settings
+    this->_control_sun_rotation_x = ui.sun_rotation_x;
+    this->_control_sun_rotation_y = ui.sun_rotation_y;
+
+    // Set camera control values
+    this->_control_cam_zoom->setSliderPosition((int)(4.0f * cam_zoom));
+    this->_control_cam_rotation_x->setSliderPosition((int)cam_rotation_x);
+    this->_control_cam_rotation_y->setSliderPosition((int)cam_rotation_y);
+
+    // Set light control values
+    this->_control_sun_rotation_x->setSliderPosition(sun_rotation_x);
+    this->_control_sun_rotation_y->setSliderPosition(sun_rotation_y);
+
+    // Attach listeners for the camera controls
+    QObject::connect(this->_control_cam_rotation_x, &QSlider::valueChanged, this, &OpenGL::camRotationX);
+    QObject::connect(this->_control_cam_rotation_y, &QSlider::valueChanged, this, &OpenGL::camRotationY);
+    QObject::connect(this->_control_cam_zoom, &QSlider::valueChanged, this, &OpenGL::camZoom);
+
+    // Attach listeners for the sun controls
+    QObject::connect(this->_control_sun_rotation_x, &QSlider::valueChanged, this, &OpenGL::sunRotationX);
+    QObject::connect(this->_control_sun_rotation_y, &QSlider::valueChanged, this, &OpenGL::sunRotationY);
 }
 
 // Clean up objects
@@ -74,13 +118,15 @@ void OpenGL::initializeGL()
     this->_terrain->initializeGL();
 }
 
-// On widget being resize, recalculate the camera perspective
+// On widget being resize, recalculate the camera perspective, and update the control widget size
 void OpenGL::resizeGL(int w, int h)
 {
     this->_camera->resize(w, h);
+    this->_controls->setGeometry(0, -10, w, h);
 }
 
 // Paint the scene, lights, objects, etc.
+// TODO: Commenting, improve labeling, describe whats happening
 void OpenGL::paintGL()
 {
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
@@ -112,76 +158,117 @@ void OpenGL::paintGL()
     // Draw the sun graphic
     this->_light->paintGL(camera_matrix);
 
-    // Draw additional debug info (axis)
-    // TODO: Draw axis as an info graphic in the corner
+    // Current widget width and height
+    float width = (float)this->size().width();
+    float height = (float)this->size().height();
 
-    float length = 2.0f;
+    // How large (pixels) should the axis indicator be (WxH)
+    float i_size = 120.0f;
+    // How far from the corner of the screen (pixels)
+    float margin = 25.0f;
 
-    // Get the axis vectors for drawing the world space zero axis compensated for the camera
-    QVector3D x = camera_matrix * QVector3D(length, 0.0f, 0.0f);   // (1,  0,  0)
-    QVector3D y = camera_matrix * QVector3D(0.0f, length, 0.0f);   // (0,  1,  0)
-    QVector3D z = camera_matrix * QVector3D(0.0f, 0.0f, length);   // (0,  0,  1)
-    QVector3D xn = camera_matrix * QVector3D(-length, 0.0f, 0.0f); // (-1, 0,  0)
-    QVector3D yn = camera_matrix * QVector3D(0.0f, -length, 0.0f); // (0, -1,  0)
-    QVector3D zn = camera_matrix * QVector3D(0.0f, 0.0f, -length); // (0,  0, -1)
-    QVector3D zero = camera_matrix * QVector3D(0.0f, 0.0f, 0.0f);  // (0,  0,  0)
+    // Get the camera rotation matrix
+    QMatrix4x4 rotation_matrix = this->_camera->rotationMatrix();
 
-    // Draw the origin point (black dot at world (0, 0, 0))
+    // Get the axis vectors for drawing the world space zero axis compensated for the camera rotation
+    // 3D vector form
+    QVector3D x_v = rotation_matrix * QVector3D(1.0f, 0.0f, 0.0f);    // (1,  0,  0)
+    QVector3D y_v = rotation_matrix * QVector3D(0.0f, 1.0f, 0.0f);    // (0,  1,  0)
+    QVector3D z_v = rotation_matrix * QVector3D(0.0f, 0.0f, 1.0f);    // (0,  0,  1)
+    QVector3D zero_v = rotation_matrix * QVector3D(0.0f, 0.0f, 0.0f); // (0,  0,  0)
+
+    // Transform to move and scale the indicator into the corner
+    // w = width, h = height, s = i_size, m = margin
+    // 1 0 -1 | 1/w 0   0 | 1 0 m | s/2 0   0 | 1 0 1 | x
+    // 0 1 -1 | 0   1/h 0 | 0 1 m | 0   s/2 0 | 0 1 1 | y
+    // 0 0  1 | 0   0   1 | 0 0 1 | 0   0   1 | 0 0 1 | 1
+    QMatrix transform; // (3x3 matrix)
+    transform = transform * QMatrix(1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+    transform = transform * QMatrix(i_size / 2.0f, 0.0f, 0.0f, i_size / 2.0f, 0.0f, 0.0f);
+    transform = transform * QMatrix(1.0f, 0.0f, 0.0f, 1.0f, margin, margin);
+    transform = transform * QMatrix(1.0f / width, 0.0f, 0.0f, 1.0f / height, 0.0f, 0.0f);
+    transform = transform * QMatrix(1.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f);
+
+    // Apply tranformation to the indicator coordinates
+    // QPointF is used as QMatrix does not support multiplication by QVector2D
+    QPointF x = transform * QPointF(x_v.x(), x_v.y());
+    QPointF y = transform * QPointF(y_v.x(), y_v.y());
+    QPointF z = transform * QPointF(z_v.x(), z_v.y());
+    QPointF zero = transform * QPointF(zero_v.x(), zero_v.y());
+
+    // Compensations for drawing axis over each other, z value was stripped from above,
+    // this re-introduces them into the drawing for pseudo-depth.
+    float z_0 = 0.0f; // z-axis compensation (for "winning" over x-axis)
+    float z_1 = 0.2f; // z-axis compensation (for "winning" over x-axis)
+    float o = 0.0f;   // Origin compensation (for "winning" over x- and z-axis)
+
+    // z-axis is point to the right of screen, it should be in front of the x-axis
+    // x-axis normally dominates
+    if ((z - zero).x() >= 0)
+    {
+        z_0 = 0.01;
+        z_1 = 0.1f;
+    }
+
+    // If z-axis is pointing right, or x-axis is pointing left (with error margin for point size)
+    // Have origin draw over (origin in is front, black dot)
+    if ((z - zero).x() > 0.0207912 || (x - zero).x() < -0.0207912)
+    {
+        o = 0.125f;
+    }
+
+    glPointSize(5.0f);
+    glLineWidth(3.0f);
+
+    // Draw the origin point (black dot representing (0, 0, 0))
     glBegin(GL_POINTS);
     glColor3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(zero.x(), zero.y(), zero.z());
+    glVertex3f(zero.x(), zero.y(), 0.125f - o);
+    glEnd();
+
+    glPointSize(7.0f);
+
+    // Axis end points
+    glBegin(GL_POINTS);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(x.x(), x.y(), 0.1f);
+
+    glColor3f(0.0f, 0.0f, 1.0f - z_0);
+    glVertex3f(z.x(), z.y(), 0.1f - z_0);
+
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(y.x(), y.y(), 0.0f);
     glEnd();
 
     // Draw positive x-axis
     glBegin(GL_LINES);
     glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(x.x(), x.y(), x.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
-
-    // Draw positive y-axis
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(y.x(), y.y(), y.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
+    glVertex3f(x.x(), x.y(), 0.2f);
+    glVertex3f(zero.x(), zero.y(), 0.2f);
 
     // Draw positive z-axis
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(z.x(), z.y(), z.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
-    glEnd();
+    glVertex3f(z.x(), z.y(), z_1 - z_0);
+    glVertex3f(zero.x(), zero.y(), z_1 - z_0);
 
-    // Draw dashed lines
-    glPushAttrib(GL_ENABLE_BIT);
-
-    glLineStipple(4, 0xAAAA);
-    glEnable(GL_LINE_STIPPLE);
-
-    // Draw negative x-axis
-    glBegin(GL_LINES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(xn.x(), xn.y(), xn.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
-
-    // Draw negative y-axis
+    // Draw positive y-axis
     glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(yn.x(), yn.y(), yn.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
-
-    // Draw negative z-axis
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(zn.x(), zn.y(), zn.z());
-    glVertex3f(zero.x(), zero.y(), zero.z());
+    glVertex3f(y.x(), y.y(), 0.15f);
+    glVertex3f(zero.x(), zero.y(), 0.15f);
     glEnd();
 
-    glPopAttrib();
+    glLineWidth(1.0f);
 }
 
 // On mouse wheel activity, zoom in (was implemented early to debug OpenGL implementation)
 void OpenGL::wheelEvent(QWheelEvent *event)
 {
+    float camera_zoom;
     if (event->angleDelta().y() < 0)
-        this->_camera->zoom(0.25f);
+        camera_zoom = this->_camera->zoom(0.25f);
     else
-        this->_camera->zoom(-0.25f);
+        camera_zoom = this->_camera->zoom(-0.25f);
+    this->_control_cam_zoom->setSliderPosition((int)(4.0f * camera_zoom));
     this->update();
 }
 
@@ -206,13 +293,47 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
 
     if (modifiers.testFlag(Qt::ShiftModifier))
     {
-        this->_light->rotateX(delta.y());
-        this->_light->rotateY(delta.x());
+        float sun_rotation_x = this->_light->rotateX(delta.y());
+        float sun_rotation_y = this->_light->rotateY(delta.x());
+        this->_control_sun_rotation_x->setSliderPosition((int)sun_rotation_x);
+        this->_control_sun_rotation_y->setSliderPosition((int)sun_rotation_y);
     }
     else
     {
-        this->_camera->rotateX(-delta.y());
-        this->_camera->rotateY(-delta.x());
+        float cam_rotation_x = this->_camera->rotateX(-delta.y());
+        float cam_rotation_y = this->_camera->rotateY(-delta.x());
+        this->_control_cam_rotation_x->setSliderPosition((int)cam_rotation_x);
+        this->_control_cam_rotation_y->setSliderPosition((int)cam_rotation_y);
     }
     update();
+}
+
+void OpenGL::sunRotationX(int value)
+{
+    this->_light->setRotationX((float)value);
+    this->update();
+}
+
+void OpenGL::sunRotationY(int value)
+{
+    this->_light->setRotationY((float)value);
+    this->update();
+}
+
+void OpenGL::camRotationX(int value)
+{
+    this->_camera->setRotationX((float)value);
+    this->update();
+}
+
+void OpenGL::camRotationY(int value)
+{
+    this->_camera->setRotationY((float)value);
+    this->update();
+}
+
+void OpenGL::camZoom(int value)
+{
+    this->_camera->setZoom(((float)value) / 4.0f);
+    this->update();
 }
