@@ -6,6 +6,8 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QSlider>
+#include <QDial>
 
 #include "./Terrain/terrain.h"
 #include "./Camera/camera.h"
@@ -17,6 +19,14 @@ class OpenGL : public QOpenGLWidget
 public:
     explicit OpenGL(QWidget *parent = 0);
     ~OpenGL();
+
+public slots:
+    void sunRotationX(int value);
+    void sunRotationY(int value);
+
+    void camRotationX(int value);
+    void camRotationY(int value);
+    void camZoom(int value);
 
 protected:
     // Initialize gl functions and settings
@@ -47,4 +57,13 @@ private:
 
     // Previous position for createing relative mouse movement data in mouseMoveEvent
     QPoint _prev;
+
+    QWidget *_controls;
+
+    QSlider *_control_cam_zoom;
+    QSlider *_control_cam_rotation_x;
+    QDial *_control_cam_rotation_y;
+
+    QSlider *_control_sun_rotation_x;
+    QDial *_control_sun_rotation_y;
 };
