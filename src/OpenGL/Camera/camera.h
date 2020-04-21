@@ -16,21 +16,33 @@ public:
     // Return the generated combined projection and view matrix
     QMatrix4x4 matrix();
 
+    // Return the rotation of the matrix only
+    QMatrix4x4 rotationMatrix();
+
+    // Return the projection matrix only
+    QMatrix4x4 projectionMatrix();
+
     // Returns the generated camera world position
-    QVector3D position();
+    QVector3D
+    position();
 
     // Rotate the camera (turntable) around the terrain
-    void rotateY(float v) { this->_rotation_y += v; };
+    float rotateY(float v)
+    {
+        this->_rotation_y += v;
+        return this->_rotation_y;
+    };
 
     // Rotate the camera over the terrain
-    void rotateX(float v)
+    float rotateX(float v)
     {
         this->_rotation_x += v;
         this->_clampRotationX(); // Limits rotation
+        return this->_rotation_x;
     };
 
     // Zoom the camera into/out of the terrain
-    void zoom(float v)
+    float zoom(float v)
     {
         this->_zoom += v;
         if (this->_zoom < 1.0f)
@@ -38,23 +50,37 @@ public:
 
         if (this->_zoom > 20.0f)
             this->_zoom = 20.0f;
+        return this->_zoom;
     };
+    float zoom() { return this->_zoom; }
 
     // Set the rotation (turntable) around the terrain
-    void setRotationZ(float v) { this->_rotation_y = v; };
+    float setRotationY(float v)
+    {
+        this->_rotation_y = v;
+        return this->_rotation_y;
+    };
 
     // Set the rotation over the terrain
-    void setRotationX(float v)
+    float setRotationX(float v)
     {
         this->_rotation_x = v;
         this->_clampRotationX(); // limits rotation
+        return this->_rotation_x;
     };
 
     // Set the zoom level into the terrain
-    void setZoom(float v) { this->_zoom = v; }
+    float setZoom(float v)
+    {
+        this->_zoom = v;
+        return this->_zoom;
+    }
 
     // Resize call, when widget size change recalculate the projection matrix
     void resize(int w, int h);
+
+    float rotationX() { return this->_rotation_x; }
+    float rotationY() { return this->_rotation_y; }
 
 private:
     // Get the view matrix (no projection)
