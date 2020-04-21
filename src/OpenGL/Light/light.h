@@ -23,23 +23,33 @@ public:
     QVector3D color() { return this->_color; };
 
     // Rotates the light around the terrain (turntable)
-    void rotateY(float rotation) { this->_rotation_y += rotation; };
+    float rotateY(float rotation)
+    {
+        this->_rotation_y += rotation;
+        return this->_rotation_y;
+    };
 
     // Rotates the light over the terrain
-    void rotateX(float rotation)
+    float rotateX(float rotation)
     {
         this->_rotation_x += rotation;
         this->_clampRotationX(); // Limits the rotation
+        return this->_rotation_x;
     };
 
     // Sets the rotation around the terrain (turntable)
-    void setRotationY(float rotation) { this->_rotation_y = rotation; };
+    float setRotationY(float rotation)
+    {
+        this->_rotation_y = rotation;
+        return this->_rotation_y;
+    };
 
     // Sets the rotation over the terrain
-    void setRotationX(float rotation)
+    float setRotationX(float rotation)
     {
         this->_rotation_x = rotation;
         this->_clampRotationX(); // Limits the rotation
+        return this->_rotation_x;
     };
 
     // Set the intensity of the light
