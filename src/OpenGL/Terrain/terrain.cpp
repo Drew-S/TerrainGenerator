@@ -3,7 +3,6 @@
 #include <QOpenGLShader>
 #include <QOpenGLBuffer>
 #include <QColor>
-#include <QImage>
 
 #include <GL/gl.h>
 
@@ -24,12 +23,26 @@ void Terrain::initializeGL()
 {
     // Attach a height map, used for testing shader code
     // TODO: remove file height map, use generated height map
-    this->_height = new QOpenGLTexture(QImage("assets/textures/height.png").mirrored());
+
+    int res = 1;
+
+    QImage height(res, res, QImage::Format_Indexed8);
+    height.setColorCount(1);
+    height.setColor(0, qRgba(0, 0, 0, 255));
+    height.fill(0);
+
+    this->_height = new QOpenGLTexture(height.mirrored());
     this->_height->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     this->_height->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
+    // Once transforms are applied in fragment shader the color (128, 128, 255) or (0.5, 0.5, 1.0) becomes (0, 1, 0) normal vector
+    QImage normal(res, res, QImage::Format_Indexed8);
+    normal.setColorCount(1);
+    normal.setColor(0, qRgba(128, 128, 255, 255));
+    normal.fill(0);
+
     // TODO: remove file normal map, use generated normal map
-    this->_normal = new QOpenGLTexture(QImage("assets/textures/normal.png").mirrored());
+    this->_normal = new QOpenGLTexture(normal.mirrored());
     this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
@@ -72,8 +85,8 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D c
 
     // Draw the lines that make up the terrain faces
     // TODO: Include a switch to toggle lines
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
 }
 
 // Draws the terrain givent the provided information
@@ -174,4 +187,22 @@ void Terrain::setResolution(int resolution)
             }
         }
     }
+}
+
+// Update the current height map texture with a new height map
+void Terrain::setHeightMap(QImage height_map)
+{
+    delete this->_height;
+    this->_height = new QOpenGLTexture(height_map);
+    this->_height->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_height->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+}
+
+// Update the current normal map texture with a new normal map
+void Terrain::setNormalMap(QImage normal_map)
+{
+    delete this->_normal;
+    this->_normal = new QOpenGLTexture(normal_map);
+    this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 }

@@ -12,6 +12,7 @@
 #include <QVector> // Used here as QT replacement for std::vector
 #include <QVector2D>
 #include <QVector3D>
+#include <QImage>
 
 // Class to manage the terrain data, shaders, textures, and vertices
 // Used to draw the terrain to the OpenGL widget
@@ -27,6 +28,10 @@ public:
     void initializeGL();
     // Draw the terrain, calls _paintGL which does drawing, this uses _paintGL twice to draw faces and the lines
     void paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity);
+
+    // Update the existing height/normal map textures
+    void setHeightMap(QImage height_map);
+    void setNormalMap(QImage normal_map);
 
 private:
     // Draws the terrain
