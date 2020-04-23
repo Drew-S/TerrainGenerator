@@ -39,7 +39,6 @@ QMatrix4x4 Camera::rotationMatrix()
 // Get the projection matrix
 QMatrix4x4 Camera::projectionMatrix()
 {
-{
     QMatrix4x4 projection;
     // Generate the perspective matrix
     // TODO: include a toggle for orthographic mode
