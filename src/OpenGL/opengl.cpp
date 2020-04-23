@@ -11,11 +11,6 @@
 
 #include <GL/gl.h>
 
-static float mapRange(float start_min, float start_max, float end_min, float end_max, float value)
-{
-    return ((value - start_min) / (start_max - start_min)) * (end_max - end_min) + end_min;
-}
-
 // TODO: add ui support for selecting sky color
 #define SKY 0.77f, 0.84f, 0.99f, 1.0f
 
@@ -198,6 +193,7 @@ void OpenGL::paintGL()
 
     // Compensations for drawing axis over each other, z value was stripped from above,
     // this re-introduces them into the drawing for pseudo-depth.
+    // TODO: improve names here
     float z_0 = 0.0f; // z-axis compensation (for "winning" over x-axis)
     float z_1 = 0.2f; // z-axis compensation (for "winning" over x-axis)
     float o = 0.0f;   // Origin compensation (for "winning" over x- and z-axis)
@@ -272,25 +268,24 @@ void OpenGL::wheelEvent(QWheelEvent *event)
     this->update();
 }
 
+// When the OpenGL widget is clicked, enable dragging and set the starting point
 void OpenGL::mousePressEvent(QMouseEvent *event)
 {
     this->_prev = event->pos();
-    this->_dragging = true;
 }
 
-void OpenGL::mouseReleaseEvent(QMouseEvent *event)
-{
-    (void *)event;
-    this->_dragging = false;
-}
-
+// When the mouse moves. Mouse tracking is off = only called if clicked (dragging)
+// TODO: Limit mouse buttons
 void OpenGL::mouseMoveEvent(QMouseEvent *event)
 {
+    // Get modifiers (shift key)
     Qt::KeyboardModifiers modifiers = event->modifiers();
 
+    // Get and update the relative movement
     QPoint delta = this->_prev - event->pos();
     this->_prev = event->pos();
 
+    // If shift is clicked rotated the sun instead
     if (modifiers.testFlag(Qt::ShiftModifier))
     {
         float sun_rotation_x = this->_light->rotateX(delta.y());
@@ -298,6 +293,7 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
         this->_control_sun_rotation_x->setSliderPosition((int)sun_rotation_x);
         this->_control_sun_rotation_y->setSliderPosition((int)sun_rotation_y);
     }
+    // Otherwise default to the camera only
     else
     {
         float cam_rotation_x = this->_camera->rotateX(-delta.y());
@@ -305,35 +301,43 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
         this->_control_cam_rotation_x->setSliderPosition((int)cam_rotation_x);
         this->_control_cam_rotation_y->setSliderPosition((int)cam_rotation_y);
     }
+    // Update the OpenGL data
     update();
 }
 
+// When the sun widgets are changed
 void OpenGL::sunRotationX(int value)
 {
     this->_light->setRotationX((float)value);
     this->update();
 }
-
 void OpenGL::sunRotationY(int value)
 {
     this->_light->setRotationY((float)value);
     this->update();
 }
 
+// When the camera widgets are changed
 void OpenGL::camRotationX(int value)
 {
     this->_camera->setRotationX((float)value);
     this->update();
 }
-
 void OpenGL::camRotationY(int value)
 {
     this->_camera->setRotationY((float)value);
     this->update();
 }
-
 void OpenGL::camZoom(int value)
 {
     this->_camera->setZoom(((float)value) / 4.0f);
+    this->update();
+}
+
+// When the nodeeditor has new updated textures
+void OpenGL::nodeeditorOutputUpdated(QImage normal_map, QImage height_map)
+{
+    this->_terrain->setHeightMap(height_map);
+    this->_terrain->setNormalMap(normal_map);
     this->update();
 }

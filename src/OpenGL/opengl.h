@@ -6,6 +6,7 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QImage>
 #include <QSlider>
 #include <QDial>
 
@@ -21,12 +22,17 @@ public:
     ~OpenGL();
 
 public slots:
+    // Called when the sun widgets are adjusted
     void sunRotationX(int value);
     void sunRotationY(int value);
 
+    // Called when the camera widgets are adjusted
     void camRotationX(int value);
     void camRotationY(int value);
     void camZoom(int value);
+
+    // Called when the nodeeditor has updated normal and height maps
+    void nodeeditorOutputUpdated(QImage normal_map, QImage height_map);
 
 protected:
     // Initialize gl functions and settings
@@ -41,7 +47,6 @@ protected:
 
     // Mouse click and draw rotate camera, shift to rotate light
     void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
@@ -52,14 +57,13 @@ private:
     // Light handler
     Light *_light;
 
-    // Switch to update data when mouse move is click drag
-    bool _dragging = false;
-
     // Previous position for createing relative mouse movement data in mouseMoveEvent
     QPoint _prev;
 
+    // Pointer for the overlay controls
     QWidget *_controls;
 
+    // Pointers for specific overlay controls, used for listeners and updating
     QSlider *_control_cam_zoom;
     QSlider *_control_cam_rotation_x;
     QDial *_control_cam_rotation_y;
