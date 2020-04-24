@@ -53,7 +53,8 @@ bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
             QString file_name = QFileDialog::getOpenFileName(
                 nullptr,
                 tr("Open Image"),
-                QDir::homePath(),
+                "/home/drew/Documents/School/Active/COMP_495/project/assets/textures",
+                // QDir::homePath(),
                 tr("Image Files (*.png *.jpg)"));
 
             // If a file is not selected set the QLabel to display
