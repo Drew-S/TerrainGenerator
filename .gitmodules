@@ -1,0 +1,4 @@
+[submodule "nodeeditor"]
+    path = lib/nodeeditor
+    url = https://github.com/paceholder/nodeeditor
+    ignore = all
