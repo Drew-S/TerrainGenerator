@@ -3,9 +3,9 @@
 #include <QLayout>
 #include <QObject>
 
-#include <nodeeditor/include/nodes/FlowScene>
-#include <nodeeditor/include/nodes/FlowView>
-#include <nodeeditor/include/nodes/Node>
+#include <lib/nodeeditor/include/nodes/FlowScene>
+#include <lib/nodeeditor/include/nodes/FlowView>
+#include <lib/nodeeditor/include/nodes/Node>
 
 #include "Nodes/output.h"
 #include "Nodes/inputtexture.h"

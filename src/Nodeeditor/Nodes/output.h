@@ -3,7 +3,7 @@
 #include <QLabel>
 #include <QImage>
 
-#include <nodeeditor/include/nodes/NodeDataModel>
+#include <lib/nodeeditor/include/nodes/NodeDataModel>
 
 // Normal map generator
 #include "./Normal/normal.h"

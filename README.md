@@ -14,6 +14,7 @@
 Clone the repository into the root of the project:
 
 ```
+cd lib
 git clone https://github.com/paceholder/nodeeditor.git
 ```
 
@@ -30,7 +31,7 @@ make -j
 Additional steps I needed to make it work on my system:
 
 ```
-sudo ln -s $(pwd)/nodeeditor/build/lib/libnodes.so /usr/lib/
+sudo ln -s $(pwd)/lib/nodeeditor/build/lib/libnodes.so /usr/lib/
 sudo ldconfig
 ```
 

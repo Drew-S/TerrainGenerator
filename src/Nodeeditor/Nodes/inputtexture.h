@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QEvent>
 
-#include <nodeeditor/include/nodes/NodeDataModel>
+#include <lib/nodeeditor/include/nodes/NodeDataModel>
 
 // Node for the nodeeditor that can load an image from the file system
 // Used as an input for other nodes

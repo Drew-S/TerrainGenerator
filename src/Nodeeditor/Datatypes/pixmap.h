@@ -2,7 +2,7 @@
 
 #include <QPixmap>
 
-#include <nodeeditor/include/nodes/NodeDataModel>
+#include <lib/nodeeditor/include/nodes/NodeDataModel>
 
 // Manages the sharing of a pixmap between nodes
 // Used to send once image from one node to another

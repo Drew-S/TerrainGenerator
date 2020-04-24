@@ -16,16 +16,16 @@ DEFINES += NODE_EDITOR_SHARED
 QMAKE_CXXFLAGS += -std=c++17
 
 # Passing linking variables for including nodeeditor plugin
-QMAKE_CXXFLAGS += -Wl,-rpath,$$PWD/nodeeditor/build/lib
+QMAKE_CXXFLAGS += -Wl,-rpath,$$PWD/lib/nodeeditor/build/lib
 
 # The QT libraries to be included
 QT += core gui opengl widgets
 
 # Include third party libraries (nodeeditor)
-LIBS += -L"$$PWD/nodeeditor/build/lib" -lnodes
+LIBS += -L"$$PWD/lib/nodeeditor/build/lib" -lnodes
 
 # Include and depend on having nodeeditor
-INCLUDEPATH += $$PWD/nodeeditor/include/nodes
+INCLUDEPATH += $$PWD/lib/nodeeditor/include/nodes
 
 # Where the QT Designer *.ui files are stored (xml files)
 FORMS += $$files("src/UI/*.ui", true)

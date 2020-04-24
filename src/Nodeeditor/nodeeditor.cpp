@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include <nodeeditor/include/nodes/DataModelRegistry>
+#include <lib/nodeeditor/include/nodes/DataModelRegistry>
 
 // This block of code is used to register all the different nodes
 // TODO: Figure out a way for stretch goals to dynamically load models through plugins
