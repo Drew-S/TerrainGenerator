@@ -2,3 +2,6 @@
     path = lib/nodeeditor
     url = https://github.com/paceholder/nodeeditor
     ignore = all
+[submodule "SimplexNoise"]
+	path = SimplexNoise
+	url = ./lib/SimplexNoise/
