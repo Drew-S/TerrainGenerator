@@ -5,3 +5,4 @@
 [submodule "SimplexNoise"]
 	path = SimplexNoise
 	url = ./lib/SimplexNoise/
+    ignore = all
