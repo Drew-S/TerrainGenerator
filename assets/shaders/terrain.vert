@@ -26,12 +26,7 @@ void main(void) {
 
   // Get the height value from the height map
   vec4 height = texture2D(height_map, uv);
-  vec4 vert = vec4(vertex.x, height.y * scale, vertex.z, 1.0);
-
-  // TODO: add toggle for clamp edges mode
-  if (vert.x == 0.0 || vert.z == 0.0 || vert.x == 1.0 || vert.z == 1.0) {
-    vert = vec4(vert.x, 0.0, vert.z, 1.0);
-  }
+  vec4 vert = vec4(vertex.x, height.z * scale, vertex.z, 1.0);
 
   // Apply the transformations to the vertex
   gl_Position = camera * model * vert;
