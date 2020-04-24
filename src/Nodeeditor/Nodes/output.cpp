@@ -1,15 +1,39 @@
 #include "output.h"
 
+#include <QList>
+#include <QVector3D>
+#include <QMatrix>
+#include <QColor>
+#include <QDebug>
+#include <QWidget>
+#include <QVBoxLayout>
+
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
+
 #include "../Datatypes/pixmap.h"
 
 // Setup the node
 OutputNode::OutputNode()
 {
-    // Create an image container
-    this->_widget = new QLabel("Output");
-    this->_widget->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_widget->setFixedSize(100, 100);
-    this->_widget->setPixmap(QPixmap());
+    this->_height_label = new QLabel("Height map");
+    this->_height_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    this->_height_label->setFixedSize(80, 80);
+    this->_height_label->setPixmap(QPixmap());
+
+    this->_normal_label = new QLabel("Normal map");
+    this->_normal_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    this->_normal_label->setFixedSize(80, 80);
+    this->_normal_label->setPixmap(QPixmap());
+
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    layout->addWidget(this->_height_label);
+    layout->addWidget(this->_normal_label);
+    layout->setSizeConstraint(QLayout::SetMaximumSize);
+
+    this->_widget = new QWidget();
+    this->_widget->setLayout(layout);
 
     QImage normal(1, 1, QImage::Format_Indexed8);
     normal.setColorCount(1);
@@ -45,21 +69,27 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
         std::shared_ptr<PixmapData> pixmap = std::dynamic_pointer_cast<PixmapData>(this->_pixmap);
 
         // Get width and height
-        int w = this->_widget->width();
-        int h = this->_widget->height();
+        int w = this->_height_label->width();
+        int h = this->_height_label->height();
 
         // Display preview image
-        this->_widget->setPixmap(pixmap->pixmap().scaled(w, h, Qt::KeepAspectRatio));
+        this->_height_label->setPixmap(pixmap->pixmap().scaled(w, h, Qt::KeepAspectRatio));
 
         // Emit that calculations are being made
         emit this->computingStarted();
         this->generateNormalMap();
         emit this->computingFinished();
+
+        QPixmap normal_pixmap;
+        normal_pixmap.convertFromImage(this->getNormalMap(), Qt::ColorOnly);
+
+        this->_normal_label->setPixmap(normal_pixmap.scaled(w, h, Qt::KeepAspectRatio));
     }
     // No pixmap, set null image
     else
     {
-        this->_widget->setPixmap(QPixmap());
+        this->_height_label->setPixmap(QPixmap());
+        this->_normal_label->setPixmap(QPixmap());
     }
 }
 
@@ -76,5 +106,22 @@ QImage OutputNode::getHeightMap()
     return pixmap->pixmap().toImage();
 }
 
-// TODO: Implement the normal map generation
-void OutputNode::generateNormalMap(){};
+// Generates a normal map using the normal map generator
+void OutputNode::generateNormalMap()
+{
+    QImage height_map = this->getHeightMap();
+
+    // Set the input height map for the generator
+    this->_normal_generator.setImage(&height_map);
+
+    // Generate
+    // TODO: make multithreaded
+    this->_normal_generator.generate();
+
+    // Apply the normal map
+    QImage normal_map = this->_normal_generator.toImage();
+    this->_normal_map = normal_map;
+
+    // TODO: remove, used for testing
+    // normal_map.save("/home/drew/test_normal_map.png");
+};

@@ -5,8 +5,11 @@
 
 #include <nodeeditor/include/nodes/NodeDataModel>
 
+// Normal map generator
+#include "./Normal/normal.h"
+
 // Node for managing the final output of the pipeline
-// Generates the normal map
+// Node that will generated normal map
 class OutputNode : public QtNodes::NodeDataModel
 {
 public:
@@ -53,9 +56,16 @@ private:
     // The shared pointer for the inputted pixmap
     std::shared_ptr<QtNodes::NodeData> _pixmap;
 
+    // Generator for the normal map
+    NormalMapGenerator _normal_generator;
+
     // Houses the generated normal map
     QImage _normal_map;
 
     // The embedded widget
-    QLabel *_widget;
+    QWidget *_widget;
+
+    // Image previews
+    QLabel *_height_label;
+    QLabel *_normal_label;
 };
