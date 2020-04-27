@@ -5,9 +5,11 @@ TEMPLATE = app
 
 # Get all the source code files recursively from the src directory
 SOURCES += $$files("src/*.cpp", true)
+SOURCES += "$$PWD/lib/SimplexNoise/src/SimplexNoise.cpp"
 
 # Get all the header files recursively from the src directory
 HEADERS += $$files("src/*h", true)
+HEADERS += "$$PWD/lib/SimplexNoise/src/SimplexNoise.h"
 
 # Used to link the nodeeditor 3rd party widget for QT
 DEFINES += NODE_EDITOR_SHARED

@@ -12,6 +12,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 
     registry->registerModel<OutputNode>();
     registry->registerModel<InputTextureNode>();
+    registry->registerModel<InputSimplexNoiseNode>();
 
     return registry;
 }
