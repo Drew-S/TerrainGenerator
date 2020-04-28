@@ -2,18 +2,28 @@
 
 #include <QDebug>
 
+static double KERNEL_X[3][3] = {
+    {-1.00, 0.00, 1.00},
+    {-2.00, 0.00, 2.00},
+    {-1.00, 0.00, 1.00}};
+
+static double KERNEL_Y[3][3] = {
+    {-1.00, -2.00, -1.00},
+    {0.00, 0.00, 0.00},
+    {1.00, 2.00, 1.00}};
+
 // Constructor with a provided height map
-NormalMapGenerator::NormalMapGenerator(QImage *height_map)
+NormalMapGenerator::NormalMapGenerator(VectorMap *height_map)
 {
     this->setImage(height_map);
 }
 
 // Set/update the reference height map
-void NormalMapGenerator::setImage(QImage *height_map)
+void NormalMapGenerator::setImage(VectorMap *height_map)
 {
     this->_height_map = height_map;
-    this->_width = this->_height_map->width();
-    this->_height = this->_height_map->height();
+    this->_width = this->_height_map->width;
+    this->_height = this->_height_map->height;
 }
 
 // Generate the normal map (uses sobel filtering)
@@ -27,34 +37,38 @@ void NormalMapGenerator::generate()
     {
         for (int y = 0; y < this->_height; y++)
         {
-            // For a pixel o get neighbour pixel heights
+            // Neighbouring pixel values
             // tl  t  tr
             //  l  o   r
             // bl  b  br
-            double tl = this->_getHeightIntensity(x - 1, y - 1);
-            double t = this->_getHeightIntensity(x, y - 1);
-            double tr = this->_getHeightIntensity(x + 1, y - 1);
-            double r = this->_getHeightIntensity(x + 1, y);
-            double br = this->_getHeightIntensity(x + 1, y + 1);
-            double b = this->_getHeightIntensity(x, y + 1);
-            double bl = this->_getHeightIntensity(x - 1, y + 1);
-            double l = this->_getHeightIntensity(x - 1, y);
+            double matrix[3][3] = {
+                {this->_getHeightIntensity(x - 1, y - 1),
+                 this->_getHeightIntensity(x, y - 1),
+                 this->_getHeightIntensity(x + 1, y - 1)},
+                {this->_getHeightIntensity(x - 1, y),
+                 0.00,
+                 this->_getHeightIntensity(x + 1, y)},
+                {this->_getHeightIntensity(x - 1, y + 1),
+                 this->_getHeightIntensity(x, y + 1),
+                 this->_getHeightIntensity(x + 1, y + 1)}};
 
-            // Sobel kernel
-            // tl  2t  tr | top    = sum of row_0
-            // 2l   o  2r | bottom = sum of row_2
-            // bl  2b  br | left   = sum of col_0
-            //              right  = sum of col_2
-            double top = tl + t * 2.00 + tr;
-            double bottom = bl + b * 2.00 + br;
-            double left = tl + l * 2.00 + bl;
-            double right = tr + r * 2.00 + br;
+            // | a b c |   | 1 2 3 |
+            // | d e f | o | 4 5 6 | = a1 + b2 + c3 + d4 + e5 + f6 + g7 + h8 + i9
+            // | g h i |   | 7 8 9 |
+            double x_prime = KERNEL_X[0][0] * matrix[0][0] + KERNEL_X[0][1] * matrix[0][1] + KERNEL_X[0][2] * matrix[0][2] +
+                             KERNEL_X[1][0] * matrix[1][0] + KERNEL_X[1][1] * matrix[1][1] + KERNEL_X[1][2] * matrix[1][2] +
+                             KERNEL_X[2][0] * matrix[2][0] + KERNEL_X[2][1] * matrix[2][1] + KERNEL_X[2][2] * matrix[2][2];
 
-            // TODO: Add control element
-            double strength = 1.00;
+            double y_prime = KERNEL_Y[0][0] * matrix[0][0] + KERNEL_Y[0][1] * matrix[0][1] + KERNEL_Y[0][2] * matrix[0][2] +
+                             KERNEL_Y[1][0] * matrix[1][0] + KERNEL_Y[1][1] * matrix[1][1] + KERNEL_Y[1][2] * matrix[1][2] +
+                             KERNEL_Y[2][0] * matrix[2][0] + KERNEL_Y[2][1] * matrix[2][1] + KERNEL_X[2][2] * matrix[2][2];
+
+            // TODO: Add blur to smooth jaggedness
+
+            double mag = glm::sqrt(x_prime * x_prime + y_prime * y_prime);
 
             // Get the normal vector, adjusted for [-1, 1] range to color range [0, 1]
-            glm::dvec3 n = glm::normalize((glm::dvec3(right - left, bottom - top, strength) + 1.00) / 2.00);
+            glm::dvec3 n = glm::normalize((glm::dvec3(-x_prime, -y_prime, mag) + 1.00) / 2.00);
 
             // Create color and apply to the normal image
             QColor color = QColor::fromRgbF(n.x, n.y, n.z);
@@ -74,21 +88,14 @@ QImage NormalMapGenerator::toImage()
 
 // Gets the height intensity for a pixel, if x goes beyond borders,
 // it is clamped back to the corner (other options could be to wrap)
-double NormalMapGenerator::_getHeightIntensity(int x, int y)
+double
+NormalMapGenerator::_getHeightIntensity(int x, int y)
 {
-    if (x < 0)
-        x = 0;
-
-    if (y < 0)
-        y = 0;
-
-    if (x >= this->_width)
-        x = this->_width - 1;
-
-    if (y >= this->_height)
-        y = this->_height - 1;
+    if (x < 0 || y < 0 || x >= this->_width || y >= this->_height)
+        return 0.00;
+    double height = this->_height_map->at(x, y).z;
 
     // TODO: add strength control element
     double strength = 25.00;
-    return this->_height_map->pixelColor(x, y).blueF() * strength;
+    return height * strength;
 }
