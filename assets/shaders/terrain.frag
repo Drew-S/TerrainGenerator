@@ -20,16 +20,18 @@ in highp vec2 frag_uv;
 // Model transformation
 in highp mat4 frag_model;
 
+// in highp float height_value;
+
 // Lighting constants
 // TODO: Add UI controls to adjust these
-float ambient_strength = 0.1;
+float ambient_strength = 0.25;
 
 // TODO: Bind ambient color to the sky color
 vec3 ambient_color = vec3(0.77, 0.84, 0.99);
 
 float diffuse_strength = 1.0;
 
-float specular_strength = 0.2;
+float specular_strength = 0.1;
 
 void main(void) {
   // Build tangent space to object space normal transform
