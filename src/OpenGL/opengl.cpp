@@ -291,7 +291,7 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
         float sun_rotation_x = this->_light->rotateX(delta.y());
         float sun_rotation_y = this->_light->rotateY(delta.x());
         this->_control_sun_rotation_x->setSliderPosition((int)sun_rotation_x);
-        this->_control_sun_rotation_y->setSliderPosition((int)sun_rotation_y);
+        this->_control_sun_rotation_y->setSliderPosition(360 - (int)sun_rotation_y);
     }
     // Otherwise default to the camera only
     else
@@ -313,7 +313,7 @@ void OpenGL::sunRotationX(int value)
 }
 void OpenGL::sunRotationY(int value)
 {
-    this->_light->setRotationY((float)value);
+    this->_light->setRotationY(360.0f - (float)value);
     this->update();
 }
 
