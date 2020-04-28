@@ -10,9 +10,9 @@
 #include <QSlider>
 #include <QDial>
 
-#include "./Terrain/terrain.h"
-#include "./Camera/camera.h"
-#include "./Light/light.h"
+#include "./terrain.h"
+#include "./camera.h"
+#include "./light.h"
 
 // Custom OpenGL widget that manages and renders the OpenGL context to the widget
 class OpenGL : public QOpenGLWidget
