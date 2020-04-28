@@ -6,6 +6,8 @@
 
 #include <lib/nodeeditor/include/nodes/NodeDataModel>
 
+#include "../Datatypes/structures.h"
+
 // Node for the nodeeditor that can load an image from the file system
 // Used as an input for other nodes
 class InputTextureNode : public QtNodes::NodeDataModel
@@ -50,6 +52,7 @@ protected:
 private:
     // The selected image
     QPixmap _pixmap;
+    VectorMap _color_map;
 
     // The embedded widget
     QLabel *_widget;

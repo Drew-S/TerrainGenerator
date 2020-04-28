@@ -32,7 +32,7 @@ QtNodes::NodeDataType InputTextureNode::dataType(QtNodes::PortType port_type, Qt
 std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
-    return std::make_shared<PixmapData>(this->_pixmap);
+    return std::make_shared<PixmapData>(this->_color_map);
 }
 
 // When clicking on the node, if user clicks the QLabel image container
@@ -68,6 +68,7 @@ bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
             else
             {
                 this->_pixmap = QPixmap(file_name);
+                this->_color_map = VectorMap(this->_pixmap);
                 this->_widget->setPixmap(this->_pixmap.scaled(w, h, Qt::KeepAspectRatio));
             }
 
