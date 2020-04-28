@@ -4,9 +4,14 @@
 #include <QImage>
 
 #include <lib/nodeeditor/include/nodes/NodeDataModel>
+#include <lib/nodeeditor/include/nodes/Connection>
 
 // Normal map generator
 #include "./Normal/normal.h"
+
+#include "../Datatypes/structures.h"
+
+#include "../Datatypes/pixmap.h"
 
 // Node for managing the final output of the pipeline
 // Node that will generated normal map
@@ -49,15 +54,21 @@ public:
     QImage getNormalMap();
     QImage getHeightMap();
 
+public slots:
+    void inputConnectionDeleted(QtNodes::Connection const &connection);
+
 private:
     // Generate a normal map (tangent space)
-    void generateNormalMap();
+    void _generateNormalMap(VectorMap height_map);
 
     // The shared pointer for the inputted pixmap
-    std::shared_ptr<QtNodes::NodeData> _pixmap;
+    std::shared_ptr<PixmapData> _pixmap;
 
     // Generator for the normal map
     NormalMapGenerator _normal_generator;
+
+    // Saved height map image
+    QImage _height_map;
 
     // Houses the generated normal map
     QImage _normal_map;

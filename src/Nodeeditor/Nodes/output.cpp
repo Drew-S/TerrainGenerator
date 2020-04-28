@@ -11,8 +11,6 @@
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
-#include "../Datatypes/pixmap.h"
-
 // Setup the node
 OutputNode::OutputNode()
 {
@@ -34,6 +32,7 @@ OutputNode::OutputNode()
 
     this->_widget = new QWidget();
     this->_widget->setLayout(layout);
+    this->_widget->setStyleSheet("background-color: rgba(0,0,0,0)");
 
     QImage normal(1, 1, QImage::Format_Indexed8);
     normal.setColorCount(1);
@@ -61,23 +60,25 @@ QtNodes::NodeDataType OutputNode::dataType(QtNodes::PortType port_type, QtNodes:
 void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
     (void)port;
-    // Save pointer
-    this->_pixmap = node_data;
-    if (this->_pixmap)
+    if (node_data != nullptr && node_data->sameType(PixmapData()))
     {
         // Cast pointer into PixmapData pointer
-        std::shared_ptr<PixmapData> pixmap = std::dynamic_pointer_cast<PixmapData>(this->_pixmap);
+        this->_pixmap = std::dynamic_pointer_cast<PixmapData>(node_data);
 
         // Get width and height
         int w = this->_height_label->width();
         int h = this->_height_label->height();
 
+        VectorMap height_map = this->_pixmap->vectorMap();
+
+        this->_height_map = height_map.toImage();
+
         // Display preview image
-        this->_height_label->setPixmap(pixmap->pixmap().scaled(w, h, Qt::KeepAspectRatio));
+        this->_height_label->setPixmap(height_map.toPixmap().scaled(w, h, Qt::KeepAspectRatio));
 
         // Emit that calculations are being made
         emit this->computingStarted();
-        this->generateNormalMap();
+        this->_generateNormalMap(height_map);
         emit this->computingFinished();
 
         QPixmap normal_pixmap;
@@ -102,15 +103,12 @@ QImage OutputNode::getNormalMap()
 // Returns the generated heightmap
 QImage OutputNode::getHeightMap()
 {
-    std::shared_ptr<PixmapData> pixmap = std::dynamic_pointer_cast<PixmapData>(this->_pixmap);
-    return pixmap->pixmap().toImage();
+    return this->_height_map;
 }
 
 // Generates a normal map using the normal map generator
-void OutputNode::generateNormalMap()
+void OutputNode::_generateNormalMap(VectorMap height_map)
 {
-    QImage height_map = this->getHeightMap();
-
     // Set the input height map for the generator
     this->_normal_generator.setImage(&height_map);
 
@@ -124,4 +122,20 @@ void OutputNode::generateNormalMap()
 
     // TODO: remove, used for testing
     // normal_map.save("/home/drew/test_normal_map.png");
+};
+
+// Input is removed so we reset the height and normal maps
+void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+{
+    (void)connection;
+    this->_pixmap = nullptr;
+    this->_height_map = QImage();
+
+    QImage normal(1, 1, QImage::Format_Indexed8);
+    normal.setColorCount(1);
+    normal.setColor(0, qRgba(128, 128, 255, 255));
+    normal.fill(0);
+
+    this->_normal_map = normal;
+    emit this->computingFinished();
 };
