@@ -2,6 +2,9 @@
 Makefile
 .qmake.stash
 
+# Vim settings for g++ linting
+_vimrc_local.vim
+
 # Compiled build files do not need to be watched
 build/
 lib/
