@@ -11,6 +11,8 @@
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
+#include "../Datatypes/vectormap.h"
+
 // Setup the node
 OutputNode::OutputNode()
 {
@@ -53,23 +55,25 @@ QtNodes::NodeDataType OutputNode::dataType(QtNodes::PortType port_type, QtNodes:
 {
     (void)port_type;
     (void)port_index;
-    return PixmapData().type();
+    return IntensityMapData().type();
 }
 
 // Set the input pixmap data
 void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
     (void)port;
-    if (node_data != nullptr && node_data->sameType(PixmapData()))
+    if (node_data != nullptr && node_data->sameType(IntensityMapData()))
     {
-        // Cast pointer into PixmapData pointer
-        this->_pixmap = std::dynamic_pointer_cast<PixmapData>(node_data);
+        // Cast pointer into VectorMapData pointer
+        this->_pixmap = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+        if (this->_pixmap == nullptr)
+            throw 0;
 
         // Get width and height
         int w = this->_height_label->width();
         int h = this->_height_label->height();
 
-        VectorMap height_map = this->_pixmap->vectorMap();
+        IntensityMap height_map = this->_pixmap->intensityMap();
 
         this->_height_map = height_map.toImage();
 
@@ -107,7 +111,7 @@ QImage OutputNode::getHeightMap()
 }
 
 // Generates a normal map using the normal map generator
-void OutputNode::_generateNormalMap(VectorMap height_map)
+void OutputNode::_generateNormalMap(IntensityMap height_map)
 {
     // Set the input height map for the generator
     this->_normal_generator.setImage(&height_map);
@@ -122,7 +126,7 @@ void OutputNode::_generateNormalMap(VectorMap height_map)
 
     // TODO: remove, used for testing
     // normal_map.save("/home/drew/test_normal_map.png");
-};
+}
 
 // Input is removed so we reset the height and normal maps
 void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
@@ -138,4 +142,18 @@ void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 
     this->_normal_map = normal;
     emit this->computingFinished();
-};
+}
+
+// Save the node for a file
+QJsonObject OutputNode::save() const
+{
+    QJsonObject data;
+    data["name"] = this->name();
+    return data;
+}
+
+// Restore the node from a file
+void OutputNode::restore(QJsonObject const &data)
+{
+    (void)data;
+}

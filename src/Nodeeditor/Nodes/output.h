@@ -2,6 +2,7 @@
 
 #include <QLabel>
 #include <QImage>
+#include <QJsonObject>
 
 #include <lib/nodeeditor/include/nodes/NodeDataModel>
 #include <lib/nodeeditor/include/nodes/Connection>
@@ -9,9 +10,9 @@
 // Normal map generator
 #include "./Normal/normal.h"
 
-#include "../Datatypes/structures.h"
-
 #include "../Datatypes/pixmap.h"
+
+#include "../Datatypes/intensitymap.h"
 
 // Node for managing the final output of the pipeline
 // Node that will generated normal map
@@ -37,8 +38,12 @@ public:
     // Get the number of ports (0 output, 1 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
-    // Get the port datatype (only imports PixmapData)
+    // Get the port datatype (only imports VectorMapData)
     QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+
+    // Save and load the node for project files
+    QJsonObject save() const override;
+    void restore(QJsonObject const &data) override;
 
     // Get the output data (nothing)
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port)
@@ -59,10 +64,10 @@ public slots:
 
 private:
     // Generate a normal map (tangent space)
-    void _generateNormalMap(VectorMap height_map);
+    void _generateNormalMap(IntensityMap height_map);
 
     // The shared pointer for the inputted pixmap
-    std::shared_ptr<PixmapData> _pixmap;
+    std::shared_ptr<IntensityMapData> _pixmap;
 
     // Generator for the normal map
     NormalMapGenerator _normal_generator;

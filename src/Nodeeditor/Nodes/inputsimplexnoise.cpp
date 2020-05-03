@@ -36,14 +36,14 @@ QtNodes::NodeDataType InputSimplexNoiseNode::dataType(QtNodes::PortType port_typ
 {
     (void)port_type;
     (void)port_index;
-    return PixmapData().type();
+    return IntensityMapData().type();
 }
 
 // Get the data attached to a port
 std::shared_ptr<QtNodes::NodeData> InputSimplexNoiseNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
-    return std::make_shared<PixmapData>(this->_color_map);
+    return std::make_shared<IntensityMapData>(this->_intensity_map);
 }
 
 // Generates the noise texture
@@ -56,7 +56,7 @@ void InputSimplexNoiseNode::_generate()
     // Create a vector map to house information
     // TODO: Add support for preview image size control
     // TODO: Switch to use intensity map
-    this->_color_map = VectorMap(256, 256);
+    this->_intensity_map = IntensityMap(256, 256);
     // Generate the "image" with the specified size
     for (int x = 0; x < 256; x++)
     {
@@ -71,14 +71,61 @@ void InputSimplexNoiseNode::_generate()
             // Normalize intensity from [-1, 1] -> [0, 1]
             intensity = (intensity + 1.0f) / 2.0f;
             // Save noise in vector map
-            this->_color_map.append(glm::dvec3(intensity, intensity, intensity));
+            this->_intensity_map.append(intensity);
         }
     }
 
     // Set preview and emit completion of generation
-    this->_pixmap = this->_color_map.toPixmap();
+    this->_pixmap = this->_intensity_map.toPixmap();
     this->_ui.label_pixmap->setPixmap(this->_pixmap.scaled(100, 100, Qt::KeepAspectRatio));
     emit this->dataUpdated(0);
+}
+
+// Save the node setup to a Json Object for saving to a file
+QJsonObject InputSimplexNoiseNode::save() const
+{
+    QJsonObject data;
+    data["name"] = this->name();
+    data["octives"] = this->_octives;
+    data["frequency"] = this->_frequency;
+    data["persistence"] = this->_persistence;
+
+    QJsonObject offset;
+    offset["x"] = this->_offset.x();
+    offset["y"] = this->_offset.y();
+    offset["z"] = this->_offset.z();
+    data["offset"] = offset;
+
+    return data;
+}
+
+// Restore the nodes setup from a save file (json object)
+void InputSimplexNoiseNode::restore(QJsonObject const &data)
+{
+    // Set storage files
+    this->_octives = data["octives"].toDouble();
+    this->_frequency = data["frequency"].toDouble();
+    this->_persistence = data["persistence"].toDouble();
+
+    this->_offset = QVector3D(data["offset"]["x"].toDouble(), data["offset"]["y"].toDouble(), data["offset"]["z"].toDouble());
+
+    // Update ui
+    this->_ui.spin_octives->setValue(this->_octives);
+    this->_ui.spin_frequency->setValue(this->_frequency);
+    this->_ui.spin_persistence->setValue(this->_persistence);
+    this->_ui.spin_x->setValue(this->_offset.x());
+    this->_ui.spin_y->setValue(this->_offset.y());
+    this->_ui.spin_z->setValue(this->_offset.z());
+
+    // Regenerate the noise
+    this->_generate();
+}
+
+// Sets data from an input port, not yet implemented
+void InputSimplexNoiseNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+{
+    (void)node_data;
+    (void)port;
 }
 
 // Listeners for updating generation parameters and re-running generation

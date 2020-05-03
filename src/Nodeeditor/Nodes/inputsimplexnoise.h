@@ -2,7 +2,7 @@
 
 #include "lib/SimplexNoise/src/SimplexNoise.h"
 
-#include "../Datatypes/structures.h"
+#include "../Datatypes/intensitymap.h"
 
 #include "ui_SimplexNoise.h"
 
@@ -12,6 +12,7 @@
 #include <QWidget>
 #include <QObject>
 #include <QVector3D>
+#include <QJsonObject>
 
 // Input Node for generating simplex noise maps
 class InputSimplexNoiseNode : public QtNodes::NodeDataModel
@@ -37,19 +38,18 @@ public:
     // Get the number of ports (1 output, 0 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
-    // Get the port datatype (only exports PixmapData)
+    // Get the port datatype (only exports VectorMapData)
     QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
 
-    // Get the output data (the PixmapData)
+    // Get the output data (the VectorMapData)
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
+
+    QJsonObject save() const override;
+    void restore(QJsonObject const &data) override;
 
     // Needed for all nodes, even if there are no inputs
     // TODO: Add support for input control parameters
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
-    {
-        (void)node_data;
-        (void)port;
-    };
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
 private slots:
     // Watches for changes in the widget to update noise parameters
@@ -65,7 +65,7 @@ private:
     void
     _generate();
     // Houses the pixmap to be passed
-    VectorMap _color_map;
+    IntensityMap _intensity_map;
     QPixmap _pixmap;
 
     // Generator for open simplex noise
