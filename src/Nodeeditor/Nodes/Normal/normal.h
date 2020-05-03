@@ -7,7 +7,7 @@
 #include <QImage>
 #include <QColor>
 
-#include "../../Datatypes/structures.h"
+#include "../../Datatypes/intensitymap.h"
 
 // TODO: make a worker to utilize QThread's
 // Class to set parameters and generate a normal map from a supplied height map
@@ -15,14 +15,14 @@ class NormalMapGenerator
 {
 public:
     NormalMapGenerator(){};
-    NormalMapGenerator(VectorMap *height_map);
+    NormalMapGenerator(IntensityMap *height_map);
 
     // Generates the normal map
     // TODO: Meant to be threaded later on
     void generate();
 
     // Update the reference height map
-    void setImage(VectorMap *height_map);
+    void setImage(IntensityMap *height_map);
 
     // Get the generated normal map image
     QImage toImage();
@@ -37,5 +37,5 @@ private:
 
     // Reference to maps
     QImage _normal_map;
-    VectorMap *_height_map;
+    IntensityMap *_height_map;
 };

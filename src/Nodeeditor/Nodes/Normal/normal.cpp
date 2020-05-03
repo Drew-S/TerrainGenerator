@@ -13,13 +13,13 @@ static double KERNEL_Y[3][3] = {
     {1.00, 2.00, 1.00}};
 
 // Constructor with a provided height map
-NormalMapGenerator::NormalMapGenerator(VectorMap *height_map)
+NormalMapGenerator::NormalMapGenerator(IntensityMap *height_map)
 {
     this->setImage(height_map);
 }
 
 // Set/update the reference height map
-void NormalMapGenerator::setImage(VectorMap *height_map)
+void NormalMapGenerator::setImage(IntensityMap *height_map)
 {
     this->_height_map = height_map;
     this->_width = this->_height_map->width;
@@ -93,7 +93,7 @@ NormalMapGenerator::_getHeightIntensity(int x, int y)
 {
     if (x < 0 || y < 0 || x >= this->_width || y >= this->_height)
         return 0.00;
-    double height = this->_height_map->at(x, y).z;
+    double height = this->_height_map->at(x, y);
 
     // TODO: add strength control element
     double strength = 25.00;
