@@ -25,14 +25,14 @@ QtNodes::NodeDataType InputTextureNode::dataType(QtNodes::PortType port_type, Qt
 {
     (void)port_type;
     (void)port_index;
-    return PixmapData().type();
+    return VectorMapData().type();
 }
 
 // Get the data attached to a port
 std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
-    return std::make_shared<PixmapData>(this->_color_map);
+    return std::make_shared<VectorMapData>(this->_color_map);
 }
 
 // When clicking on the node, if user clicks the QLabel image container
@@ -42,38 +42,19 @@ bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
 {
     if (object == this->_widget)
     {
-        // Get label size
-        int w = this->_widget->width();
-        int h = this->_widget->height();
-
         // Click to select an image
         if (event->type() == QEvent::MouseButtonPress)
         {
             // Select a texture file
-            QString file_name = QFileDialog::getOpenFileName(
+
+            this->_filename = QFileDialog::getOpenFileName(
                 nullptr,
                 tr("Open Image"),
                 "/home/drew/Documents/School/Active/COMP_495/project/assets/textures",
                 // QDir::homePath(),
                 tr("Image Files (*.png *.jpg)"));
 
-            // If a file is not selected set the QLabel to display
-            // a select image message
-            if (file_name == "")
-            {
-                this->_widget->setText("Click to load image");
-            }
-
-            // If a file is selected set the image preview
-            else
-            {
-                this->_pixmap = QPixmap(file_name);
-                this->_color_map = VectorMap(this->_pixmap);
-                this->_widget->setPixmap(this->_pixmap.scaled(w, h, Qt::KeepAspectRatio));
-            }
-
-            // Inform that data is updated so pipline is updated
-            emit this->dataUpdated(0);
+            this->_generate();
             return true;
         }
         // Resize the selecting pixmap
@@ -82,9 +63,46 @@ bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
             if (!this->_pixmap.isNull())
             {
                 // Scale the pixmap to fill the window
-                this->_widget->setPixmap(this->_pixmap.scaled(w, h, Qt::KeepAspectRatio));
+                this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
             }
         }
     }
     return false;
+}
+
+void InputTextureNode::_generate()
+{
+    // If a file is not selected set the QLabel to display
+    // a select image message
+    if (this->_filename == "")
+    {
+        this->_widget->setText("Click to load image");
+    }
+
+    // If a file is selected set the image preview
+    else
+    {
+        this->_pixmap = QPixmap(this->_filename);
+        this->_color_map = VectorMap(this->_pixmap);
+        this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
+    }
+
+    // Inform that data is updated so pipline is updated
+    emit this->dataUpdated(0);
+}
+
+// Save the node to for a file
+QJsonObject InputTextureNode::save() const
+{
+    QJsonObject data;
+    data["name"] = this->name();
+    data["image"] = this->_filename;
+    return data;
+}
+
+// Restore the node from a save file
+void InputTextureNode::restore(QJsonObject const &data)
+{
+    this->_filename = data["image"].toString();
+    this->_generate();
 }
