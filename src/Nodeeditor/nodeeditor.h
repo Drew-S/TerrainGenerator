@@ -2,14 +2,15 @@
 
 #include <QLayout>
 #include <QObject>
+#include <QJsonObject>
 
 #include <lib/nodeeditor/include/nodes/FlowScene>
 #include <lib/nodeeditor/include/nodes/FlowView>
 #include <lib/nodeeditor/include/nodes/Node>
 
-#include "Nodes/output.h"
-#include "Nodes/inputtexture.h"
-#include "Nodes/inputsimplexnoise.h"
+#include "./Nodes/output.h"
+#include "./Nodes/inputtexture.h"
+#include "./Nodes/inputsimplexnoise.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
@@ -23,6 +24,10 @@ public:
     // Returns the height/normal map of the active selected output node
     QImage getHeightMap();
     QImage getNormalMap();
+
+    // Save/load the editor nodes, layout, and connections
+    QJsonObject save();
+    void load(QJsonObject data);
 
 public slots:
     // Called when a node is created
@@ -43,5 +48,5 @@ private:
     QtNodes::FlowScene *_scene;
     QtNodes::FlowView *_view;
     // Selected output node to obtain normal and height map from
-    OutputNode *_active_output;
+    OutputNode *_active_output = nullptr;
 };

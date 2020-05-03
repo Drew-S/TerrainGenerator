@@ -1,8 +1,13 @@
 #include "nodeeditor.h"
 
 #include <QDebug>
+#include <QJsonDocument>
 
 #include <lib/nodeeditor/include/nodes/DataModelRegistry>
+#include <lib/nodeeditor/include/nodes/TypeConverter>
+
+#include "./Datatypes/pixmap.h"
+#include "./Datatypes/converters.h"
 
 // This block of code is used to register all the different nodes
 // TODO: Figure out a way for stretch goals to dynamically load models through plugins
@@ -13,6 +18,17 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<OutputNode>();
     registry->registerModel<InputTextureNode>();
     registry->registerModel<InputSimplexNoiseNode>();
+
+    // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
+    registry->registerTypeConverter(std::make_pair(
+                                        VectorMapData().type(),
+                                        IntensityMapData().type()),
+                                    QtNodes::TypeConverter{VectorToIntensityMapConverter()});
+
+    registry->registerTypeConverter(std::make_pair(
+                                        IntensityMapData().type(),
+                                        VectorMapData().type()),
+                                    QtNodes::TypeConverter{IntensityToVectorMapConverter()});
 
     return registry;
 }
@@ -45,10 +61,11 @@ Nodeeditor::~Nodeeditor()
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
     // Created node is output and active output is null
-    if (node.nodeDataModel()->name() == "OutputNode" && this->_active_output == nullptr)
+    if (node.nodeDataModel()->name() == OutputNode().name() && !this->_active_output)
     {
         // Save pointer to the output node
-        this->_active_output = dynamic_cast<OutputNode *>(node.nodeDataModel());
+        this->_active_output = static_cast<OutputNode *>(node.nodeDataModel());
+
         // Connect to computing listeners of the output node
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
@@ -59,13 +76,16 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
 void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
 {
     // If the node is an output node
-    if (node.nodeDataModel()->name() == "OutputNode")
+    if (node.nodeDataModel()->name() == OutputNode().name())
     {
         // Disconnect old listeners
-        QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
-        QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
+        if (this->_active_output)
+        {
+            QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
+            QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
+        }
         // Update the active output node
-        this->_active_output = dynamic_cast<OutputNode *>(node.nodeDataModel());
+        this->_active_output = static_cast<OutputNode *>(node.nodeDataModel());
         // Attach new listeners
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
@@ -88,9 +108,14 @@ void Nodeeditor::outputComputingFinished()
 QImage Nodeeditor::getHeightMap()
 {
     if (this->_active_output)
-        return this->_active_output->getHeightMap();
+    {
+        OutputNode *node = static_cast<OutputNode *>(this->_active_output);
+        return node->getHeightMap();
+    }
     else
+    {
         return QImage();
+    }
 }
 
 // Returns the active output node height map or an blue QImage (normal compensated)
@@ -98,7 +123,8 @@ QImage Nodeeditor::getNormalMap()
 {
     if (this->_active_output)
     {
-        return this->_active_output->getNormalMap();
+        OutputNode *node = static_cast<OutputNode *>(this->_active_output);
+        return node->getNormalMap();
     }
     else
     {
@@ -108,4 +134,16 @@ QImage Nodeeditor::getNormalMap()
         normal.fill(0);
         return normal;
     }
+}
+
+// Saves the nodeeditor to a save file
+QJsonObject Nodeeditor::save()
+{
+    return QJsonDocument::fromJson(this->_scene->saveToMemory()).object();
+}
+
+// Loads the nodeeditor from a save file
+void Nodeeditor::load(QJsonObject data)
+{
+    this->_scene->loadFromMemory(QJsonDocument(data).toJson());
 }
