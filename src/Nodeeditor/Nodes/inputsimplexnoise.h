@@ -20,20 +20,20 @@ class InputSimplexNoiseNode : public QtNodes::NodeDataModel
     Q_OBJECT
 public:
     InputSimplexNoiseNode();
-    ~InputSimplexNoiseNode(){};
+    ~InputSimplexNoiseNode();
 
     // Title shown at the top of the node
-    QString caption() const override { return "Simplex Noise Texture"; };
+    QString caption() const override;
 
     // Title shown in the selection list
-    QString name() const override { return "InputSimplexNoiseNode"; };
-    void name(QString name) { (void)name; };
+    QString name() const override;
+    void name(QString name);
 
     // The image label that is embedded in the node
-    QWidget *embeddedWidget() { return this->_widget; };
+    QWidget *embeddedWidget();
 
     // Needed for NodeDataModel, not sure where it is used
-    QString modelName() { return "Input Simplex Noise Node"; };
+    QString modelName();
 
     // Get the number of ports (1 output, 0 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;

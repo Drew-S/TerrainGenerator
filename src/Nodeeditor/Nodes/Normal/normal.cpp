@@ -12,6 +12,7 @@ static double KERNEL_Y[3][3] = {
     {0.00, 0.00, 0.00},
     {1.00, 2.00, 1.00}};
 
+NormalMapGenerator::NormalMapGenerator(){};
 // Constructor with a provided height map
 NormalMapGenerator::NormalMapGenerator(IntensityMap *height_map)
 {

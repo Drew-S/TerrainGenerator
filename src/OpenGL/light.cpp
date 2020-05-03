@@ -8,6 +8,9 @@
 // TODO: Add control to set light color
 #define LIGHT_COLOR 1.0f, 1.0f, 1.0f
 
+Light::Light() {}
+Light::~Light() {}
+
 // Get the position of the light in world coordinates
 QVector3D Light::position()
 {
@@ -69,4 +72,66 @@ void Light::paintGL(QMatrix4x4 camera)
     glEnd();
 
     glPopAttrib();
+}
+
+// Returns the intensity of the light
+float Light::intensity()
+{
+    return this->_intensity;
+}
+
+// Returns the color of the light as QVector3D for easy use in OpenGL shaders
+QVector3D Light::color()
+{
+    return this->_color;
+}
+
+// Rotates the light around the terrain (turntable)
+float Light::rotateY(float rotation)
+{
+    this->_rotation_y += rotation;
+    return this->_rotation_y;
+}
+
+// Rotates the light over the terrain
+float Light::rotateX(float rotation)
+{
+    this->_rotation_x += rotation;
+    this->_clampRotationX(); // Limits the rotation
+    return this->_rotation_x;
+}
+
+// Sets the rotation around the terrain (turntable)
+float Light::setRotationY(float rotation)
+{
+    this->_rotation_y = rotation;
+    return this->_rotation_y;
+}
+
+// Sets the rotation over the terrain
+float Light::setRotationX(float rotation)
+{
+    this->_rotation_x = rotation;
+    this->_clampRotationX(); // Limits the rotation
+    return this->_rotation_x;
+}
+
+// Set the intensity of the light
+void Light::setIntensity(float intensity)
+{
+    this->_intensity = intensity;
+}
+
+// Set the color of the light
+void Light::setColor(QVector3D color)
+{
+    this->_color = color;
+}
+// Limits the rotation of the camera over the terrain
+void Light::_clampRotationX()
+{
+    if (this->_rotation_x < 0.0)
+        this->_rotation_x = 0.0;
+    if (this->_rotation_x > 90.0)
+        this->_rotation_x = 90.0;
 }

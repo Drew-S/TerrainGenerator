@@ -14,7 +14,7 @@
 class NormalMapGenerator
 {
 public:
-    NormalMapGenerator(){};
+    NormalMapGenerator();
     NormalMapGenerator(IntensityMap *height_map);
 
     // Generates the normal map

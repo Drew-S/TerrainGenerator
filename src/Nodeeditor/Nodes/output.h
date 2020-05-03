@@ -20,20 +20,20 @@ class OutputNode : public QtNodes::NodeDataModel
 {
 public:
     OutputNode();
-    ~OutputNode(){};
+    ~OutputNode();
 
     // Title shown at the top of the node
-    QString caption() const override { return QString("Output"); };
+    QString caption() const override;
 
     // Title shown in the selection list
-    QString name() const override { return QString("OutputNode"); };
-    void name(QString name) { (void)name; };
+    QString name() const override;
+    void name(QString name);
 
     // The image label that is embedded in the node
-    QWidget *embeddedWidget() { return this->_widget; };
+    QWidget *embeddedWidget();
 
     // Needed for NodeDataModel, not sure where it is used
-    QString modelName() { return QString("Output Node"); };
+    QString modelName();
 
     // Get the number of ports (0 output, 1 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
@@ -46,11 +46,7 @@ public:
     void restore(QJsonObject const &data) override;
 
     // Get the output data (nothing)
-    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port)
-    {
-        (void)port;
-        return nullptr;
-    };
+    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Set the input pixmap
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);

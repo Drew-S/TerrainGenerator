@@ -10,66 +10,42 @@
 class Light
 {
 public:
-    Light(){};
-    ~Light(){};
+    Light();
+    ~Light();
 
     // Returns the position of the light in world space
     QVector3D position();
 
     // Returns the intensity of the light
-    float intensity() { return this->_intensity; };
+    float intensity();
 
     // Returns the color of the light as QVector3D for easy use in OpenGL shaders
-    QVector3D color() { return this->_color; };
+    QVector3D color();
 
     // Rotates the light around the terrain (turntable)
-    float rotateY(float rotation)
-    {
-        this->_rotation_y += rotation;
-        return this->_rotation_y;
-    };
+    float rotateY(float rotation);
 
     // Rotates the light over the terrain
-    float rotateX(float rotation)
-    {
-        this->_rotation_x += rotation;
-        this->_clampRotationX(); // Limits the rotation
-        return this->_rotation_x;
-    };
+    float rotateX(float rotation);
 
     // Sets the rotation around the terrain (turntable)
-    float setRotationY(float rotation)
-    {
-        this->_rotation_y = rotation;
-        return this->_rotation_y;
-    };
+    float setRotationY(float rotation);
 
     // Sets the rotation over the terrain
-    float setRotationX(float rotation)
-    {
-        this->_rotation_x = rotation;
-        this->_clampRotationX(); // Limits the rotation
-        return this->_rotation_x;
-    };
+    float setRotationX(float rotation);
 
     // Set the intensity of the light
-    void setIntensity(float intensity) { this->_intensity = intensity; };
+    void setIntensity(float intensity);
 
     // Set the color of the light
-    void setColor(QVector3D color) { this->_color = color; };
+    void setColor(QVector3D color);
 
     // Draw the sun onto the screen
     void paintGL(QMatrix4x4 camera);
 
 private:
     // Limits the rotation of the camera over the terrain
-    void _clampRotationX()
-    {
-        if (this->_rotation_x < 0.0)
-            this->_rotation_x = 0.0;
-        if (this->_rotation_x > 90.0)
-            this->_rotation_x = 90.0;
-    };
+    void _clampRotationX();
 
     // Rotation over the terrain 0 -> 90
     float _rotation_x = 0.0f;

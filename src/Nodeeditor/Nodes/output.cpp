@@ -44,10 +44,47 @@ OutputNode::OutputNode()
     this->_normal_map = normal;
 }
 
+OutputNode::~OutputNode() {}
+
+// Title shown at the top of the node
+QString OutputNode::caption() const
+{
+    return QString("Output");
+}
+
+// Title shown in the selection list
+QString OutputNode::name() const
+{
+    return QString("OutputNode");
+}
+void OutputNode::name(QString name)
+{
+    (void)name;
+}
+
+// The image label that is embedded in the node
+QWidget *OutputNode::embeddedWidget()
+{
+    return this->_widget;
+}
+
+// Needed for NodeDataModel, not sure where it is used
+QString OutputNode::modelName()
+{
+    return QString("Output Node");
+}
+
 // Get the number of in and out ports
 unsigned int OutputNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 1 : 0;
+}
+
+// Get the output data (nothing)
+std::shared_ptr<QtNodes::NodeData> OutputNode::outData(QtNodes::PortIndex port)
+{
+    (void)port;
+    return nullptr;
 }
 
 // Get the data type for the port inputs and output

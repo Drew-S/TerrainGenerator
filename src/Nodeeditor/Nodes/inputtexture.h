@@ -15,20 +15,20 @@ class InputTextureNode : public QtNodes::NodeDataModel
 {
 public:
     InputTextureNode();
-    ~InputTextureNode(){};
+    ~InputTextureNode();
 
     // Title shown at the top of the node
-    QString caption() const override { return "Input Texture"; };
+    QString caption() const override;
 
     // Title shown in the selection list
-    QString name() const override { return "InputTextureNode"; };
-    void name(QString name) { (void)name; };
+    QString name() const override;
+    void name(QString name);
 
     // The image label that is embedded in the node
-    QWidget *embeddedWidget() { return this->_widget; };
+    QWidget *embeddedWidget();
 
     // Needed for NodeDataModel, not sure where it is used
-    QString modelName() { return "Input Texture Node"; };
+    QString modelName();
 
     // Get the number of ports (1 output, 0 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
@@ -44,11 +44,7 @@ public:
     void restore(QJsonObject const &data) override;
 
     // Needed for all nodes, even if there are no inputs
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
-    {
-        (void)node_data;
-        (void)port;
-    };
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
 protected:
     // Used to click on the image to select a texture file

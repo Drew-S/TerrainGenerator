@@ -12,6 +12,9 @@
 #include <QPushButton>
 #include <QRegExp>
 
+MainWindow::MainWindow() {}
+MainWindow::~MainWindow() {}
+
 // Setup is a function used to setup the application,
 // Connect to ui elements and controls and link sub components
 void MainWindow::setup(Ui::MainWindow *ui)

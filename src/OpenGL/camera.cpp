@@ -1,5 +1,8 @@
 #include "camera.h"
 
+Camera::Camera() {}
+Camera::~Camera() {}
+
 // Return the calculated View matrix, used for getting the position of the camera
 // and for getting the combined projection and view matrix
 QMatrix4x4 Camera::_matrix()
@@ -60,4 +63,76 @@ QVector3D Camera::position()
 void Camera::resize(int w, int h)
 {
     this->_projection = w / float(h);
+}
+
+// Rotate the camera (turntable) around the terrain
+float Camera::rotateY(float v)
+{
+    this->_rotation_y += v;
+    return this->_rotation_y;
+}
+
+// Rotate the camera over the terrain
+float Camera::rotateX(float v)
+{
+    this->_rotation_x += v;
+    this->_clampRotationX(); // Limits rotation
+    return this->_rotation_x;
+}
+
+// Zoom the camera into/out of the terrain
+float Camera::zoom(float v)
+{
+    this->_zoom += v;
+    if (this->_zoom < 1.0f)
+        this->_zoom = 1.0f;
+
+    if (this->_zoom > 20.0f)
+        this->_zoom = 20.0f;
+    return this->_zoom;
+}
+float Camera::zoom()
+{
+    return this->_zoom;
+}
+
+// Set the rotation (turntable) around the terrain
+float Camera::setRotationY(float v)
+{
+    this->_rotation_y = v;
+    return this->_rotation_y;
+}
+
+// Set the rotation over the terrain
+float Camera::setRotationX(float v)
+{
+    this->_rotation_x = v;
+    this->_clampRotationX(); // limits rotation
+    return this->_rotation_x;
+}
+
+// Set the zoom level into the terrain
+float Camera::setZoom(float v)
+{
+    this->_zoom = v;
+    return this->_zoom;
+}
+
+// Get rotation values
+float Camera::rotationX()
+{
+    return this->_rotation_x;
+}
+float Camera::rotationY()
+{
+    return this->_rotation_y;
+}
+
+// Applies rotation limits above the terrain
+void Camera::_clampRotationX()
+{
+    if (this->_rotation_x < 0.0)
+        this->_rotation_x = 0.0;
+    if (this->_rotation_x > 90.0)
+        this->_rotation_x = 90.0;
 }

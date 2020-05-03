@@ -18,6 +18,8 @@ Terrain::Terrain(int resolution)
     this->_transform.translate(-0.5f, 0.0, -0.5f);
 }
 
+Terrain::~Terrain() {}
+
 // Initialize OpenGL items
 void Terrain::initializeGL()
 {

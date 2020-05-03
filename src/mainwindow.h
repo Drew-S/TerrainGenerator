@@ -15,8 +15,8 @@
 class MainWindow : public QMainWindow
 {
 public:
-    MainWindow(){};
-    ~MainWindow(){};
+    MainWindow();
+    ~MainWindow();
 
     void setup(Ui::MainWindow *ui);
 
