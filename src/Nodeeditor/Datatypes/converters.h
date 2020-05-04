@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/nodeeditor/include/nodes/NodeData>
+#include <nodes/NodeData>
 
 #include "pixmap.h"
 #include "vectormap.h"

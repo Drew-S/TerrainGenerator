@@ -4,8 +4,8 @@
 #include <QImage>
 #include <QJsonObject>
 
-#include <lib/nodeeditor/include/nodes/NodeDataModel>
-#include <lib/nodeeditor/include/nodes/Connection>
+#include <nodes/NodeDataModel>
+#include <nodes/Connection>
 
 // Normal map generator
 #include "./Normal/normal.h"

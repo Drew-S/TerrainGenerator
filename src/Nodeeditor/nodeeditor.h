@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include <lib/nodeeditor/include/nodes/FlowScene>
-#include <lib/nodeeditor/include/nodes/FlowView>
-#include <lib/nodeeditor/include/nodes/Node>
+#include <nodes/FlowScene>
+#include <nodes/FlowView>
+#include <nodes/Node>
 
 #include "./Nodes/output.h"
 #include "./Nodes/inputtexture.h"

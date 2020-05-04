@@ -2,7 +2,7 @@
 
 #include <QPixmap>
 
-#include <lib/nodeeditor/include/nodes/NodeDataModel>
+#include <nodes/NodeDataModel>
 
 #include "vectormap.h"
 #include "intensitymap.h"

@@ -6,7 +6,7 @@
 
 #include "ui_SimplexNoise.h"
 
-#include <lib/nodeeditor/include/nodes/NodeDataModel>
+#include <nodes/NodeDataModel>
 
 #include <QPixmap>
 #include <QWidget>

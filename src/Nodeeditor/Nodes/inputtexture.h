@@ -5,7 +5,7 @@
 #include <QEvent>
 #include <QJsonObject>
 
-#include <lib/nodeeditor/include/nodes/NodeDataModel>
+#include <nodes/NodeDataModel>
 
 #include "../Datatypes/vectormap.h"
 
