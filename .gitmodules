@@ -3,6 +3,10 @@
     url = https://github.com/paceholder/nodeeditor
     ignore = all
 [submodule "SimplexNoise"]
-	path = lib/SimplexNoise/SimplexNoise
-	url = ./lib/SimplexNoise/
+	path = lib/SimplexNoise
+	url = https://github.com/SRombauts/SimplexNoise
+    ignore = all
+[submodule "quazip"]
+	path = lib/quazip
+	url = https://github.com/stachenov/quazip
     ignore = all
