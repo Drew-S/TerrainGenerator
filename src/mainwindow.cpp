@@ -1,5 +1,11 @@
 #include "mainwindow.h"
 
+// #include <zip.h>
+
+#include <quazip/quazip.h>
+#include <quazip/quazipfile.h>
+#include <quazip/quazipnewinfo.h>
+
 #include <QObject>
 #include <QImage>
 #include <QDebug>
@@ -82,24 +88,34 @@ void MainWindow::_saveAsAccept()
         // <file>.tgdf -> <file> (user having tgdf extension is the same as no extension) (prevents <file>.tgdf.tgdf)
         QString filename = this->_save_as_filename;
         filename = filename.replace(QRegExp("\\.tgdf$"), "");
+        filename = this->_save_as_directory + "/" + filename + ".tgdf";
 
-        // Open save as file
-        QFile save_file(this->_save_as_directory + "/" + filename + ".tgdf");
-        if (!save_file.open(QIODevice::WriteOnly))
+        QuaZip zip(filename);
+        if (!zip.open(QuaZip::mdAdd))
         {
-            qWarning("Could not open save file");
+            this->_save_as_dialog->reject();
             return;
         }
 
-        // Get project data
+        QuaZipFile file(&zip);
+        QuaZipNewInfo info("data.bin");
+        if (!file.open(QIODevice::WriteOnly, info))
+        {
+            zip.close();
+            this->_save_as_dialog->reject();
+            return;
+        }
+
+        // // Get project data
         QJsonObject global;
         global["global_data"] = "stuff";
         global["nodes"] = this->_editor->save();
 
         QJsonDocument document(global);
 
-        // Write the data to the file
-        save_file.write(document.toBinaryData());
+        file.write(document.toBinaryData());
+        file.close();
+        zip.close();
 
         // Close the dialogue
         this->_save_as_dialog->accept();
@@ -129,9 +145,25 @@ void MainWindow::load()
     if (filename == "")
         return;
 
-    QFile file(filename);
-    file.open(QFile::ReadOnly);
-    QJsonDocument document = QJsonDocument::fromBinaryData(file.readAll());
+    QuaZip zip(filename);
+    if (!zip.open(QuaZip::mdUnzip))
+        return;
+
+    zip.setCurrentFile("data.bin");
+    QuaZipFile file(&zip);
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        zip.close();
+        return;
+    }
+
+    QByteArray data = file.readAll();
+
+    QJsonDocument document = QJsonDocument::fromBinaryData(data);
+
+    file.close();
+    zip.close();
 
     this->_editor->load(document["nodes"].toObject());
 }
