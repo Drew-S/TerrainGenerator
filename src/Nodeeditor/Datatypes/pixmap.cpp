@@ -16,7 +16,7 @@ QtNodes::NodeDataType IntensityMapData::type() const
 }
 
 // Get the underlying data container
-IntensityMap IntensityMap::intensityMap() const
+IntensityMap IntensityMapData::intensityMap() const
 {
     return this->_intensity_map;
 }
