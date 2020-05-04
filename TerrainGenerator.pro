@@ -1,33 +1,37 @@
 # Defines the output of the built code (in this case an application, not a library or plugin)
 TEMPLATE = app
-
 # INCLUDEPATH += .
 
+CONFIG += static
 # Get all the source code files recursively from the src directory
 SOURCES += $$files("src/*.cpp", true)
-SOURCES += "$$PWD/lib/SimplexNoise/src/SimplexNoise.cpp"
 
 # Get all the header files recursively from the src directory
 HEADERS += $$files("src/*h", true)
-HEADERS += "$$PWD/lib/SimplexNoise/src/SimplexNoise.h"
 
 # Used to link the nodeeditor 3rd party widget for QT
-DEFINES += NODE_EDITOR_SHARED
+DEFINES += NODE_EDITOR_STATIC
+DEFINES += QUAZIP_STATIC
 
 # What version of std to use
 QMAKE_CXXFLAGS += -std=c++17
-
-# Passing linking variables for including nodeeditor plugin
-QMAKE_CXXFLAGS += -Wl,-rpath,$$PWD/lib/nodeeditor/build/lib
 
 # The QT libraries to be included
 QT += core gui opengl widgets
 
 # Include third party libraries (nodeeditor)
+INCLUDEPATH += $$PWD/lib/nodeeditor/include
 LIBS += -L"$$PWD/lib/nodeeditor/build/lib" -lnodes
 
-# Include and depend on having nodeeditor
-INCLUDEPATH += $$PWD/lib/nodeeditor/include/nodes
+# (quazip, zip files for saving/loading)
+INCLUDEPATH += $$PWD/lib/quazip
+DEPENDPATH += $$PWD/lib/quazip
+LIBS += -L"$$PWD/lib/quazip/quazip" -lQt5Quazip
+LIBS += -Lz
+
+# (simplex noise)
+SOURCES += "$$PWD/lib/SimplexNoise/src/SimplexNoise.cpp"
+HEADERS += "$$PWD/lib/SimplexNoise/src/SimplexNoise.h"
 
 # Where the QT Designer *.ui files are stored (xml files)
 FORMS += $$files("src/UI/*.ui", true)

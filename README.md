@@ -9,33 +9,38 @@
 - Qmake (should be included with QT)
 - Make (built in with Linux, included with [MingGW](http://mingw.org/))
 
-## Installing Nodeeditor 3rd party
+## Installing 3rd party libraries
 
-Clone the repository into the root of the project:
+### Nodeeditor
 
 ```
 cd lib
 git clone https://github.com/paceholder/nodeeditor.git
-```
 
-Then build the library (as presented from [nodeeditor](https://github.com/paceholder/nodeeditor)):
-
-```
 cd nodeeditor
 mkdir build
 cd build
-cmake ..
-make -j
+cmake .. -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DBUILD_SHARED_LIBS=off
+make
 ```
 
-Additional steps I needed to make it work on my system:
+### Quazip
 
 ```
-sudo ln -s $(pwd)/lib/nodeeditor/build/lib/libnodes.so /usr/lib/
-sudo ldconfig
+cd lib
+git clone https://github.com/stachenov/quazip.git
+
+cd quazip
+qmake CONFIG+=staticlib LIBS+=-lz
+make
 ```
 
-I created a symlink to the shared library for my entire system and reloaded ld to recognize it for programs.
+### Simplex Noise
+
+```
+cd lib
+git clone https://github.com/SRombauts/SimplexNoise.git
+```
 
 ## Building
 
