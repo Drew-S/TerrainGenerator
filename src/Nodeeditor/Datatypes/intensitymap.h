@@ -44,7 +44,7 @@ public:
     bool append(double value);
 
     // Set a specific pixel (bool whether can/successful)
-    bool set(int x, int y, double v);
+    bool set(int x, int y, double value);
 
     // Storage of the intensity map data
     int width;

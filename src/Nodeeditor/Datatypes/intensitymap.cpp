@@ -68,7 +68,7 @@ bool IntensityMap::append(double value)
 }
 
 // Set a specific value for an index
-void IntensityMap::set(int x, int y, double value)
+bool IntensityMap::set(int x, int y, double value)
 {
     if (x < 0 || x >= this->width || y < 0 || y > this->height)
         return false;
