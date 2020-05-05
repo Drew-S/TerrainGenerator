@@ -10,7 +10,8 @@
 
 int main(int argc, char *argv[])
 {
-    qDebug() << "Starting Program";
+    qSetMessagePattern("[%{type}] %{appname} (%{file}:%{line}) - %{message}");
+
     QApplication app(argc, argv);
 
     // Should colorize the connections between nodes based on their data type

@@ -9,6 +9,8 @@ SOURCES += $$files("src/*.cpp", true)
 # Get all the header files recursively from the src directory
 HEADERS += $$files("src/*h", true)
 
+DEFINES += QT_MESSAGELOGCONTEXT
+
 # Used to link the nodeeditor 3rd party widget for QT
 DEFINES += NODE_EDITOR_STATIC
 DEFINES += QUAZIP_STATIC
