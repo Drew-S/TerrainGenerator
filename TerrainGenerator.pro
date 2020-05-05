@@ -33,6 +33,10 @@ LIBS += -Lz
 SOURCES += "$$PWD/lib/SimplexNoise/src/SimplexNoise.cpp"
 HEADERS += "$$PWD/lib/SimplexNoise/src/SimplexNoise.h"
 
+# (json)
+INCLUDEPATH += $$PWD/lib/json/single_include/nlohmann
+HEADERS += "$$PWD/lib/json/single_include/nlohmann/json.hpp"
+
 # Where the QT Designer *.ui files are stored (xml files)
 FORMS += $$files("src/UI/*.ui", true)
 
