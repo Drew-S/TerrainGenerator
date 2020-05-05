@@ -10,3 +10,7 @@
 	path = lib/quazip
 	url = https://github.com/stachenov/quazip
     ignore = all
+[submodule "json"]
+	path = lib/json/json
+	url = https://github.com/nlohmann/json.git
+    ignore = all
