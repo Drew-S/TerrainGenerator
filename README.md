@@ -42,6 +42,15 @@ cd lib
 git clone https://github.com/SRombauts/SimplexNoise.git
 ```
 
+### JSON
+
+Qt json is only well designed for reading data
+
+```
+cd lib
+git clone https://github.com/nlohmann/json.git
+```
+
 ## Building
 
 **Makefile**:
