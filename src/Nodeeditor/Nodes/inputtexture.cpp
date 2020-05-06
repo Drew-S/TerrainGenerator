@@ -108,6 +108,7 @@ bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
                 // Scale the pixmap to fill the window
                 this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
             }
+            return QObject::eventFilter(object, event);
         }
     }
     return false;

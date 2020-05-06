@@ -12,7 +12,10 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
 {
     qDebug("Creating Input Simplex Noise Node, attaching listeners and UI widget");
     this->_widget = new QWidget();
+    this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
+    this->_widget->setMinimumSize(281, 302);
+    this->_shared_ui.setupUi(this->_shared_widget);
 
     // Attach listeners
     QObject::connect(this->_ui.spin_octives, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::octivesChanged);
@@ -21,6 +24,13 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     QObject::connect(this->_ui.spin_x, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::xChanged);
     QObject::connect(this->_ui.spin_y, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::yChanged);
     QObject::connect(this->_ui.spin_z, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::zChanged);
+
+    QObject::connect(this->_shared_ui.spin_octives, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::octivesChanged);
+    QObject::connect(this->_shared_ui.spin_frequency, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::frequencyChanged);
+    QObject::connect(this->_shared_ui.spin_persistence, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::persistenceChanged);
+    QObject::connect(this->_shared_ui.spin_x, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::xChanged);
+    QObject::connect(this->_shared_ui.spin_y, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::yChanged);
+    QObject::connect(this->_shared_ui.spin_z, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::zChanged);
 
     // Generate values
     this->_generate();
@@ -48,6 +58,10 @@ void InputSimplexNoiseNode::name(QString name)
 QWidget *InputSimplexNoiseNode::embeddedWidget()
 {
     return this->_widget;
+}
+QWidget *InputSimplexNoiseNode::sharedWidget()
+{
+    return this->_shared_widget;
 }
 
 // Needed for NodeDataModel, not sure where it is used
@@ -109,6 +123,7 @@ void InputSimplexNoiseNode::_generate()
     // Set preview and emit completion of generation
     this->_pixmap = this->_intensity_map.toPixmap();
     this->_ui.label_pixmap->setPixmap(this->_pixmap.scaled(this->_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
+    this->_shared_ui.label_pixmap->setPixmap(this->_pixmap.scaled(this->_shared_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
     emit this->dataUpdated(0);
 }
 
@@ -150,6 +165,13 @@ void InputSimplexNoiseNode::restore(QJsonObject const &data)
     this->_ui.spin_y->setValue(this->_offset.y());
     this->_ui.spin_z->setValue(this->_offset.z());
 
+    this->_shared_ui.spin_octives->setValue(this->_octives);
+    this->_shared_ui.spin_frequency->setValue(this->_frequency);
+    this->_shared_ui.spin_persistence->setValue(this->_persistence);
+    this->_shared_ui.spin_x->setValue(this->_offset.x());
+    this->_shared_ui.spin_y->setValue(this->_offset.y());
+    this->_shared_ui.spin_z->setValue(this->_offset.z());
+
     // Regenerate the noise
     this->_generate();
 }
@@ -165,30 +187,42 @@ void InputSimplexNoiseNode::setInData(std::shared_ptr<QtNodes::NodeData> node_da
 void InputSimplexNoiseNode::octivesChanged(double value)
 {
     this->_octives = (float)value;
+    this->_ui.spin_octives->setValue(this->_octives);
+    this->_shared_ui.spin_octives->setValue(this->_octives);
     this->_generate();
 }
 void InputSimplexNoiseNode::frequencyChanged(double value)
 {
     this->_frequency = (float)value;
+    this->_ui.spin_frequency->setValue(this->_frequency);
+    this->_shared_ui.spin_frequency->setValue(this->_frequency);
     this->_generate();
 }
 void InputSimplexNoiseNode::persistenceChanged(double value)
 {
     this->_persistence = (float)value;
+    this->_ui.spin_persistence->setValue(this->_persistence);
+    this->_shared_ui.spin_persistence->setValue(this->_persistence);
     this->_generate();
 }
 void InputSimplexNoiseNode::xChanged(double value)
 {
     this->_offset.setX((float)value);
+    this->_ui.spin_x->setValue(this->_offset.x());
+    this->_shared_ui.spin_x->setValue(this->_offset.x());
     this->_generate();
 }
 void InputSimplexNoiseNode::yChanged(double value)
 {
     this->_offset.setY((float)value);
+    this->_ui.spin_y->setValue(this->_offset.y());
+    this->_shared_ui.spin_y->setValue(this->_offset.y());
     this->_generate();
 }
 void InputSimplexNoiseNode::zChanged(double value)
 {
     this->_offset.setZ((float)value);
+    this->_ui.spin_z->setValue(this->_offset.z());
+    this->_shared_ui.spin_z->setValue(this->_offset.z());
     this->_generate();
 }

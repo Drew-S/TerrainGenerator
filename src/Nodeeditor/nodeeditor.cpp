@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QJsonDocument>
+#include <QHBoxLayout>
 
 #include <lib/nodeeditor/include/nodes/DataModelRegistry>
 #include <lib/nodeeditor/include/nodes/TypeConverter>
@@ -35,12 +36,14 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 }
 
 // Create a node editor manager
-Nodeeditor::Nodeeditor(QLayout *target)
+Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
 {
     qDebug("Setting up nodeeditor widget");
     // Create a scene and a view, attach models to the scene
     this->_scene = new QtNodes::FlowScene(registerDataModels());
     this->_view = new QtNodes::FlowView(this->_scene);
+    this->_properties = properties;
+    this->_properties->setLayout(new QHBoxLayout());
 
     // Add the view to the provided target layout (container)
     target->addWidget(this->_view);
@@ -62,8 +65,9 @@ Nodeeditor::~Nodeeditor()
 // is null, set the active output to the newly created output node.
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
+    QString name = node.nodeDataModel()->name();
     // Created node is output and active output is null
-    if (node.nodeDataModel()->name() == OutputNode().name() && !this->_active_output)
+    if (name == OutputNode().name() && !this->_active_output)
     {
         qDebug("Setting active output node");
         // Save pointer to the output node
@@ -73,13 +77,20 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
     }
+    if (name == InputSimplexNoiseNode().name())
+    {
+        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node.nodeDataModel());
+        QWidget *shared = selected->sharedWidget();
+        this->_properties->layout()->addWidget(shared);
+    }
 }
 
 // When a node is double clicked, if it is an output node update the active output node
 void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
 {
+    QString name = node.nodeDataModel()->name();
     // If the node is an output node
-    if (node.nodeDataModel()->name() == OutputNode().name())
+    if (name == OutputNode().name())
     {
         qDebug("Updating active output node");
         // Disconnect old listeners
@@ -93,6 +104,12 @@ void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
         // Attach new listeners
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
+    }
+    if (name == InputSimplexNoiseNode().name())
+    {
+        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node.nodeDataModel());
+        QWidget *shared = selected->sharedWidget();
+        this->_properties->layout()->addWidget(shared);
     }
 }
 

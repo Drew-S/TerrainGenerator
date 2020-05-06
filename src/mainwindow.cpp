@@ -48,7 +48,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
 {
     qDebug("Setting up main window and save dialogue ui, attaching listeners");
     this->_main_ui = ui;
-    this->_editor = new Nodeeditor(ui->NodeEditorLayout);
+    this->_editor = new Nodeeditor(ui->NodeEditorLayout, ui->NodePropertiesContainerWidget);
     this->_open_gl = this->_main_ui->OpenGLWidget;
 
     // Connect output widget compute finished to OpenGL to display results

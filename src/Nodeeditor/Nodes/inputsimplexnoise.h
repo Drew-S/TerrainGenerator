@@ -5,6 +5,7 @@
 #include "../Datatypes/intensitymap.h"
 
 #include "ui_SimplexNoiseNode.h"
+#include "ui_SimplexNoiseNode_no_scroll.h"
 
 #include <nodes/NodeDataModel>
 
@@ -31,6 +32,7 @@ public:
 
     // The image label that is embedded in the node
     QWidget *embeddedWidget();
+    QWidget *sharedWidget();
 
     // Needed for NodeDataModel, not sure where it is used
     QString modelName();
@@ -79,5 +81,7 @@ private:
 
     // Housing widget and ui
     QWidget *_widget;
-    Ui::SimplexNoiseNode _ui;
+    QWidget *_shared_widget;
+    Ui::SimplexNoiseNode_no_scroll _ui;
+    Ui::SimplexNoiseNode _shared_ui;
 };

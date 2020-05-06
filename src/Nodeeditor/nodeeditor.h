@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QObject>
 #include <QJsonObject>
+#include <QWidget>
 
 #include <nodes/FlowScene>
 #include <nodes/FlowView>
@@ -18,7 +19,7 @@ class Nodeeditor : public QObject
     Q_OBJECT
 
 public:
-    Nodeeditor(QLayout *target);
+    Nodeeditor(QLayout *target, QWidget *properties);
     ~Nodeeditor();
 
     // Returns the height/normal map of the active selected output node
@@ -48,5 +49,6 @@ private:
     QtNodes::FlowScene *_scene;
     QtNodes::FlowView *_view;
     // Selected output node to obtain normal and height map from
+    QWidget *_properties;
     OutputNode *_active_output = nullptr;
 };

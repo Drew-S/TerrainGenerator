@@ -55,7 +55,7 @@ private:
     // The selected image
     QPixmap _pixmap;
     QString _filename = "";
-    VectorMap _color_map;
+    VectorMap _color_map{0, 0};
 
     // The embedded widget
     QLabel *_widget;
