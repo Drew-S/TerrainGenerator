@@ -65,8 +65,6 @@ void NormalMapGenerator::generate()
                              KERNEL_Y[1][0] * matrix[1][0] + KERNEL_Y[1][1] * matrix[1][1] + KERNEL_Y[1][2] * matrix[1][2] +
                              KERNEL_Y[2][0] * matrix[2][0] + KERNEL_Y[2][1] * matrix[2][1] + KERNEL_X[2][2] * matrix[2][2];
 
-            // TODO: Add blur to smooth jaggedness
-
             double mag = glm::sqrt(x_prime * x_prime + y_prime * y_prime);
 
             // Get the normal vector, adjusted for [-1, 1] range to color range [0, 1]

@@ -161,9 +161,6 @@ void OutputNode::_generateNormalMap(IntensityMap height_map)
     // Apply the normal map
     QImage normal_map = this->_normal_generator.toImage();
     this->_normal_map = normal_map;
-
-    // TODO: remove, used for testing
-    // normal_map.save("/home/drew/test_normal_map.png");
 }
 
 // Input is removed so we reset the height and normal maps

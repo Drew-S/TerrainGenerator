@@ -3,8 +3,6 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 
-// TODO: Move all function implementations to *.cpp files globally (all files)
-
 // Camera class manages the QMatrix4x4 projection and view matrix and the QVector3D position for use
 // in the OpenGL shaders.
 class Camera

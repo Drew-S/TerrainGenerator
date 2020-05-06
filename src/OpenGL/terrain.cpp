@@ -44,7 +44,6 @@ void Terrain::initializeGL()
     normal.setColor(0, qRgba(128, 128, 255, 255));
     normal.fill(0);
 
-    // TODO: remove file normal map, use generated normal map
     this->_normal = new QOpenGLTexture(normal.mirrored());
     this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);

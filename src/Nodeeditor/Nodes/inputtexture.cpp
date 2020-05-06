@@ -7,8 +7,6 @@
 #include "../Datatypes/pixmap.h"
 
 // Setup the node
-// TODO: Not sure why, deleting texture node while it is connected to output node causes crash.
-//       Does not occur on Simplex Noise Node. Figure out why.
 InputTextureNode::InputTextureNode()
 {
     qDebug("Creating Input Texture Node, attaching UI");

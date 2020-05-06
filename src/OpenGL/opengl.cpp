@@ -15,7 +15,6 @@
 // TODO: add ui support for selecting sky color
 #define SKY 0.77f, 0.84f, 0.99f, 1.0f
 
-// TODO: Add openGL support checks and warning information to user
 // Creates an OpenGL widget (QOpenGLWidget)
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -124,7 +123,6 @@ void OpenGL::resizeGL(int w, int h)
 }
 
 // Paint the scene, lights, objects, etc.
-// TODO: Commenting, improve labeling, describe whats happening
 void OpenGL::paintGL()
 {
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
