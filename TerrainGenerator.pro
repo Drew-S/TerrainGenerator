@@ -1,6 +1,7 @@
 # Defines the output of the built code (in this case an application, not a library or plugin)
 TEMPLATE = app
 # INCLUDEPATH += .
+CONFIG += debug
 
 CONFIG += static
 # Get all the source code files recursively from the src directory
@@ -45,29 +46,13 @@ FORMS += $$files("src/UI/*.ui", true)
 # Where to place the compiled ui files (header files)
 UI_DIR = src/UI
 
-# Configuration modes (CONFIG+=debug environment variable)
-CONFIG(debug) {
-    # Enable all debug messages
-    QMAKE_CXXFLAGS += -Wall
+QMAKE_CXXFLAGS += -Wall
 
-    # Where to place debug builds
-    DESTDIR = $$PWD/build/debug
+# Where to place release buildsx
+DESTDIR = $$PWD/build
 
-    # Where to place debug moc files
-    MOC_DIR = $$PWD/build/debug/moc
+# Where to place release moc files
+MOC_DIR = $$PWD/build/moc
 
-    # Where to place debug object files
-    OBJECTS_DIR = $$PWD/build/debug/objects
-} else {
-    # Release version, supress qt debug messages (info calls)
-    DEFINES += QT_NO_DEBUG_OUTPUT
-
-    # Where to place release builds
-    DESTDIR = $$PWD/build/release
-
-    # Where to place release moc files
-    MOC_DIR = $$PWD/build/release/moc
-
-    # Where to place release object files
-    OBJECTS_DIR = $$PWD/build/release/objects
-}
+# Where to place release object files
+OBJECTS_DIR = $$PWD/build/objects
