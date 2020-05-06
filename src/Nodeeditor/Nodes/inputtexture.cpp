@@ -1,15 +1,21 @@
 #include "inputtexture.h"
 
+#include <QDebug>
 #include <QFileDialog>
+#include <QRegion>
 
 #include "../Datatypes/pixmap.h"
 
 // Setup the node
+// TODO: Not sure why, deleting texture node while it is connected to output node causes crash.
+//       Does not occur on Simplex Noise Node. Figure out why.
 InputTextureNode::InputTextureNode()
 {
+    qDebug("Creating Input Texture Node, attaching UI");
     // Create an image container
-    this->_widget = new QLabel("Click to load image");
+    this->_widget = new QLabel("Select image");
     this->_widget->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    this->_widget->setStyleSheet("QLabel{ background-color: rgba(117, 117, 117, 255); border: 1px solid black; }");
     this->_widget->setFixedSize(100, 100);
     this->_widget->installEventFilter(this);
 }
@@ -119,6 +125,7 @@ void InputTextureNode::_generate()
     // If a file is selected set the image preview
     else
     {
+        qDebug("Setting input texture");
         this->_pixmap = QPixmap(this->_filename);
         this->_color_map = VectorMap(this->_pixmap);
         this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
@@ -131,6 +138,7 @@ void InputTextureNode::_generate()
 // Save the node to for a file
 QJsonObject InputTextureNode::save() const
 {
+    qDebug("Saving Input Texture Node");
     QJsonObject data;
     data["name"] = this->name();
     data["image"] = this->_filename;
@@ -140,6 +148,7 @@ QJsonObject InputTextureNode::save() const
 // Restore the node from a save file
 void InputTextureNode::restore(QJsonObject const &data)
 {
+    qDebug("Restoring Input Texture Node");
     this->_filename = data["image"].toString();
     this->_generate();
 }

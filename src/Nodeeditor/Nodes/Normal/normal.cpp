@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+// Sobel Kernels for calculating normal values from the height map
 static double KERNEL_X[3][3] = {
     {-1.00, 0.00, 1.00},
     {-2.00, 0.00, 2.00},
@@ -77,6 +78,7 @@ void NormalMapGenerator::generate()
         }
     }
 
+    qInfo("Generation of normal map complete");
     // Save normal image
     this->_normal_map = normal;
 }
@@ -89,8 +91,7 @@ QImage NormalMapGenerator::toImage()
 
 // Gets the height intensity for a pixel, if x goes beyond borders,
 // it is clamped back to the corner (other options could be to wrap)
-double
-NormalMapGenerator::_getHeightIntensity(int x, int y)
+double NormalMapGenerator::_getHeightIntensity(int x, int y)
 {
     if (x < 0 || y < 0 || x >= this->_width || y >= this->_height)
         return 0.00;

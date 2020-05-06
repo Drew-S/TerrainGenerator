@@ -26,23 +26,23 @@ public:
     QVector3D position();
 
     // Rotate the camera (turntable) around the terrain
-    float rotateY(float v);
+    float rotateY(float value);
 
     // Rotate the camera over the terrain
-    float rotateX(float v);
+    float rotateX(float value);
 
     // Zoom the camera into/out of the terrain
-    float zoom(float v);
+    float zoom(float value);
     float zoom();
 
     // Set the rotation (turntable) around the terrain
-    float setRotationY(float v);
+    float setRotationY(float value);
 
     // Set the rotation over the terrain
-    float setRotationX(float v);
+    float setRotationX(float value);
 
     // Set the zoom level into the terrain
-    float setZoom(float v);
+    float setZoom(float value);
 
     // Resize call, when widget size change recalculate the projection matrix
     void resize(int w, int h);

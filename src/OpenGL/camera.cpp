@@ -22,7 +22,6 @@ QMatrix4x4 Camera::_matrix()
 // Return the calculated camera matrix, the combined projection and view matrix
 QMatrix4x4 Camera::matrix()
 {
-
     // Return camera matrix (combined view and projection)
     return this->projectionMatrix() * this->_matrix();
 }
@@ -66,24 +65,24 @@ void Camera::resize(int w, int h)
 }
 
 // Rotate the camera (turntable) around the terrain
-float Camera::rotateY(float v)
+float Camera::rotateY(float value)
 {
-    this->_rotation_y += v;
+    this->_rotation_y += value;
     return this->_rotation_y;
 }
 
 // Rotate the camera over the terrain
-float Camera::rotateX(float v)
+float Camera::rotateX(float value)
 {
-    this->_rotation_x += v;
+    this->_rotation_x += value;
     this->_clampRotationX(); // Limits rotation
     return this->_rotation_x;
 }
 
 // Zoom the camera into/out of the terrain
-float Camera::zoom(float v)
+float Camera::zoom(float value)
 {
-    this->_zoom += v;
+    this->_zoom += value;
     if (this->_zoom < 1.0f)
         this->_zoom = 1.0f;
 
@@ -97,24 +96,24 @@ float Camera::zoom()
 }
 
 // Set the rotation (turntable) around the terrain
-float Camera::setRotationY(float v)
+float Camera::setRotationY(float value)
 {
-    this->_rotation_y = v;
+    this->_rotation_y = value;
     return this->_rotation_y;
 }
 
 // Set the rotation over the terrain
-float Camera::setRotationX(float v)
+float Camera::setRotationX(float value)
 {
-    this->_rotation_x = v;
+    this->_rotation_x = value;
     this->_clampRotationX(); // limits rotation
     return this->_rotation_x;
 }
 
 // Set the zoom level into the terrain
-float Camera::setZoom(float v)
+float Camera::setZoom(float value)
 {
-    this->_zoom = v;
+    this->_zoom = value;
     return this->_zoom;
 }
 

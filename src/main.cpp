@@ -7,6 +7,7 @@
 #include "Nodeeditor/nodeeditor.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -23,12 +24,14 @@ void writeLine(const char *prefix, const char *file, int line, const char *funct
     time_info = localtime(&now);
     char buffer[10];
     strftime(buffer, 10, "%H:%M:%S", time_info);
-    fprintf(stderr, "%s [%s] (%s:%d) %s -- %s\n", buffer, prefix, file, line, function, message);
+    fprintf(stderr, "%s %s (%s:%d) %s -- %s\n", buffer, prefix, file, line, function, message);
+    fflush(stderr);
 
     if (log_file)
     {
         FILE *log_file = fopen("log.txt", "a");
-        fprintf(log_file, "%s [%s] (%s:%d) %s -- %s\n", buffer, prefix, file, line, function, message);
+        fprintf(log_file, "%s %s (%s:%d) %s -- %s\n", buffer, prefix, file, line, function, message);
+        fflush(log_file);
     }
 }
 
@@ -42,23 +45,23 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
     {
     case QtDebugMsg:
         if (verbosity >= 4)
-            writeLine("debug", file, context.line, function, local_message.constData());
+            writeLine("[debug]", file, context.line, function, local_message.constData());
         break;
     case QtInfoMsg:
         if (verbosity >= 3)
-            writeLine("info ", file, context.line, function, local_message.constData());
+            writeLine(" [info]", file, context.line, function, local_message.constData());
         break;
     case QtWarningMsg:
         if (verbosity >= 2)
-            writeLine("warn ", file, context.line, function, local_message.constData());
+            writeLine(" [warn]", file, context.line, function, local_message.constData());
         break;
     case QtCriticalMsg:
         if (verbosity >= 1)
-            writeLine("crit ", file, context.line, function, local_message.constData());
+            writeLine(" [crit]", file, context.line, function, local_message.constData());
         break;
     case QtFatalMsg:
         if (verbosity >= 0)
-            writeLine("fatal", file, context.line, function, local_message.constData());
+            writeLine("[fatal]", file, context.line, function, local_message.constData());
         break;
     }
 }

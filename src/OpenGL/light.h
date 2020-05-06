@@ -23,19 +23,19 @@ public:
     QVector3D color();
 
     // Rotates the light around the terrain (turntable)
-    float rotateY(float rotation);
+    float rotateY(float value);
 
     // Rotates the light over the terrain
-    float rotateX(float rotation);
+    float rotateX(float value);
 
     // Sets the rotation around the terrain (turntable)
-    float setRotationY(float rotation);
+    float setRotationY(float value);
 
     // Sets the rotation over the terrain
-    float setRotationX(float rotation);
+    float setRotationX(float value);
 
     // Set the intensity of the light
-    void setIntensity(float intensity);
+    void setIntensity(float value);
 
     // Set the color of the light
     void setColor(QVector3D color);

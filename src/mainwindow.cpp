@@ -28,11 +28,14 @@ using json = nlohmann::json;
 #include <QList>
 
 #define SAVE_DATA_FILE_NAME "data.json"
+#define EXT ".tgdf"
+#define EXT_REG "\\.tgdf$"
 #define RW_ALL QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ReadGroup | QFileDevice::WriteGroup | QFileDevice::ReadOther | QFileDevice::WriteOther
 
 MainWindow::MainWindow()
 {
     this->_packed_files = new QTemporaryDir(QDir::tempPath() + "/TerrainGenerator_XXXXXX");
+    qDebug("Using temp directory: %s", qPrintable(this->_packed_files->path()));
 }
 MainWindow::~MainWindow()
 {
@@ -43,6 +46,7 @@ MainWindow::~MainWindow()
 // Connect to ui elements and controls and link sub components
 void MainWindow::setup(Ui::MainWindow *ui)
 {
+    qDebug("Setting up main window and save dialogue ui, attaching listeners");
     this->_main_ui = ui;
     this->_editor = new Nodeeditor(ui->NodeEditorLayout);
     this->_open_gl = this->_main_ui->OpenGLWidget;
@@ -87,6 +91,8 @@ void MainWindow::_saveAsFile()
         QDir::homePath(),
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
+    qDebug("Directory to save project set to: %s", qPrintable(directory));
+
     this->_save_ui->directory_label->setText(directory);
     this->_save_as_directory = directory;
 }
@@ -94,6 +100,7 @@ void MainWindow::_saveAsFile()
 // Toggle whether or not to pack images with save file
 void MainWindow::_saveAsTogglePack(bool checked)
 {
+    qDebug("Packing resources in save file: %s", checked ? "true" : "false");
     this->_save_as_pack = checked;
 }
 
@@ -101,24 +108,30 @@ void MainWindow::_saveAsTogglePack(bool checked)
 void MainWindow::_saveAsLineEdit(QString const &text)
 {
     this->_save_as_filename = text;
+    QString file = text;
+    file.replace(QRegExp(EXT_REG), "");
+    qDebug("Save file set to: %s%s", qPrintable(file), EXT);
 }
 
 // Saves the project data to the provided output file
 // TODO: A bit deep, separate into sub functions
+// TODO: Add indication for successfully/failing to save
 void MainWindow::_saveAsAccept()
 {
     // Terrain Generator Data File : tgdf
     // TODO: Come up with better extension name
-    if (this->_save_as_directory != "" && this->_save_as_filename != "" && this->_save_as_filename != ".tgdf")
+    if (this->_save_as_directory != "" && this->_save_as_filename != "" && this->_save_as_filename != EXT)
     {
         // <file>.tgdf -> <file> (user having tgdf extension is the same as no extension) (prevents <file>.tgdf.tgdf)
         QString filename = this->_save_as_filename;
-        filename = filename.replace(QRegExp("\\.tgdf$"), "");
-        filename = this->_save_as_directory + "/" + filename + ".tgdf";
+        filename = filename.replace(QRegExp(EXT_REG), "");
+        filename = this->_save_as_directory + "/" + filename + EXT;
+        qInfo("Saving to file: %s", qPrintable(filename));
 
         QuaZip zip(filename);
         if (!zip.open(QuaZip::mdAdd))
         {
+            qCritical("Unable to open up: '%s' for saving", qPrintable(filename));
             this->_save_as_dialog->reject();
             return;
         }
@@ -132,6 +145,7 @@ void MainWindow::_saveAsAccept()
         // If enable pack external resources (images) within the save file
         if (this->_save_as_pack)
         {
+            qInfo("Packing external resources");
             // Loop over all the nodes, if they have a 'image' key, save image to file
             // Update image key to a simple filename
             // TODO: Implement protections for same name
@@ -151,12 +165,16 @@ void MainWindow::_saveAsAccept()
                     QuaZipNewInfo image_info(image, image_path);
                     image_info.setPermissions(RW_ALL);
                     if (!image_file.open(QIODevice::WriteOnly, image_info))
+                    {
+                        qWarning("Unable to open zip file for writing");
                         continue;
+                    }
 
                     // Read the image into byte array
                     QFile file(image_path);
                     if (!file.open(QIODevice::ReadOnly))
                     {
+                        qWarning("Unable to open up file for reading");
                         image_file.close();
                         continue;
                     }
@@ -166,6 +184,8 @@ void MainWindow::_saveAsAccept()
                     image_file.write(data);
                     image_file.close();
                     file.close();
+
+                    qDebug("Image compressed and updated: %s", qPrintable(image));
 
                     // Update the filename reference in the nodes
                     nodeeditor["nodes"][i]["model"]["image"] = image.toStdString();
@@ -183,6 +203,7 @@ void MainWindow::_saveAsAccept()
         info.setPermissions(RW_ALL);
         if (!file.open(QIODevice::WriteOnly, info))
         {
+            qCritical("Unable to open zip data file for writing");
             zip.close();
             this->_save_as_dialog->reject();
             return;
@@ -193,11 +214,15 @@ void MainWindow::_saveAsAccept()
         file.close();
         zip.close();
 
+        qDebug("Saving completed successfully");
+
         // Close the dialogue
         this->_save_as_dialog->accept();
     }
     else
     {
+        qInfo("Cannot save, not enough/invalid information");
+        // TODO: UI validation information
         this->_save_as_dialog->reject();
     }
 }
@@ -205,19 +230,23 @@ void MainWindow::_saveAsAccept()
 // Open up the save as dialogue
 void MainWindow::saveAs()
 {
+    qDebug("Open saving dialogue");
     this->_save_as_dialog->exec();
 }
 
 // Load data from a project file
 // TODO: Implement Validator
 // TODO: A bit deep, separate into sub functions
+// TODO: Add indication for successfully/failing to load
 void MainWindow::load()
 {
     QString filename = QFileDialog::getOpenFileName(
         nullptr,
         tr("Open Project"),
         QDir::homePath(),
-        tr("Project files (*.tgdf)"));
+        tr((QString("Project files (*") + QString(EXT) + QString(")")).toStdString().c_str()));
+
+    qInfo("Attempting to load save file: %s", qPrintable(filename));
 
     if (filename == "")
         return;
@@ -225,7 +254,10 @@ void MainWindow::load()
     // Load zip file
     QuaZip zip(filename);
     if (!zip.open(QuaZip::mdUnzip))
+    {
+        qCritical("Unable to unzip save file");
         return;
+    }
 
     // Read data file
     zip.setCurrentFile(SAVE_DATA_FILE_NAME);
@@ -233,6 +265,7 @@ void MainWindow::load()
 
     if (!file.open(QIODevice::ReadOnly))
     {
+        qCritical("Unable to read zip data file");
         zip.close();
         return;
     }
@@ -243,12 +276,15 @@ void MainWindow::load()
     QJsonDocument document = QJsonDocument::fromJson(data);
     json settings = json::parse(document.toJson().constData());
 
+    qInfo("Save file version: %s", qPrintable(document["save_version"].toString()));
+
     // Set some data
     this->_save_as_pack = settings.value("packed_externals", false);
 
     // Extract images if using a packed save file
     if (this->_save_as_pack)
     {
+        qInfo("Extracting packed resources");
         // Extract each image to a temporary directory
         for (bool more = zip.goToFirstFile(); more; more = zip.goToNextFile())
         {
@@ -258,29 +294,31 @@ void MainWindow::load()
 
             // Read image file
             if (!file.open(QIODevice::ReadOnly))
+            {
+                qWarning("Unable to read file: %s", qPrintable(zip.getCurrentFileName()));
                 continue;
+            }
             QByteArray image_file_data = file.readAll();
 
-            // Get filename
-            QuaZipFileInfo image_info;
-            zip.getCurrentFileInfo(&image_info);
-
             // Filename with temp path /tmp/TerrainGenerator_XXXXXX/file.png
-            std::string temp_image_file = this->_packed_files->path().toStdString() + "/" + image_info.name.toStdString();
+            std::string temp_image_file = this->_packed_files->path().toStdString() + "/" + zip.getCurrentFileName().toStdString();
             file.close();
 
             // Write image to temp file
             QFile temp_file(temp_image_file.c_str());
             if (!temp_file.open(QIODevice::WriteOnly))
             {
+                qWarning("Unable to write file: %s", temp_image_file.c_str());
                 file.close();
                 continue;
             }
+            qInfo("Extracted file: %s", qPrintable(zip.getCurrentFileName()));
 
             temp_file.write(image_file_data);
             temp_file.close();
         }
 
+        qInfo("Updating resource references");
         // Update image file references to read temp file location
         for (int i = 0; i < (int)settings["nodes"]["nodes"].size(); i++)
         {
@@ -299,4 +337,6 @@ void MainWindow::load()
 
     // Load nodeeditor
     this->_editor->load(document["nodes"].toObject());
+
+    qDebug("Loading save file complete");
 }

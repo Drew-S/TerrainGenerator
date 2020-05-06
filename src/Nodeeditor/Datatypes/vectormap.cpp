@@ -1,10 +1,13 @@
 #include "vectormap.h"
 
+#include <QDebug>
+
 VectorMap::VectorMap() {}
 
 // Set initial size without data
 VectorMap::VectorMap(int width, int height)
 {
+    qDebug("Creating Vector Map with only size set: (%dx%d)", width, height);
     this->width = width;
     this->height = height;
 }
@@ -12,6 +15,7 @@ VectorMap::VectorMap(int width, int height)
 // Set size and values from a 1D vector array
 VectorMap::VectorMap(int width, int height, std::vector<glm::dvec3> values)
 {
+    qDebug("Creating Vector Map with data: (%dx%d), %d pixels set", width, height, width * height);
     this->width = width;
     this->height = height;
     this->values = values;
@@ -20,12 +24,14 @@ VectorMap::VectorMap(int width, int height, std::vector<glm::dvec3> values)
 // Create vector map from image
 VectorMap::VectorMap(QImage image)
 {
+    qDebug("Creating Vector Map from QImage");
     this->_saveImage(image);
 }
 
 // Create vector map from pixmap
 VectorMap::VectorMap(QPixmap image)
 {
+    qDebug("Creating Vector Map from QPixmap");
     this->_saveImage(image.toImage());
 }
 
@@ -35,6 +41,7 @@ VectorMap::~VectorMap() {}
 // TODO: Add support for channel selecting
 IntensityMap VectorMap::toIntensityMap()
 {
+    qDebug("Converting Vector Map to Intensity Map");
     IntensityMap map(this->width, this->height);
     for (int x = 0; x < this->width; x++)
     {
@@ -49,7 +56,7 @@ IntensityMap VectorMap::toIntensityMap()
 // Create vector map from an intensity map
 VectorMap VectorMap::fromIntensityMap(IntensityMap &map)
 {
-
+    qDebug("Converting Intensity Map to Vector Map");
     VectorMap vec(map.width, map.height);
     for (int x = 0; x < map.width; x++)
     {
@@ -63,8 +70,10 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map)
 }
 
 // Convert vector map to an image
-QImage VectorMap::toImage()
+QImage VectorMap::toImage(bool print_qimage)
 {
+    if (print_qimage)
+        qDebug("Converting Vector Map to QImage");
     QImage image(this->width, this->height, QImage::Format_RGBA64);
     for (int x = 0; x < this->width; x++)
     {
@@ -81,7 +90,8 @@ QImage VectorMap::toImage()
 // Convert vector map to a pixmap
 QPixmap VectorMap::toPixmap()
 {
-    return QPixmap::fromImage(this->toImage());
+    qDebug("Converting Vector Map to QPixmap");
+    return QPixmap::fromImage(this->toImage(false));
 }
 
 // Get a value at a specific index
@@ -95,7 +105,7 @@ glm::dvec3 VectorMap::at(int x, int y)
 // Append a value to the array
 bool VectorMap::append(glm::dvec3 value)
 {
-    if (this->values.size() >= this->width * this->height)
+    if ((int)this->values.size() >= this->width * this->height)
         return false;
     this->values.push_back(value);
     return true;

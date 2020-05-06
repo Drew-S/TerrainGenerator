@@ -32,7 +32,7 @@ public:
     ~IntensityMap();
 
     // Return an image of the intensity map
-    QImage toImage();
+    QImage toImage(bool print_qimage = true);
 
     // Return a pixmap of the intensity map
     QPixmap toPixmap();

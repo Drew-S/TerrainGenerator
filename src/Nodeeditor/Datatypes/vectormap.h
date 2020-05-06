@@ -27,7 +27,7 @@ public:
     static VectorMap fromIntensityMap(IntensityMap &map);
 
     // Return an image of the vector map
-    QImage toImage();
+    QImage toImage(bool print_qimage = true);
 
     // Return a pixmap of the vector map
     QPixmap toPixmap();

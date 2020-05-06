@@ -10,6 +10,7 @@
 // number of vertices in the x and z coordinates, this results in resolution^2 vertices
 Terrain::Terrain(int resolution)
 {
+    qDebug("Setting up terrain");
     // When created set the supplied resolution
     this->setResolution(resolution);
 
@@ -24,8 +25,8 @@ Terrain::~Terrain() {}
 void Terrain::initializeGL()
 {
     // Attach a height map, used for testing shader code
-    // TODO: remove file height map, use generated height map
 
+    qDebug("Initialize Terrain OpenGL, Creating Default Maps, attaching shaders, and Attaching buffers");
     int res = 1;
 
     QImage height(res, res, QImage::Format_Indexed8);
@@ -50,6 +51,7 @@ void Terrain::initializeGL()
 
     // Initialize the vertex shader
     // TODO: Long term include absolute path management
+    // TODO: Implement shader file exist checks
     this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "assets/shaders/terrain.vert");
 
     // Initialize the frag shader (color)
@@ -159,6 +161,7 @@ static int getIndex(int row, int col, int resolution)
 // and along col. Vertices = resolution^2
 void Terrain::setResolution(int resolution)
 {
+    qDebug("Generating terrain mesh: (%dx%d), %d vertices", resolution, resolution, resolution * resolution);
     // Clear existing vertex data
     this->_vertices.clear();
     this->_indexes.clear();
@@ -194,6 +197,7 @@ void Terrain::setResolution(int resolution)
 // Update the current height map texture with a new height map
 void Terrain::setHeightMap(QImage height_map)
 {
+    qDebug("Updating Height Map");
     delete this->_height;
     this->_height = new QOpenGLTexture(height_map);
     this->_height->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
@@ -203,6 +207,7 @@ void Terrain::setHeightMap(QImage height_map)
 // Update the current normal map texture with a new normal map
 void Terrain::setNormalMap(QImage normal_map)
 {
+    qDebug("Updating Normal Map");
     delete this->_normal;
     this->_normal = new QOpenGLTexture(normal_map);
     this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);

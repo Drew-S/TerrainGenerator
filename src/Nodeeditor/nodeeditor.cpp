@@ -14,6 +14,7 @@
 static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 {
     std::shared_ptr<QtNodes::DataModelRegistry> registry = std::make_shared<QtNodes::DataModelRegistry>();
+    qDebug("Registering Data Models and Data Converters");
 
     registry->registerModel<OutputNode>();
     registry->registerModel<InputTextureNode>();
@@ -36,6 +37,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 // Create a node editor manager
 Nodeeditor::Nodeeditor(QLayout *target)
 {
+    qDebug("Setting up nodeeditor widget");
     // Create a scene and a view, attach models to the scene
     this->_scene = new QtNodes::FlowScene(registerDataModels());
     this->_view = new QtNodes::FlowView(this->_scene);
@@ -63,6 +65,7 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
     // Created node is output and active output is null
     if (node.nodeDataModel()->name() == OutputNode().name() && !this->_active_output)
     {
+        qDebug("Setting active output node");
         // Save pointer to the output node
         this->_active_output = static_cast<OutputNode *>(node.nodeDataModel());
 
@@ -78,6 +81,7 @@ void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
     // If the node is an output node
     if (node.nodeDataModel()->name() == OutputNode().name())
     {
+        qDebug("Updating active output node");
         // Disconnect old listeners
         if (this->_active_output)
         {
@@ -100,6 +104,7 @@ void Nodeeditor::outputComputingStarted() {}
 // TODO: Have this complete a busy indicator
 void Nodeeditor::outputComputingFinished()
 {
+    qDebug("Output node done computing normal map");
     // Inform parents that there are new normal and height maps (main.cpp)
     emit this->outputUpdated(this->getNormalMap(), this->getHeightMap());
 }
@@ -139,11 +144,13 @@ QImage Nodeeditor::getNormalMap()
 // Saves the nodeeditor to a save file
 QJsonObject Nodeeditor::save()
 {
+    qDebug("Saving dataflow diagram");
     return QJsonDocument::fromJson(this->_scene->saveToMemory()).object();
 }
 
 // Loads the nodeeditor from a save file
 void Nodeeditor::load(QJsonObject data)
 {
+    qDebug("Loading dataflow diagram");
     this->_scene->loadFromMemory(QJsonDocument(data).toJson());
 }

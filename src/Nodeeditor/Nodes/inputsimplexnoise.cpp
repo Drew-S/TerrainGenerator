@@ -10,6 +10,7 @@
 // Create a node and attach listeners
 InputSimplexNoiseNode::InputSimplexNoiseNode()
 {
+    qDebug("Creating Input Simplex Noise Node, attaching listeners and UI widget");
     this->_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
 
@@ -80,12 +81,12 @@ std::shared_ptr<QtNodes::NodeData> InputSimplexNoiseNode::outData(QtNodes::PortI
 // TODO: ALL NODES, create render version of calculations for final high res generation
 void InputSimplexNoiseNode::_generate()
 {
+    qDebug("Generating Noise Map");
     // Create a simplex noise generator with parameters
     this->_noise = SimplexNoise(this->_frequency / 1000.0f, 1.0f, 1.99f, this->_persistence);
 
     // Create a vector map to house information
     // TODO: Add support for preview image size control
-    // TODO: Switch to use intensity map
     this->_intensity_map = IntensityMap(256, 256);
     // Generate the "image" with the specified size
     for (int x = 0; x < 256; x++)
@@ -107,13 +108,14 @@ void InputSimplexNoiseNode::_generate()
 
     // Set preview and emit completion of generation
     this->_pixmap = this->_intensity_map.toPixmap();
-    this->_ui.label_pixmap->setPixmap(this->_pixmap.scaled(100, 100, Qt::KeepAspectRatio));
+    this->_ui.label_pixmap->setPixmap(this->_pixmap.scaled(this->_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
     emit this->dataUpdated(0);
 }
 
 // Save the node setup to a Json Object for saving to a file
 QJsonObject InputSimplexNoiseNode::save() const
 {
+    qDebug("Saving Simplex Noise Node");
     QJsonObject data;
     data["name"] = this->name();
     data["octives"] = this->_octives;
@@ -132,6 +134,7 @@ QJsonObject InputSimplexNoiseNode::save() const
 // Restore the nodes setup from a save file (json object)
 void InputSimplexNoiseNode::restore(QJsonObject const &data)
 {
+    qDebug("Restoring Simplex Noise Node");
     // Set storage files
     this->_octives = data["octives"].toDouble();
     this->_frequency = data["frequency"].toDouble();

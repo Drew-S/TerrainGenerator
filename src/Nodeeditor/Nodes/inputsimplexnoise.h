@@ -4,7 +4,7 @@
 
 #include "../Datatypes/intensitymap.h"
 
-#include "ui_SimplexNoise.h"
+#include "ui_SimplexNoiseNode.h"
 
 #include <nodes/NodeDataModel>
 
@@ -72,12 +72,12 @@ private:
     SimplexNoise _noise;
 
     // Adjustment parameters
-    float _octives = 1.0f;
-    float _frequency = 1.0f;
+    float _octives = 8.0f;
+    float _frequency = 5.0f;
     float _persistence = 0.5f;
     QVector3D _offset{0.0f, 0.0f, 0.0f};
 
     // Housing widget and ui
     QWidget *_widget;
-    Ui::SimplexNoiseWidget _ui;
+    Ui::SimplexNoiseNode _ui;
 };

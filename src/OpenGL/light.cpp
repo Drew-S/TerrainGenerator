@@ -87,39 +87,39 @@ QVector3D Light::color()
 }
 
 // Rotates the light around the terrain (turntable)
-float Light::rotateY(float rotation)
+float Light::rotateY(float value)
 {
-    this->_rotation_y += rotation;
+    this->_rotation_y += value;
     return this->_rotation_y;
 }
 
 // Rotates the light over the terrain
-float Light::rotateX(float rotation)
+float Light::rotateX(float value)
 {
-    this->_rotation_x += rotation;
+    this->_rotation_x += value;
     this->_clampRotationX(); // Limits the rotation
     return this->_rotation_x;
 }
 
 // Sets the rotation around the terrain (turntable)
-float Light::setRotationY(float rotation)
+float Light::setRotationY(float value)
 {
-    this->_rotation_y = rotation;
+    this->_rotation_y = value;
     return this->_rotation_y;
 }
 
 // Sets the rotation over the terrain
-float Light::setRotationX(float rotation)
+float Light::setRotationX(float value)
 {
-    this->_rotation_x = rotation;
+    this->_rotation_x = value;
     this->_clampRotationX(); // Limits the rotation
     return this->_rotation_x;
 }
 
 // Set the intensity of the light
-void Light::setIntensity(float intensity)
+void Light::setIntensity(float value)
 {
-    this->_intensity = intensity;
+    this->_intensity = value;
 }
 
 // Set the color of the light
@@ -127,6 +127,7 @@ void Light::setColor(QVector3D color)
 {
     this->_color = color;
 }
+
 // Limits the rotation of the camera over the terrain
 void Light::_clampRotationX()
 {

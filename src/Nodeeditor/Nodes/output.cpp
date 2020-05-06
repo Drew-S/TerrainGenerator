@@ -16,15 +16,14 @@
 // Setup the node
 OutputNode::OutputNode()
 {
+    qDebug("Creating Output Node");
     this->_height_label = new QLabel("Height map");
     this->_height_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_height_label->setFixedSize(80, 80);
-    this->_height_label->setPixmap(QPixmap());
+    this->_height_label->setFixedSize(100, 100);
 
     this->_normal_label = new QLabel("Normal map");
     this->_normal_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_normal_label->setFixedSize(80, 80);
-    this->_normal_label->setPixmap(QPixmap());
+    this->_normal_label->setFixedSize(100, 100);
 
     QVBoxLayout *layout = new QVBoxLayout();
 
@@ -34,7 +33,8 @@ OutputNode::OutputNode()
 
     this->_widget = new QWidget();
     this->_widget->setLayout(layout);
-    this->_widget->setStyleSheet("background-color: rgba(0,0,0,0)");
+    // this->_widget->setAttribute(Qt::WA_NoSystemBackground);
+    this->_widget->setStyleSheet("QWidget { background-color: rgba(0,0,0,0); } QLabel { background-color: rgba(117, 117, 117, 255); border: 1px solid black; }");
 
     QImage normal(1, 1, QImage::Format_Indexed8);
     normal.setColorCount(1);
@@ -130,8 +130,9 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
     // No pixmap, set null image
     else
     {
-        this->_height_label->setPixmap(QPixmap());
-        this->_normal_label->setPixmap(QPixmap());
+
+        this->_height_label->setText("Height map");
+        this->_normal_label->setText("Normal map");
     }
 }
 
@@ -184,6 +185,7 @@ void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 // Save the node for a file
 QJsonObject OutputNode::save() const
 {
+    qDebug("Saving Output Node");
     QJsonObject data;
     data["name"] = this->name();
     return data;
@@ -192,5 +194,6 @@ QJsonObject OutputNode::save() const
 // Restore the node from a file
 void OutputNode::restore(QJsonObject const &data)
 {
+    qDebug("Restore Output Node");
     (void)data;
 }

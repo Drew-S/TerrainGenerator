@@ -8,6 +8,7 @@
 #include <QPoint>
 #include <QPointF>
 #include <QMatrix>
+#include <QDebug>
 
 #include <GL/gl.h>
 
@@ -18,6 +19,7 @@
 // Creates an OpenGL widget (QOpenGLWidget)
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
+    qDebug("Setting up OpenGL widget");
     // Set surface format detail
     QSurfaceFormat fmt;
 
@@ -99,6 +101,7 @@ void OpenGL::initializeGL()
     // glClearColor(...) in plain openGL and c++ is the same as f->glClearColor in QOpenGL
     // QT's currentContext functions produce a generic set of functions that should be compatible with
     // many different versions of openGL independent of the users graphics card (within reason)
+    qDebug("Initializing OpenGL functionality");
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     f->initializeOpenGLFunctions();
 
@@ -271,13 +274,15 @@ void OpenGL::wheelEvent(QWheelEvent *event)
 // When the OpenGL widget is clicked, enable dragging and set the starting point
 void OpenGL::mousePressEvent(QMouseEvent *event)
 {
+    // if (event->button() == Qt::LeftButton)
     this->_prev = event->pos();
 }
 
 // When the mouse moves. Mouse tracking is off = only called if clicked (dragging)
-// TODO: Limit mouse buttons
 void OpenGL::mouseMoveEvent(QMouseEvent *event)
 {
+    if (event->buttons() != Qt::LeftButton)
+        return;
     // Get modifiers (shift key)
     Qt::KeyboardModifiers modifiers = event->modifiers();
 
