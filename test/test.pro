@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-CONFIG += console
+CONFIG += console testcase
 
 QMAKE_CXXFLAGS += -std=c++17
 
@@ -12,6 +12,7 @@ INCLUDEPATH += $$PWD/../lib/nodeeditor/include
 LIBS += -L$$PWD/../lib/nodeeditor/build/lib -lnodes
 
 SOURCES += $$files("*.cpp", true)
+HEADERS += $$files("*.h", true)
 
 SOURCES += ../src/Nodeeditor/Datatypes/intensitymap.cpp \
     ../src/Nodeeditor/Datatypes/vectormap.cpp
