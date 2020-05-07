@@ -43,13 +43,9 @@ IntensityMap VectorMap::toIntensityMap()
 {
     qDebug("Converting Vector Map to Intensity Map");
     IntensityMap map(this->width, this->height);
-    for (int x = 0; x < this->width; x++)
-    {
-        for (int y = 0; y < this->height; y++)
-        {
-            map.append(this->at(x, y).x);
-        }
-    }
+    for (int i = 0; i < this->width * this->height; i++)
+        map.append(this->values[i].x);
+
     return map;
 }
 
@@ -58,13 +54,10 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map)
 {
     qDebug("Converting Intensity Map to Vector Map");
     VectorMap vec(map.width, map.height);
-    for (int x = 0; x < map.width; x++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        for (int y = 0; y < map.height; y++)
-        {
-            double v = map.at(x, y);
-            vec.append(glm::dvec3(v, v, v));
-        }
+        double v = map.values[i];
+        vec.append(glm::dvec3(v, v, v));
     }
     return vec;
 }
