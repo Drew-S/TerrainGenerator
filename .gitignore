@@ -8,6 +8,9 @@ _vimrc_local.vim
 # Compiled build files do not need to be watched
 build/
 lib/
+test/build/
+test/moc/
+test/objects/
 
 .vscode/
 
