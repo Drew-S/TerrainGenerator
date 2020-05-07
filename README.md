@@ -56,26 +56,17 @@ git clone https://github.com/nlohmann/json.git
 **Makefile**:
 ```
 qmake TerrainGenerator.pro
-```
-
-**debug**:
-```
-CONFIG+=debug make
-```
-
-**release**:
-```
 make
 ```
 
 ## Running
 
-**debug**:
 ```
-./build/debug/TerrainGenerator
+./build/TerrainGenerator
 ```
 
-**release**:
+## Unit Test
+
 ```
-./build/release/TerrainGenerator
+./test/build/test
 ```
