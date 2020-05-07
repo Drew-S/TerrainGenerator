@@ -1,6 +1,6 @@
 #include "ui_Main.h"
 
-#include <lib/nodeeditor/include/nodes/ConnectionStyle>
+#include <nodes/ConnectionStyle>
 
 #include "mainwindow.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib/SimplexNoise/src/SimplexNoise.h"
+#include "SimplexNoise.h"
 
 #include "../Datatypes/intensitymap.h"
 

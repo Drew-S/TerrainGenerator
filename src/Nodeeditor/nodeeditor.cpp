@@ -4,8 +4,8 @@
 #include <QJsonDocument>
 #include <QHBoxLayout>
 
-#include <lib/nodeeditor/include/nodes/DataModelRegistry>
-#include <lib/nodeeditor/include/nodes/TypeConverter>
+#include <nodes/DataModelRegistry>
+#include <nodes/TypeConverter>
 
 #include "./Datatypes/pixmap.h"
 #include "./Datatypes/converters.h"
