@@ -67,7 +67,12 @@ double IntensityMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return 0.00;
-    return this->values[y * this->width + x];
+
+    int index = y * this->width + x;
+    if (index >= (int)this->values.size())
+        return 0.00;
+
+    return this->values[index];
 }
 
 // Append a value to the end of the array
@@ -84,7 +89,12 @@ bool IntensityMap::set(int x, int y, double value)
 {
     if (x < 0 || x >= this->width || y < 0 || y > this->height)
         return false;
-    this->values[y * this->width + x] = value;
+
+    int index = y * this->width + x;
+    if (index >= (int)this->values.size())
+        return false;
+
+    this->values[index] = value;
     return true;
 }
 
