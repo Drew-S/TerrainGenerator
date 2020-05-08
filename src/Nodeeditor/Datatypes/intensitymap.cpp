@@ -43,9 +43,9 @@ QImage IntensityMap::toImage(bool print_qimage)
     if (print_qimage)
         qDebug("Converting Intensity map to QImage");
     QImage image(this->width, this->height, QImage::Format_RGBA64);
-    for (int x = 0; x < this->width; x++)
+    for (int y = 0; y < this->height; y++)
     {
-        for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
         {
             double h = this->at(x, y);
             QColor color = QColor::fromRgbF(h, h, h);
@@ -103,9 +103,41 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
 {
     this->width = image.width();
     this->height = image.height();
-    for (int x = 0; x < this->width; x++)
+    switch (channel)
     {
-        for (int y = 0; y < this->height; y++)
+        // Use only the red channel
+    case IntensityMap::RED:
+        qDebug("Converting image with channel red");
+        break;
+
+        // Use only the green channel
+    case IntensityMap::GREEN:
+        qDebug("Converting image with channel green");
+        break;
+
+        // Use only the blue channel
+    case IntensityMap::BLUE:
+        qDebug("Converting image with channel blue");
+        break;
+
+        // Average the red, green, and blue channels
+    case IntensityMap::AVERAGE:
+        qDebug("Converting image with channels averaged");
+        break;
+
+        // Select the smallest of the red, green, and blue channels
+    case IntensityMap::MIN:
+        qDebug("Converting image with minimum channel");
+        break;
+
+        // Select the largest of the red, green, and blue channels
+    case IntensityMap::MAX:
+        qDebug("Converting image with maximum channel");
+        break;
+    }
+    for (int y = 0; y < this->height; y++)
+    {
+        for (int x = 0; x < this->width; x++)
         {
             double c, min, max;
             QColor color = image.pixelColor(x, y);
@@ -113,31 +145,26 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
             {
                 // Use only the red channel
             case IntensityMap::RED:
-                qDebug("Converting image with channel red");
                 this->values.push_back(color.redF());
                 break;
 
                 // Use only the green channel
             case IntensityMap::GREEN:
-                qDebug("Converting image with channel green");
                 this->values.push_back(color.greenF());
                 break;
 
                 // Use only the blue channel
             case IntensityMap::BLUE:
-                qDebug("Converting image with channel blue");
                 this->values.push_back(color.blueF());
                 break;
 
                 // Average the red, green, and blue channels
             case IntensityMap::AVERAGE:
-                qDebug("Converting image with channels averaged");
                 this->values.push_back((color.redF() + color.greenF() + color.blueF()) / 3.00);
                 break;
 
                 // Select the smallest of the red, green, and blue channels
             case IntensityMap::MIN:
-                qDebug("Converting image with minimum channel");
                 min = color.redF();
                 c = color.greenF();
                 if (c < min)
@@ -150,7 +177,6 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
 
                 // Select the largest of the red, green, and blue channels
             case IntensityMap::MAX:
-                qDebug("Converting image with maximum channel");
                 max = color.redF();
                 c = color.greenF();
                 if (c > max)

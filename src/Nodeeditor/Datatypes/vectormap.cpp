@@ -68,9 +68,9 @@ QImage VectorMap::toImage(bool print_qimage)
     if (print_qimage)
         qDebug("Converting Vector Map to QImage");
     QImage image(this->width, this->height, QImage::Format_RGBA64);
-    for (int x = 0; x < this->width; x++)
+    for (int y = 0; y < this->height; y++)
     {
-        for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
         {
             glm::dvec3 pixel = this->at(x, y);
             QColor color = QColor::fromRgbF(pixel.x, pixel.y, pixel.z);
@@ -118,9 +118,9 @@ void VectorMap::_saveImage(QImage image)
 {
     this->width = image.width();
     this->height = image.height();
-    for (int x = 0; x < this->width; x++)
+    for (int y = 0; y < this->height; y++)
     {
-        for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
         {
             QColor color = image.pixelColor(x, y);
             this->values.push_back(glm::dvec3(color.redF(), color.greenF(), color.blueF()));
