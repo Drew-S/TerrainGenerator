@@ -64,8 +64,7 @@ private slots:
 
 private:
     // Generates a pixmap
-    void
-    _generate();
+    void _generate();
     // Houses the pixmap to be passed
     IntensityMap _intensity_map;
     QPixmap _pixmap;
