@@ -3,6 +3,8 @@ TEMPLATE = app
 # INCLUDEPATH += .
 CONFIG += debug
 
+TARGET = TerrainGenerator
+
 CONFIG += static
 # Get all the source code files recursively from the src directory
 SOURCES += $$files("*.cpp", true)
