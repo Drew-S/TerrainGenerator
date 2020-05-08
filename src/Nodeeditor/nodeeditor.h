@@ -12,6 +12,7 @@
 #include "./Nodes/output.h"
 #include "./Nodes/inputtexture.h"
 #include "./Nodes/inputsimplexnoise.h"
+#include "./Nodes/inputdrawingnode.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
@@ -46,9 +47,12 @@ signals:
     void outputUpdated(QImage normal_map, QImage height_map);
 
 private:
+    void _updatePropertieNodesShared(QWidget *shared);
+    void _updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap = false);
     QtNodes::FlowScene *_scene;
     QtNodes::FlowView *_view;
     // Selected output node to obtain normal and height map from
     QWidget *_properties;
+    QWidget *_properties_node = nullptr;
     OutputNode *_active_output = nullptr;
 };

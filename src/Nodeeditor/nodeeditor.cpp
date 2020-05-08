@@ -17,9 +17,10 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     std::shared_ptr<QtNodes::DataModelRegistry> registry = std::make_shared<QtNodes::DataModelRegistry>();
     qDebug("Registering Data Models and Data Converters");
 
-    registry->registerModel<OutputNode>();
-    registry->registerModel<InputTextureNode>();
-    registry->registerModel<InputSimplexNoiseNode>();
+    registry->registerModel<OutputNode>("Output");
+    registry->registerModel<InputTextureNode>("Input");
+    registry->registerModel<InputSimplexNoiseNode>("Input");
+    registry->registerModel<InputDrawingNode>("Input");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -61,6 +62,48 @@ Nodeeditor::~Nodeeditor()
     delete this->_active_output;
 }
 
+// Swap out or replace the node's property node
+void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
+{
+    if (this->_properties_node)
+    {
+        this->_properties->layout()->removeWidget(this->_properties_node);
+        this->_properties_node->hide();
+        this->_properties_node->setParent(nullptr);
+    }
+
+    this->_properties->layout()->addWidget(shared);
+    this->_properties_node = shared;
+    this->_properties_node->show();
+}
+
+// Handler for placing nodes in the properties node if the node has support
+void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
+{
+    QString name = node->name();
+    if (name == InputSimplexNoiseNode().name())
+    {
+        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node);
+
+        QWidget *shared = selected->sharedWidget();
+        this->_updatePropertieNodesShared(shared);
+    }
+    else if (name == InputDrawingNode().name())
+    {
+        InputDrawingNode *selected = static_cast<InputDrawingNode *>(node);
+
+        QWidget *shared = selected->sharedWidget();
+        this->_updatePropertieNodesShared(shared);
+    }
+    else if (swap)
+    {
+        this->_properties->layout()->removeWidget(this->_properties_node);
+        this->_properties_node->hide();
+        this->_properties_node->setParent(nullptr);
+        this->_properties_node = nullptr;
+    }
+}
+
 // When a node is created, if it is an output node and the current active output node
 // is null, set the active output to the newly created output node.
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
@@ -77,12 +120,7 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
     }
-    if (name == InputSimplexNoiseNode().name())
-    {
-        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node.nodeDataModel());
-        QWidget *shared = selected->sharedWidget();
-        this->_properties->layout()->addWidget(shared);
-    }
+    this->_updatePropertiesNode(node.nodeDataModel());
 }
 
 // When a node is double clicked, if it is an output node update the active output node
@@ -105,12 +143,7 @@ void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
         QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
     }
-    if (name == InputSimplexNoiseNode().name())
-    {
-        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node.nodeDataModel());
-        QWidget *shared = selected->sharedWidget();
-        this->_properties->layout()->addWidget(shared);
-    }
+    this->_updatePropertiesNode(node.nodeDataModel(), true);
 }
 
 // When the output node begins calculating
