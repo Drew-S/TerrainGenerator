@@ -11,6 +11,7 @@ lib/
 test/build/
 test/moc/
 test/objects/
+test/target_wrapper.sh
 
 .vscode/
 

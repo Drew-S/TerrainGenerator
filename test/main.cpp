@@ -10,14 +10,14 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setAttribute(Qt::AA_Use96Dpi, true);
 
-    int status;
-    auto ASSERT_TEST = [&status, argc, argv](QObject *object) {
-        status |= QTest::qExec(object, argc, argv);
+    int failed;
+    auto ASSERT_TEST = [&failed, argc, argv](QObject *object) {
+        failed += QTest::qExec(object, argc, argv);
         delete object;
     };
 
     ASSERT_TEST(new IntensityMap_Test());
     ASSERT_TEST(new VectorMap_Test());
 
-    return status;
+    return 0;
 }
