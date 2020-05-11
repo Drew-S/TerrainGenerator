@@ -3,19 +3,55 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QRegion>
+#include <QFileInfo>
+#include <QMouseEvent>
 
 #include "../Datatypes/pixmap.h"
 
 // Setup the node
 InputTextureNode::InputTextureNode()
 {
+    this->_global = GlobalData::getInstance();
     qDebug("Creating Input Texture Node, attaching UI");
     // Create an image container
-    this->_widget = new QLabel("Select image");
-    this->_widget->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_widget->setStyleSheet("QLabel{ background-color: rgba(117, 117, 117, 255); border: 1px solid black; }");
-    this->_widget->setFixedSize(100, 100);
-    this->_widget->installEventFilter(this);
+    this->_widget = new QWidget();
+    this->_shared = new QWidget();
+    this->_dialogue = new QDialog();
+
+    this->_new_texture_ui.setupUi(this->_dialogue);
+    this->_drawing_ui.setupUi(this->_shared);
+    this->_ui.setupUi(this->_widget);
+
+    QObject::connect(this->_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
+    QObject::connect(this->_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::exec);
+    QObject::connect(this->_new_texture_ui.resolution, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        this->_new_file_res = value;
+    });
+    QObject::connect(this->_new_texture_ui.ok_button, &QPushButton::clicked, this, &InputTextureNode::_newFileAccept);
+    QObject::connect(this->_new_texture_ui.cancel_button, &QPushButton::clicked, this->_dialogue, &QDialog::reject);
+
+    QObject::connect(this->_drawing_ui.brush_size, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
+        this->_brush = value;
+        this->_stencils->stencil(0)->setBrush(this->_brush);
+    });
+    QObject::connect(this->_drawing_ui.flow_rate, &QSlider::valueChanged, [this](int value) {
+        this->_flow = (double)value;
+        this->_drawing_ui.flow_rate_label->setText(QString::number(value));
+    });
+    QObject::connect(this->_drawing_ui.color_strength, &QSlider::valueChanged, [this](int value) {
+        this->_color.setRed(value);
+        this->_color.setGreen(value);
+        this->_color.setBlue(value);
+        this->_stencils->stencil(0)->setColor(this->_color);
+    });
+    QObject::connect(this->_drawing_ui.opacity, &QSlider::valueChanged, [this](int value) {
+        this->_color.setAlpha(value);
+        this->_stencils->stencil(0)->setColor(this->_color);
+    });
+
+    this->_drawing_ui.drawing_surface->installEventFilter(this);
+
+    this->_stencils = StencilList::getInstance();
 }
 
 InputTextureNode::~InputTextureNode() {}
@@ -40,6 +76,12 @@ void InputTextureNode::name(QString name)
 QWidget *InputTextureNode::embeddedWidget()
 {
     return this->_widget;
+}
+
+// The image label that is shared with the properties
+QWidget *InputTextureNode::sharedWidget()
+{
+    return this->_shared;
 }
 
 // Needed for NodeDataModel, not sure where it is used
@@ -76,40 +118,46 @@ std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex 
     return std::make_shared<VectorMapData>(this->_color_map);
 }
 
-// When clicking on the node, if user clicks the QLabel image container
-// open a file select dialog and select a file.
-// If the node is resized, updated the image size
-bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
+void InputTextureNode::_loadFile()
 {
-    if (object == this->_widget)
-    {
-        // Click to select an image
-        if (event->type() == QEvent::MouseButtonPress)
-        {
-            // Select a texture file
+    this->_filename = QFileDialog::getOpenFileName(
+        nullptr,
+        tr("Open Image"),
+        "/home/drew/Documents/School/Active/COMP_495/project/assets/textures",
+        // QDir::homePath(),
+        tr("Image Files (*.png *.jpg)"));
 
-            this->_filename = QFileDialog::getOpenFileName(
-                nullptr,
-                tr("Open Image"),
-                "/home/drew/Documents/School/Active/COMP_495/project/assets/textures",
-                // QDir::homePath(),
-                tr("Image Files (*.png *.jpg)"));
+    this->_generate();
+}
 
-            this->_generate();
-            return true;
-        }
-        // Resize the selecting pixmap
-        else if (event->type() == QEvent::Resize)
-        {
-            if (!this->_pixmap.isNull())
-            {
-                // Scale the pixmap to fill the window
-                this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
-            }
-            return QObject::eventFilter(object, event);
-        }
-    }
-    return false;
+void InputTextureNode::_newFileAccept()
+{
+    this->_dialogue->accept();
+    this->_pixmap = new QPixmap(this->_new_file_res, this->_new_file_res);
+    this->_painter = new QPainter(this->_pixmap);
+    this->_painter->setBrush(QBrush(QColor(255, 255, 255, 255)));
+    this->_painter->drawRect(QRect(0, 0, this->_new_file_res, this->_new_file_res));
+
+    this->_color_map = VectorMap(this->_new_file_res, this->_new_file_res);
+    this->_new_file = true;
+    this->_filename = "new_texture.png";
+    this->_setPixmaps();
+
+    emit this->dataUpdated(0);
+}
+
+void InputTextureNode::_setPixmaps()
+{
+    this->_drawing_ui.drawing_surface->setPixmap(
+        this->_pixmap->scaled(
+            this->_drawing_ui.drawing_surface->width(),
+            this->_drawing_ui.drawing_surface->height(),
+            Qt::KeepAspectRatio));
+    this->_ui.texture_display->setPixmap(
+        this->_pixmap->scaled(
+            this->_ui.texture_display->width(),
+            this->_ui.texture_display->height(),
+            Qt::KeepAspectRatio));
 }
 
 void InputTextureNode::_generate()
@@ -118,16 +166,23 @@ void InputTextureNode::_generate()
     // a select image message
     if (this->_filename == "")
     {
-        this->_widget->setText("Click to load image");
+        this->_ui.texture_display->setText("No Image");
+        this->_drawing_ui.drawing_surface->setText("No Image");
     }
 
     // If a file is selected set the image preview
     else
     {
         qDebug("Setting input texture");
-        this->_pixmap = QPixmap(this->_filename);
-        this->_color_map = VectorMap(this->_pixmap);
-        this->_widget->setPixmap(this->_pixmap.scaled(this->_widget->width(), this->_widget->height(), Qt::KeepAspectRatio));
+        this->_pixmap = new QPixmap(this->_filename);
+        this->_painter = new QPainter(this->_pixmap);
+        this->_painter->setBrush(QBrush(QColor(255, 255, 255, 255)));
+        this->_painter->drawRect(QRect(0, 0, this->_new_file_res, this->_new_file_res));
+
+        this->_color_map = VectorMap(this->_pixmap->scaled(this->_pixmap->width(), this->_pixmap->height(), Qt::KeepAspectRatio));
+        this->_ui.filepath->setText(QFileInfo(this->_filename).fileName());
+        this->_ui.filepath->setToolTip(this->_filename);
+        this->_setPixmaps();
     }
 
     // Inform that data is updated so pipline is updated
@@ -141,13 +196,77 @@ QJsonObject InputTextureNode::save() const
     QJsonObject data;
     data["name"] = this->name();
     data["image"] = this->_filename;
+    data["image_generated"] = this->_new_file;
+    if (this->_new_file)
+        this->_pixmap->save(this->_global->tmpDir() + "/" + this->_filename);
     return data;
 }
 
-// Restore the node from a save file
+// Restore the node from a save
 void InputTextureNode::restore(QJsonObject const &data)
 {
     qDebug("Restoring Input Texture Node");
     this->_filename = data["image"].toString();
     this->_generate();
+}
+
+bool InputTextureNode::eventFilter(QObject *object, QEvent *event)
+{
+    if (object == this->_drawing_ui.drawing_surface && this->_filename != "")
+    {
+        if (event->type() == QEvent::MouseButtonRelease)
+        {
+            this->_prev_first = false;
+            return true;
+        }
+        if (!(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseMove))
+            return false;
+
+        QMouseEvent *mouse_event = dynamic_cast<QMouseEvent *>(event);
+
+        if (mouse_event->buttons() != Qt::LeftButton)
+            return false;
+
+        QPointF pos = mouse_event->localPos();
+        pos.setX(pos.x() * this->_pixmap->width() / 128.00);
+        pos.setY(pos.y() * this->_pixmap->width() / 128.00);
+
+        if (!this->_prev_first)
+        {
+            this->_prev_first = true;
+            this->_prev = pos;
+            this->_stencils->stencil(0)->draw(this->_painter, pos);
+
+            this->_drawing_ui.drawing_surface->setPixmap(this->_pixmap->scaled(128, 128, Qt::KeepAspectRatio));
+
+            this->_ui.texture_display->setPixmap(
+                this->_pixmap->scaled(
+                    this->_ui.texture_display->width(),
+                    this->_ui.texture_display->height(),
+                    Qt::KeepAspectRatio));
+            this->_color_map = VectorMap(this->_pixmap->scaled(this->_pixmap->width(), this->_pixmap->height(), Qt::KeepAspectRatio));
+
+            emit this->dataUpdated(0);
+            return true;
+        }
+        else if (QLineF(this->_prev, pos).length() >= 101.00 - this->_flow)
+        {
+            this->_stencils->stencil(0)->draw(this->_painter, pos);
+
+            this->_drawing_ui.drawing_surface->setPixmap(this->_pixmap->scaled(128, 128, Qt::KeepAspectRatio));
+
+            this->_ui.texture_display->setPixmap(
+                this->_pixmap->scaled(
+                    this->_ui.texture_display->width(),
+                    this->_ui.texture_display->height(),
+                    Qt::KeepAspectRatio));
+            this->_color_map = VectorMap(this->_pixmap->scaled(this->_pixmap->width(), this->_pixmap->height(), Qt::KeepAspectRatio));
+
+            this->_prev = pos;
+
+            emit this->dataUpdated(0);
+            return true;
+        }
+    }
+    return false;
 }
