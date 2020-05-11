@@ -12,7 +12,6 @@
 #include "./Nodes/output.h"
 #include "./Nodes/inputtexture.h"
 #include "./Nodes/inputsimplexnoise.h"
-#include "./Nodes/inputdrawingnode.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
