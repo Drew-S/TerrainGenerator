@@ -13,7 +13,7 @@ VectorMap::VectorMap(int width, int height)
 }
 
 // Set size and values from a 1D vector array
-VectorMap::VectorMap(int width, int height, std::vector<glm::dvec3> values)
+VectorMap::VectorMap(int width, int height, std::vector<glm::dvec4> values)
 {
     qDebug("Creating Vector Map with data: (%dx%d), %d pixels set", width, height, width * height);
     this->width = width;
@@ -50,14 +50,31 @@ IntensityMap VectorMap::toIntensityMap()
 }
 
 // Create vector map from an intensity map
-VectorMap VectorMap::fromIntensityMap(IntensityMap &map)
+VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, VectorMap::ColorMode mode)
 {
     qDebug("Converting Intensity Map to Vector Map");
     VectorMap vec(map.width, map.height);
     for (int i = 0; i < map.width * map.height; i++)
     {
         double v = map.values[i];
-        vec.append(glm::dvec3(v, v, v));
+        switch (mode)
+        {
+        case VectorMap::APPLY:
+            vec.append(color * v);
+            break;
+        case VectorMap::OVERRIDE_COLOR:
+            vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, color.a));
+            break;
+        case VectorMap::OVERRIDE_MAP:
+            vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, v));
+            break;
+        case VectorMap::MASK:
+            vec.append(glm::dvec4(color.x, color.y, color.z, v));
+            break;
+        case VectorMap::MASK_ALPHA:
+            vec.append(glm::dvec4(color.x, color.y, color.z, v * color.a));
+            break;
+        }
     }
     return vec;
 }
@@ -72,8 +89,8 @@ QImage VectorMap::toImage(bool print_qimage)
     {
         for (int x = 0; x < this->width; x++)
         {
-            glm::dvec3 pixel = this->at(x, y);
-            QColor color = QColor::fromRgbF(pixel.x, pixel.y, pixel.z);
+            glm::dvec4 pixel = this->at(x, y);
+            QColor color = QColor::fromRgbF(pixel.r, pixel.g, pixel.b, pixel.a);
             image.setPixelColor(x, y, color);
         }
     }
@@ -88,15 +105,15 @@ QPixmap VectorMap::toPixmap()
 }
 
 // Get a value at a specific index
-glm::dvec3 VectorMap::at(int x, int y)
+glm::dvec4 VectorMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
-        return glm::dvec3(0.00, 0.00, 0.00);
+        return glm::dvec4(0.00, 0.00, 0.00, 0.00);
     return this->values[y * this->width + x];
 }
 
 // Append a value to the array
-bool VectorMap::append(glm::dvec3 value)
+bool VectorMap::append(glm::dvec4 value)
 {
     if ((int)this->values.size() >= this->width * this->height)
         return false;
@@ -105,7 +122,7 @@ bool VectorMap::append(glm::dvec3 value)
 }
 
 // Set a specific value for an index
-bool VectorMap::set(int x, int y, glm::dvec3 value)
+bool VectorMap::set(int x, int y, glm::dvec4 value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
@@ -123,7 +140,7 @@ void VectorMap::_saveImage(QImage image)
         for (int x = 0; x < this->width; x++)
         {
             QColor color = image.pixelColor(x, y);
-            this->values.push_back(glm::dvec3(color.redF(), color.greenF(), color.blueF()));
+            this->values.push_back(glm::dvec4(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
         }
     }
 }

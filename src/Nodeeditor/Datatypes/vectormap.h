@@ -6,7 +6,7 @@
 #include <QPixmap>
 #include <QColor>
 
-#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "intensitymap.h"
 
@@ -14,17 +14,28 @@
 class VectorMap
 {
 public:
+    enum ColorMode
+    {
+        APPLY,
+        OVERRIDE_COLOR,
+        OVERRIDE_MAP,
+        MASK,
+        MASK_ALPHA
+    };
     // Create map from a variety of sources or to generate
     VectorMap();
     VectorMap(int width, int height);
-    VectorMap(int width, int height, std::vector<glm::dvec3> values);
+    VectorMap(int width, int height, std::vector<glm::dvec4> values);
     VectorMap(QImage image);
     VectorMap(QPixmap image);
     ~VectorMap();
 
     // Converters to create from/to an intensity map
     IntensityMap toIntensityMap();
-    static VectorMap fromIntensityMap(IntensityMap &map);
+    static VectorMap fromIntensityMap(
+        IntensityMap &map,
+        glm::dvec4 color = glm::dvec4(1.00, 1.00, 1.00, 1.00),
+        VectorMap::ColorMode mode = VectorMap::APPLY);
 
     // Return an image of the vector map
     QImage toImage(bool print_qimage = true);
@@ -33,18 +44,18 @@ public:
     QPixmap toPixmap();
 
     // Get a specific value
-    glm::dvec3 at(int x, int y);
+    glm::dvec4 at(int x, int y);
 
     // Append a value (for filling with generated data) (bool whether can/successful)
-    bool append(glm::dvec3 value);
+    bool append(glm::dvec4 value);
 
     // Set a specific pixel (bool whether can/successful)
-    bool set(int x, int y, glm::dvec3 value);
+    bool set(int x, int y, glm::dvec4 value);
 
     // Storage of the vector map data
     int width;
     int height;
-    std::vector<glm::dvec3> values;
+    std::vector<glm::dvec4> values;
 
 private:
     // Used to convert image to vector map
