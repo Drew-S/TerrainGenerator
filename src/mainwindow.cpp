@@ -34,13 +34,10 @@ using json = nlohmann::json;
 
 MainWindow::MainWindow()
 {
-    this->_packed_files = new QTemporaryDir(QDir::tempPath() + "/TerrainGenerator_XXXXXX");
-    qDebug("Using temp directory: %s", qPrintable(this->_packed_files->path()));
+    this->_global = GlobalData::getInstance();
+    qDebug("Using temp directory: %s", qPrintable(this->_global->tmpDir()));
 }
-MainWindow::~MainWindow()
-{
-    delete this->_packed_files;
-}
+MainWindow::~MainWindow() {}
 
 // Setup is a function used to setup the application,
 // Connect to ui elements and controls and link sub components
@@ -62,10 +59,10 @@ void MainWindow::setup(Ui::MainWindow *ui)
     this->_main_ui->splitter_top_bottom->setSizes({300, 150});
 
     // Create a save as dialog and setup it ui
-    this->_save_as_dialog = new QDialog(this);
+    this->_save_as_dialogue = new QDialog(this);
 
     this->_save_ui = new Ui::SaveAsDialogue();
-    this->_save_ui->setupUi(this->_save_as_dialog);
+    this->_save_ui->setupUi(this->_save_as_dialogue);
 
     // Set output directory default label
     this->_save_ui->directory_label->setText(QDir::homePath());
@@ -78,7 +75,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
 
     // Connect the ok button to save as to write file. Connect cancel button to close the dialogue
     QObject::connect(this->_save_ui->button_box, &QDialogButtonBox::accepted, this, &MainWindow::_saveAsAccept);
-    QObject::connect(this->_save_ui->button_box, &QDialogButtonBox::rejected, this->_save_as_dialog, &QDialog::reject);
+    QObject::connect(this->_save_ui->button_box, &QDialogButtonBox::rejected, this->_save_as_dialogue, &QDialog::reject);
     QObject::connect(this->_save_ui->pack_files_check_box, &QCheckBox::clicked, this, &MainWindow::_saveAsTogglePack);
 }
 
@@ -132,7 +129,7 @@ void MainWindow::_saveAsAccept()
         if (!zip.open(QuaZip::mdAdd))
         {
             qCritical("Unable to open up: '%s' for saving", qPrintable(filename));
-            this->_save_as_dialog->reject();
+            this->_save_as_dialogue->reject();
             return;
         }
 
@@ -205,7 +202,7 @@ void MainWindow::_saveAsAccept()
         {
             qCritical("Unable to open zip data file for writing");
             zip.close();
-            this->_save_as_dialog->reject();
+            this->_save_as_dialogue->reject();
             return;
         }
 
@@ -217,13 +214,13 @@ void MainWindow::_saveAsAccept()
         qDebug("Saving completed successfully");
 
         // Close the dialogue
-        this->_save_as_dialog->accept();
+        this->_save_as_dialogue->accept();
     }
     else
     {
         qInfo("Cannot save, not enough/invalid information");
         // TODO: UI validation information
-        this->_save_as_dialog->reject();
+        this->_save_as_dialogue->reject();
     }
 }
 
@@ -231,7 +228,7 @@ void MainWindow::_saveAsAccept()
 void MainWindow::saveAs()
 {
     qDebug("Open saving dialogue");
-    this->_save_as_dialog->exec();
+    this->_save_as_dialogue->exec();
 }
 
 // Load data from a project file
@@ -301,7 +298,7 @@ void MainWindow::load()
             QByteArray image_file_data = file.readAll();
 
             // Filename with temp path /tmp/TerrainGenerator_XXXXXX/file.png
-            std::string temp_image_file = this->_packed_files->path().toStdString() + "/" + zip.getCurrentFileName().toStdString();
+            std::string temp_image_file = this->_global->tmpDir().toStdString() + "/" + zip.getCurrentFileName().toStdString();
             file.close();
 
             // Write image to temp file
@@ -326,7 +323,7 @@ void MainWindow::load()
             {
                 QString image = settings["nodes"]["nodes"][i]["model"].value("image", "").c_str();
 
-                settings["nodes"]["nodes"][i]["model"]["image"] = this->_packed_files->path().toStdString() + "/" + image.toStdString();
+                settings["nodes"]["nodes"][i]["model"]["image"] = this->_global->tmpDir().toStdString() + "/" + image.toStdString();
             }
         }
     }

@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include "global.h"
+
 #include "ui_Main.h"
 #include "ui_SaveAsDialogue.h"
 
@@ -9,8 +11,6 @@
 #include "OpenGL/opengl.h"
 
 #include <QDialog>
-#include <QDir>
-#include <QTemporaryDir>
 
 // Class that manages the main window, controls save/load from file
 class MainWindow : public QMainWindow
@@ -36,7 +36,6 @@ private:
     QString _save_as_filename = "";
     QString _save_as_directory = QDir::homePath();
     bool _save_as_pack = false;
-    QTemporaryDir *_packed_files;
 
     // Containers for main componenets of application
     Nodeeditor *_editor;
@@ -46,5 +45,6 @@ private:
     Ui::MainWindow *_main_ui;
     Ui::SaveAsDialogue *_save_ui;
 
-    QDialog *_save_as_dialog;
+    QDialog *_save_as_dialogue;
+    GlobalData *_global;
 };
