@@ -1,6 +1,6 @@
 # Defines the output of the built code (in this case an application, not a library or plugin)
 TEMPLATE = app
-# INCLUDEPATH += .
+INCLUDEPATH += .
 CONFIG += debug
 
 TARGET = TerrainGenerator
