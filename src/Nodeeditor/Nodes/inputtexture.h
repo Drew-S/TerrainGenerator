@@ -12,10 +12,8 @@
 
 #include "../Datatypes/vectormap.h"
 
-#include "./Stencil/stencil.h"
-#include "./Stencil/stencillist.h"
-
-#include "../global.h"
+#include "Globals/texturelist.h"
+#include "Globals/settings.h"
 
 #include "ui_InputTextureNode.h"
 #include "ui_NewTextureDialogue.h"
@@ -60,39 +58,28 @@ public:
     // Needed for all nodes, even if there are no inputs
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
-protected:
-    bool eventFilter(QObject *object, QEvent *event) override;
+public slots:
+    void textureUpdated();
 
 private slots:
     void _loadFile();
     void _newFileAccept();
 
+    // TODO: Move drawing to its own UI
 private:
-    void _generate();
     void _setPixmaps();
     // The selected image
     bool _new_file = false;
     int _new_file_res = 1024;
-    QPixmap *_pixmap;
-    QString _filename = "";
-    VectorMap _color_map{0, 0};
 
-    double _brush = 8.00;
-    double _flow = 99.0;
-    QColor _color;
+    Texture *_texture = nullptr;
+    int _texture_index = -1;
 
-    StencilList *_stencils;
-    QPainter *_painter;
-
-    bool _prev_first = false;
-    QPointF _prev;
-
-    // The embedded widget
+    // The embedded widgets
     Ui::InputTextureNode _ui;
+    Ui::InputTextureNode _shared_ui;
     Ui::NewTextureDialogue _new_texture_ui;
-    Ui::InputDrawingNodeWidget _drawing_ui;
     QWidget *_widget;
     QWidget *_shared;
     QDialog *_dialogue;
-    GlobalData *_global;
 };
