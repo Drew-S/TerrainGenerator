@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <QColor>
 #include <QPointF>
 #include <QLineF>
@@ -7,7 +9,7 @@
 #include <QIcon>
 #include <QPainter>
 
-#include "../../Datatypes/intensitymap.h"
+#include "../Nodeeditor/Datatypes/intensitymap.h"
 
 class Stencil
 {
@@ -18,6 +20,7 @@ public:
     ~Stencil();
 
     void setColor(QColor color);
+    void setAlpha(double value);
     void setBrush(double brush);
     void draw(QPainter *painter, QPointF pos);
 
@@ -34,4 +37,19 @@ private:
     IntensityMap _stencil;
     QPixmap _pixmap;
     QIcon _icon;
+};
+
+class StencilList
+{
+public:
+    static StencilList *getInstance();
+    ~StencilList();
+    Stencil *stencil(int index);
+    int count();
+
+private:
+    StencilList();
+    static bool _instance;
+    static StencilList *_single;
+    std::vector<Stencil> _stencils;
 };
