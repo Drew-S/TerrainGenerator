@@ -25,6 +25,7 @@ public:
     // Create map from a variety of sources or to generate
     VectorMap();
     VectorMap(int width, int height);
+    VectorMap(int width, int height, glm::dvec4 fill);
     VectorMap(int width, int height, std::vector<glm::dvec4> values);
     VectorMap(QImage image);
     VectorMap(QPixmap image);
@@ -43,6 +44,9 @@ public:
     // Return a pixmap of the vector map
     QPixmap toPixmap();
 
+    // Return vector map scaled via image (linear interpolation)
+    VectorMap scaled(int width, int height);
+
     // Get a specific value
     glm::dvec4 at(int x, int y);
 
@@ -60,4 +64,5 @@ public:
 private:
     // Used to convert image to vector map
     void _saveImage(QImage image);
+    glm::dvec4 _fill{0.00, 0.00, 0.00, 0.00};
 };

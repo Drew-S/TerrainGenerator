@@ -25,6 +25,7 @@ public:
     // Create map from a variety of sources or to generate
     IntensityMap();
     IntensityMap(int width, int height);
+    IntensityMap(int width, int height, double fill);
     IntensityMap(int width, int height, std::vector<double> values);
     IntensityMap(QImage image, IntensityMap::Channel channel);
     IntensityMap(QPixmap image, IntensityMap::Channel channel);
@@ -36,6 +37,9 @@ public:
 
     // Return a pixmap of the intensity map
     QPixmap toPixmap();
+
+    // Return intensity map scaled via image (linear interpolation)
+    IntensityMap scaled(int width, int height);
 
     // Get a specific value
     double at(int x, int y);
@@ -54,4 +58,5 @@ public:
 private:
     // Used to convert image to intensity map
     void _saveImage(QImage image, IntensityMap::Channel channel);
+    double _fill = 0.00;
 };

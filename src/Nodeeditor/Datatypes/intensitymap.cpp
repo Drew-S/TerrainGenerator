@@ -12,6 +12,15 @@ IntensityMap::IntensityMap(int width, int height)
     this->height = height;
 }
 
+// Set initial size with a fill value
+IntensityMap::IntensityMap(int width, int height, double fill)
+{
+    qDebug("Creating Intensity Map with only size set: (%dx%d)", width, height);
+    this->width = width;
+    this->height = height;
+    this->_fill = fill;
+}
+
 // Set size and values from a 1D vector array
 IntensityMap::IntensityMap(int width, int height, std::vector<double> values)
 {
@@ -62,16 +71,21 @@ QPixmap IntensityMap::toPixmap()
     return QPixmap::fromImage(this->toImage(false));
 }
 
+// Get a value at a specific index, returns the fill color if beyond bounds
+// or empty pixels
+IntensityMap IntensityMap::scaled(int width, int height)
+{
+    QImage image = this->toImage().scaled(width, height);
+    return IntensityMap(image, IntensityMap::AVERAGE);
+}
+
 // Get a value a specific index (clamps to 0.00)
 double IntensityMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
-        return 0.00;
+        return this->_fill;
 
     int index = y * this->width + x;
-    if (index >= (int)this->values.size())
-        return 0.00;
-
     return this->values[index];
 }
 
@@ -87,14 +101,10 @@ bool IntensityMap::append(double value)
 // Set a specific value for an index
 bool IntensityMap::set(int x, int y, double value)
 {
-    if (x < 0 || x >= this->width || y < 0 || y > this->height)
+    if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
 
-    int index = y * this->width + x;
-    if (index >= (int)this->values.size())
-        return false;
-
-    this->values[index] = value;
+    this->values[y * this->width + x] = value;
     return true;
 }
 

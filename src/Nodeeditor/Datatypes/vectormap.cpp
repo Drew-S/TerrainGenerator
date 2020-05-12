@@ -12,6 +12,15 @@ VectorMap::VectorMap(int width, int height)
     this->height = height;
 }
 
+// Set initial size with a specificied fill color
+VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
+{
+    qDebug("Creating Vector Map with only size set: (%dx%d)", width, height);
+    this->_fill = fill;
+    this->width = width;
+    this->height = height;
+}
+
 // Set size and values from a 1D vector array
 VectorMap::VectorMap(int width, int height, std::vector<glm::dvec4> values)
 {
@@ -43,8 +52,11 @@ IntensityMap VectorMap::toIntensityMap()
 {
     qDebug("Converting Vector Map to Intensity Map");
     IntensityMap map(this->width, this->height);
-    for (int i = 0; i < this->width * this->height; i++)
-        map.append(this->values[i].x);
+    for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
+            map.append(this->at(x, y).z);
+
+    qDebug("Completed conversion");
 
     return map;
 }
@@ -54,26 +66,29 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, Vecto
 {
     qDebug("Converting Intensity Map to Vector Map");
     VectorMap vec(map.width, map.height);
-    for (int i = 0; i < map.width * map.height; i++)
+    for (int y = 0; y < map.height; y++)
     {
-        double v = map.values[i];
-        switch (mode)
+        for (int x = 0; x < map.width; x++)
         {
-        case VectorMap::APPLY:
-            vec.append(color * v);
-            break;
-        case VectorMap::OVERRIDE_COLOR:
-            vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, color.a));
-            break;
-        case VectorMap::OVERRIDE_MAP:
-            vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, v));
-            break;
-        case VectorMap::MASK:
-            vec.append(glm::dvec4(color.x, color.y, color.z, v));
-            break;
-        case VectorMap::MASK_ALPHA:
-            vec.append(glm::dvec4(color.x, color.y, color.z, v * color.a));
-            break;
+            double v = map.at(x, y);
+            switch (mode)
+            {
+            case VectorMap::APPLY:
+                vec.append(color * v);
+                break;
+            case VectorMap::OVERRIDE_COLOR:
+                vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, color.a));
+                break;
+            case VectorMap::OVERRIDE_MAP:
+                vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, v));
+                break;
+            case VectorMap::MASK:
+                vec.append(glm::dvec4(color.x, color.y, color.z, v));
+                break;
+            case VectorMap::MASK_ALPHA:
+                vec.append(glm::dvec4(color.x, color.y, color.z, v * color.a));
+                break;
+            }
         }
     }
     return vec;
@@ -104,11 +119,22 @@ QPixmap VectorMap::toPixmap()
     return QPixmap::fromImage(this->toImage(false));
 }
 
-// Get a value at a specific index
+VectorMap VectorMap::scaled(int width, int height)
+{
+    QImage image = this->toImage().scaled(width, height);
+    return VectorMap(image);
+}
+
+// Get a value at a specific index, returns the fill color if beyond bounds
+// or empty pixels
 glm::dvec4 VectorMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
-        return glm::dvec4(0.00, 0.00, 0.00, 0.00);
+        return this->_fill;
+    int index = y * this->width + x;
+    if (index >= (int)this->values.size())
+        return this->_fill;
+
     return this->values[y * this->width + x];
 }
 
@@ -126,7 +152,12 @@ bool VectorMap::set(int x, int y, glm::dvec4 value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
-    this->values[y * this->width + x] = value;
+    int index = y * this->width + x;
+    if (index >= (int)this->values.size())
+        for (int i = (int)this->values.size(); i < index; i++)
+            this->values.push_back(this->_fill);
+
+    this->values[index] = value;
     return true;
 }
 
