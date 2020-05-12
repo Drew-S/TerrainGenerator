@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 
-#include "global.h"
+#include "Globals/settings.h"
 
 #include "ui_Main.h"
 #include "ui_SaveAsDialogue.h"
@@ -46,5 +46,4 @@ private:
     Ui::SaveAsDialogue *_save_ui;
 
     QDialog *_save_as_dialogue;
-    GlobalData *_global;
 };

@@ -34,8 +34,7 @@ using json = nlohmann::json;
 
 MainWindow::MainWindow()
 {
-    this->_global = GlobalData::getInstance();
-    qDebug("Using temp directory: %s", qPrintable(this->_global->tmpDir()));
+    qDebug("Using temp directory: %s", qPrintable(Settings::getInstance()->tmpDir()));
 }
 MainWindow::~MainWindow() {}
 
@@ -298,7 +297,7 @@ void MainWindow::load()
             QByteArray image_file_data = file.readAll();
 
             // Filename with temp path /tmp/TerrainGenerator_XXXXXX/file.png
-            std::string temp_image_file = this->_global->tmpDir().toStdString() + "/" + zip.getCurrentFileName().toStdString();
+            std::string temp_image_file = Settings::getInstance()->tmpDir().toStdString() + "/" + zip.getCurrentFileName().toStdString();
             file.close();
 
             // Write image to temp file
@@ -323,7 +322,7 @@ void MainWindow::load()
             {
                 QString image = settings["nodes"]["nodes"][i]["model"].value("image", "").c_str();
 
-                settings["nodes"]["nodes"][i]["model"]["image"] = this->_global->tmpDir().toStdString() + "/" + image.toStdString();
+                settings["nodes"]["nodes"][i]["model"]["image"] = Settings::getInstance()->tmpDir().toStdString() + "/" + image.toStdString();
             }
         }
     }
