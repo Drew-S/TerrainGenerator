@@ -2,12 +2,18 @@
 
 #include <QDir>
 #include <QTemporaryDir>
+#include <QObject>
 
-class Settings
+// Global singleton for sharing settings throughout
+class Settings : public QObject
 {
+    Q_OBJECT
 public:
+    // Get/create a reference to the settings instance
     static Settings *getInstance();
     ~Settings();
+
+    // Getters for settings
     QString tmpDir();
 
 private:
@@ -15,6 +21,7 @@ private:
     static bool _instance;
     static Settings *_single;
 
+    // Settings
     QTemporaryDir *_tmp_dir;
 };
 
