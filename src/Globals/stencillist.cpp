@@ -120,7 +120,6 @@ void Stencil::_generate()
                         .scaled(this->_brush, this->_brush, Qt::KeepAspectRatio);
 }
 
-
 // StencilList singleton setup
 bool StencilList::_instance = false;
 StencilList *StencilList::_single = nullptr;
