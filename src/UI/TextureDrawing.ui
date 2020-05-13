@@ -105,7 +105,7 @@
              <bool>false</bool>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: red;</string>
+             <string notr="true">background-color: rgb(0,0,0);</string>
             </property>
             <property name="text">
              <string/>
@@ -169,11 +169,14 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QScrollArea" name="scrollArea">
+       <widget class="QScrollArea" name="stencil_scroll">
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="widgetResizable">
          <bool>true</bool>
         </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents">
+        <widget class="QWidget" name="stencil_select">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -182,9 +185,50 @@
            <height>90</height>
           </rect>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QGridLayout" name="stencil_grid">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>85</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </widget>
        </widget>
-       <widget class="QListView" name="listView"/>
+       <widget class="QListView" name="texture_list">
+        <property name="editTriggers">
+         <set>QAbstractItemView::DoubleClicked</set>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>
