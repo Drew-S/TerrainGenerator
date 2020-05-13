@@ -2,8 +2,6 @@
 
 #include <QMainWindow>
 
-#include "Globals/settings.h"
-
 #include "ui_Main.h"
 #include "ui_SaveAsDialogue.h"
 

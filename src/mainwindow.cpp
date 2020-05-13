@@ -27,6 +27,11 @@ using json = nlohmann::json;
 #include <QRegExp>
 #include <QList>
 
+#include "Globals/settings.h"
+#include "Globals/stencillist.h"
+#include "Globals/texturelist.h"
+#include "Globals/drawing.h"
+
 #define SAVE_DATA_FILE_NAME "data.json"
 #define EXT ".tgdf"
 #define EXT_REG "\\.tgdf$"
@@ -42,6 +47,11 @@ MainWindow::~MainWindow() {}
 // Connect to ui elements and controls and link sub components
 void MainWindow::setup(Ui::MainWindow *ui)
 {
+    //Ensure global singletons have loaded
+    SETTINGS;
+    TEXTURES;
+    DRAWING;
+    STENCILS;
     qDebug("Setting up main window and save dialogue ui, attaching listeners");
     this->_main_ui = ui;
     this->_editor = new Nodeeditor(ui->NodeEditorLayout, ui->NodePropertiesContainerWidget);
