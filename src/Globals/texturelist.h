@@ -39,8 +39,14 @@ public:
     // Convert to icon
     QIcon icon();
 
+    // Texture name
+    QString name();
+
     // Convert to vector map
     VectorMap vectorMap();
+
+    // Replace the underlying pixmap
+    void replace(QPixmap pixmap);
 
     // Convert to intensity map
     IntensityMap intensityMap(IntensityMap::Channel channel);

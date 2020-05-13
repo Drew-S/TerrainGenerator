@@ -3,6 +3,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QRect>
+#include <QFileInfo>
 
 // Constructors
 Texture::Texture() {}
@@ -41,8 +42,16 @@ QIcon Texture::icon() { return QIcon(this->_pixmap); }
 // Return a vector map
 VectorMap Texture::vectorMap() { return VectorMap(this->_pixmap); }
 
+// Replace the underlying pixmap
+void Texture::replace(QPixmap pixmap) { this->_pixmap = pixmap; }
+
 // Return an intensity map
 IntensityMap Texture::intensityMap(IntensityMap::Channel channel) { return IntensityMap(this->_pixmap, channel); }
+
+QString Texture::name()
+{
+    return QFileInfo(this->_filename).fileName();
+}
 
 // Draw the stencil onto the pixmap
 void Texture::draw(Stencil *stencil, QPointF pos, bool update)
