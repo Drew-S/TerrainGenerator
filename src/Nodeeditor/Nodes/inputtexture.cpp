@@ -153,13 +153,23 @@ void InputTextureNode::_newFileAccept()
 void InputTextureNode::_setPixmaps()
 {
     if (this->_texture != nullptr)
+    {
         this->_ui.texture_display->setPixmap(
             this->_texture->pixmap().scaled(
                 this->_ui.texture_display->width(),
                 this->_ui.texture_display->height(),
                 Qt::KeepAspectRatio));
+        this->_shared_ui.texture_display->setPixmap(
+            this->_texture->pixmap().scaled(
+                this->_shared_ui.texture_display->width(),
+                this->_shared_ui.texture_display->height(),
+                Qt::KeepAspectRatio));
+    }
     else
+    {
         this->_ui.texture_display->setText("No Image");
+        this->_shared_ui.texture_display->setText("No Image");
+    }
 }
 
 // Save the node to for a file
