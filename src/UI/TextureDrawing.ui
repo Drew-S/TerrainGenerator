@@ -128,11 +128,40 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QToolButton" name="undo_button">
+            <property name="minimumSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Undo &lt;span style=&quot; color:#787878;&quot;&gt;(Ctrl+Z)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../../../../../../../../../usr/share/icons/breeze-dark/actions/24/edit-undo.svg</normaloff>../../../../../../../../../usr/share/icons/breeze-dark/actions/24/edit-undo.svg</iconset>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
         <widget class="QGraphicsView" name="interact_window">
+         <property name="cursor" stdset="0">
+          <cursorShape>CrossCursor</cursorShape>
+         </property>
          <property name="dragMode">
           <enum>QGraphicsView::NoDrag</enum>
          </property>
@@ -182,7 +211,7 @@
            <x>0</x>
            <y>0</y>
            <width>250</width>
-           <height>90</height>
+           <height>164</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
