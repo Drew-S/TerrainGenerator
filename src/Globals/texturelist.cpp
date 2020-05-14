@@ -43,7 +43,12 @@ QIcon Texture::icon() { return QIcon(this->_pixmap); }
 VectorMap Texture::vectorMap() { return VectorMap(this->_pixmap); }
 
 // Replace the underlying pixmap
-void Texture::replace(QPixmap pixmap) { this->_pixmap = pixmap; }
+void Texture::replace(QPixmap pixmap)
+{
+    qDebug("Updated texture");
+    this->_pixmap = QPixmap(pixmap);
+    emit this->updated();
+}
 
 // Return an intensity map
 IntensityMap Texture::intensityMap(IntensityMap::Channel channel) { return IntensityMap(this->_pixmap, channel); }
@@ -54,16 +59,9 @@ QString Texture::name()
 }
 
 // Draw the stencil onto the pixmap
-void Texture::draw(Stencil *stencil, QPointF pos, bool update)
+void Texture::draw(Stencil *stencil, QPointF pos)
 {
     stencil->draw(this->_painter, pos);
-    if (update)
-        emit this->updated();
-}
-
-// Emit updated signal
-void Texture::apply()
-{
     emit this->updated();
 }
 

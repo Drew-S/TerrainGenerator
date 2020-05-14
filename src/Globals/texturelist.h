@@ -53,10 +53,7 @@ public:
 
     // Draw on the texture with the stencil at a specific point,
     // if update emit updated() signal
-    void draw(Stencil *stencil, QPointF pos, bool update = false);
-
-    // Call updated signal
-    void apply();
+    void draw(Stencil *stencil, QPointF pos);
 
     // Save the texture with the existing filename
     bool save();
