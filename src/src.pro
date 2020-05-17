@@ -59,3 +59,6 @@ MOC_DIR = $$PWD/../build/moc
 
 # Where to place release object files
 OBJECTS_DIR = $$PWD/../build/objects
+
+CWD = $$PWD
+DEFINES += PWD=\\\"$$dirname(CWD)\\\"
