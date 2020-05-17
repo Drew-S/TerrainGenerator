@@ -8,7 +8,7 @@
 #include <QPixmap>
 #include <QColor>
 
-#include "../src/Nodeeditor/Datatypes/intensitymap.h"
+#include "../../src/Nodeeditor/Datatypes/intensitymap.h"
 
 class IntensityMap_Test : public QObject
 {
@@ -20,6 +20,9 @@ private slots:
         IntensityMap map(10, 20);
         QCOMPARE(map.width, 10);
         QCOMPARE(map.height, 20);
+        for (int y = 0; y < map.height; y++)
+            for (int x = 0; x < map.width; x++)
+                QCOMPARE(map.at(x, y), 0.00);
 
         std::vector<double> values{1.00, 2.00, 3.00, 4.00};
         map = IntensityMap(4, 1, values);
@@ -82,7 +85,7 @@ private slots:
     {
         QImage image(2, 2, QImage::Format_RGB32);
         image.fill(QColor(255, 100, 0, 255));
-        QPixmap pixmap = QPixmap::fromImage(image);
+        QPixmap pixmap = QPixmap::fromImage(image, Qt::NoFormatConversion);
 
         IntensityMap map(pixmap, IntensityMap::RED);
         QCOMPARE(map.at(0, 0), 1.00);
@@ -112,14 +115,15 @@ private slots:
     void append()
     {
         IntensityMap map(2, 2);
-        for (int x = -1; x < 3; x++)
-            for (int y = -1; y < 3; y++)
+        for (int y = -1; y < 3; y++)
+            for (int x = -1; x < 3; x++)
                 QCOMPARE(map.at(x, y), 0.00);
 
-        map.append(1.00);
-        map.append(2.00);
-        map.append(3.00);
-        map.append(4.00);
+        qDebug("Here?");
+        QVERIFY(map.append(1.00));
+        QVERIFY(map.append(2.00));
+        QVERIFY(map.append(3.00));
+        QVERIFY(map.append(4.00));
 
         QCOMPARE(map.at(0, 0), 1.00);
         QCOMPARE(map.at(1, 0), 2.00);
@@ -131,12 +135,12 @@ private slots:
     {
         std::vector<double> values{1.00, 1.00, 1.00, 1.00};
         IntensityMap map(2, 2, values);
-        for (int x = 0; x < 2; x++)
-            for (int y = 0; y < 2; y++)
+        for (int y = 0; y < 2; y++)
+            for (int x = 0; x < 2; x++)
                 QCOMPARE(map.at(x, y), 1.00);
 
-        for (int x = 0; x < 2; x++)
-            for (int y = 0; y < 2; y++)
+        for (int y = 0; y < 2; y++)
+            for (int x = 0; x < 2; x++)
                 map.set(x, y, 2.00 * (double)y + (double)x);
 
         QCOMPARE(map.at(0, 0), 0.00);
