@@ -86,6 +86,9 @@ double IntensityMap::at(int x, int y)
         return this->_fill;
 
     int index = y * this->width + x;
+    if (index >= (int)this->values.size())
+        return this->_fill;
+
     return this->values[index];
 }
 
