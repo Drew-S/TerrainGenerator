@@ -15,18 +15,16 @@ Texture::Texture(QString filename)
 }
 Texture::Texture(int w, int h)
 {
-    this->_pixmap = QPixmap(w, h);
-    this->_painter = new QPainter(&this->_pixmap);
-    this->_painter->setBrush(QBrush(QColor(255, 255, 255, 255)));
-    this->_painter->drawRect(QRect(0, 0, w, h));
+    QImage image(w, h, QImage::Format_ARGB32);
+    image.fill(QColor(255, 255, 255, 255));
+    this->_pixmap = QPixmap::fromImage(image);
 }
 Texture::Texture(int w, int h, QString filename)
 {
     this->_filename = filename;
-    this->_pixmap = QPixmap(w, h);
-    this->_painter = new QPainter(&this->_pixmap);
-    this->_painter->setBrush(QBrush(QColor(255, 255, 255, 255)));
-    this->_painter->drawRect(QRect(0, 0, w, h));
+    QImage image(w, h, QImage::Format_ARGB32);
+    image.fill(QColor(255, 255, 255, 255));
+    this->_pixmap = QPixmap::fromImage(image);
 }
 Texture::~Texture() {}
 
