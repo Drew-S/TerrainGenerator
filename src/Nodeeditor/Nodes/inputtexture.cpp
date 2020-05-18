@@ -27,14 +27,14 @@ InputTextureNode::InputTextureNode()
     this->_ui.setupUi(this->_widget);
 
     QObject::connect(this->_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
-    QObject::connect(this->_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::exec);
+    QObject::connect(this->_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::show);
     QObject::connect(this->_ui.edit_button, &QToolButton::clicked, [this]() {
         if (this->_texture_index != -1)
             DRAWING->show(this->_texture_index);
     });
 
     QObject::connect(this->_shared_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
-    QObject::connect(this->_shared_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::exec);
+    QObject::connect(this->_shared_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::show);
     QObject::connect(this->_shared_ui.edit_button, &QToolButton::clicked, [this]() {
         if (this->_texture_index != -1)
             DRAWING->show(this->_texture_index);
@@ -143,6 +143,7 @@ void InputTextureNode::_newFileAccept()
     if (index != -1)
     {
         this->_texture_index = index;
+        this->_new_file = true;
         this->_texture = TEXTURES->at(index);
         QObject::connect(this->_texture, &Texture::updated, this, &InputTextureNode::textureUpdated);
         this->_setPixmaps();
