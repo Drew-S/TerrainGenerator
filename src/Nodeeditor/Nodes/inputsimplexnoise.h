@@ -19,6 +19,8 @@
 class InputSimplexNoiseNode : public QtNodes::NodeDataModel
 {
     Q_OBJECT
+    friend class InputSimplexNoiseNode_Test;
+
 public:
     InputSimplexNoiseNode();
     ~InputSimplexNoiseNode();

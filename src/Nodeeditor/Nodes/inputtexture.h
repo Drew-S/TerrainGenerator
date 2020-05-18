@@ -24,6 +24,8 @@
 class InputTextureNode : public QtNodes::NodeDataModel
 {
     Q_OBJECT
+    friend class InputTextureNode_Test;
+
 public:
     InputTextureNode();
     ~InputTextureNode();
