@@ -13,20 +13,29 @@ DEFINES += NODE_EDITOR_STATIC
 INCLUDEPATH += $$PWD/../lib/nodeeditor/include
 LIBS += -L$$PWD/../lib/nodeeditor/build/lib -lnodes
 
+# (simplex noise)
+SOURCES += $$PWD/../lib/SimplexNoise/src/SimplexNoise.cpp
+HEADERS += $$PWD/../lib/SimplexNoise/src/SimplexNoise.h
+INCLUDEPATH += $$PWD/../lib/SimplexNoise/src
+
 SOURCES += $$files("*.cpp", true)
 HEADERS += $$files("*.h", true)
 
-SOURCES += ../src/Nodeeditor/Datatypes/intensitymap.cpp \
-    ../src/Nodeeditor/Datatypes/vectormap.cpp \
-    ../src/Nodeeditor/Datatypes/pixmap.cpp \
-    ../src/Nodeeditor/Datatypes/converters.cpp \
-    ../src/Nodeeditor/Nodes/Normal/normal.cpp
+# Where the QT Designer *.ui files are stored (xml files)
+FORMS += $$files("../src/UI/*.ui", true)
 
-HEADERS += ../src/Nodeeditor/Datatypes/intensitymap.h \
-    ../src/Nodeeditor/Datatypes/vectormap.h \
-    ../src/Nodeeditor/Datatypes/pixmap.h \
-    ../src/Nodeeditor/Datatypes/converters.h \
-    ../src/Nodeeditor/Nodes/Normal/normal.h
+# Where to place the compiled ui files (header files)
+UI_DIR = ../src/UI
+
+SOURCES += $$files("../src/Nodeeditor/*.cpp", true)
+SOURCES += $$files("../src/Globals/*.cpp", true)
+SOURCES += $$files("../src/OpenGL/*.cpp", true)
+
+HEADERS += $$files("../src/Nodeeditor/*.h", true)
+HEADERS += $$files("../src/Globals/*.h", true)
+HEADERS += $$files("../src/OpenGL/*.h", true)
+
+INCLUDEPATH += ../src
 
 DESTDIR = $$PWD/build
 
