@@ -56,6 +56,11 @@ QString Texture::name()
     return QFileInfo(this->_filename).fileName();
 }
 
+QString Texture::filename()
+{
+    return this->_filename;
+}
+
 // Draw the stencil onto the pixmap
 void Texture::draw(Stencil *stencil, QPointF pos)
 {

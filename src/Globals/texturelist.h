@@ -41,6 +41,7 @@ public:
 
     // Texture name
     QString name();
+    QString filename();
 
     // Convert to vector map
     VectorMap vectorMap();
