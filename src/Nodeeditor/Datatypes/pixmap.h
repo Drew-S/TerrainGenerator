@@ -12,7 +12,7 @@ class IntensityMapData : public QtNodes::NodeData
 {
 public:
     IntensityMapData();
-    IntensityMapData(QPixmap const &pixmap);
+    // IntensityMapData(QPixmap const &pixmap);
     IntensityMapData(IntensityMap const &intensity_map);
 
     // The type of data this is { QString: id, QString name}, name shows up on node
@@ -30,7 +30,7 @@ class VectorMapData : public QtNodes::NodeData
 {
 public:
     VectorMapData();
-    VectorMapData(QPixmap const &pixmap);
+    // VectorMapData(QPixmap const &pixmap);
     VectorMapData(VectorMap const &vector_map);
 
     // The type of data this is { QString: id, QString name}, name shows up on node
