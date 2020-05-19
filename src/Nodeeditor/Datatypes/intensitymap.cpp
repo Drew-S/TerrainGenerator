@@ -79,6 +79,28 @@ IntensityMap IntensityMap::scaled(int width, int height)
     return IntensityMap(image, IntensityMap::AVERAGE);
 }
 
+// Apply a transformation function on a per pixel basis
+IntensityMap IntensityMap::transform(double func(double, double), double value)
+{
+    IntensityMap map(this->width, this->height);
+    for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
+            map.append(func(this->at(x, y), value));
+
+    return map;
+}
+
+// Apply a transformation function on a per pixel basis
+IntensityMap IntensityMap::transform(double func(double, double), IntensityMap *map)
+{
+    IntensityMap out(this->width, this->height);
+    for (int y = 0; y < this->height; y++)
+        for (int x = 0; x < this->width; x++)
+            out.append(func(this->at(x, y), map->at(x, y)));
+
+    return out;
+}
+
 // Get a value a specific index (clamps to 0.00)
 double IntensityMap::at(int x, int y)
 {

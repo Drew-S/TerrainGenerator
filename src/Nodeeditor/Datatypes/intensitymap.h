@@ -41,6 +41,11 @@ public:
     // Return intensity map scaled via image (linear interpolation)
     IntensityMap scaled(int width, int height);
 
+    // Apply a transformation function on a per pixel basis
+    //                                 pixel,  value
+    IntensityMap transform(double func(double, double), double value);
+    IntensityMap transform(double func(double, double), IntensityMap *map);
+
     // Get a specific value
     double at(int x, int y);
 
