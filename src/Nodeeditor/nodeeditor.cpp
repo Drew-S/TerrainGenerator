@@ -53,6 +53,7 @@ Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
     // Connect listeners for node creation and node doubled click
     QObject::connect(this->_scene, &QtNodes::FlowScene::nodeCreated, this, &Nodeeditor::nodeCreated);
     QObject::connect(this->_scene, &QtNodes::FlowScene::nodeDoubleClicked, this, &Nodeeditor::nodeDoubleClicked);
+    QObject::connect(this->_scene, &QtNodes::FlowScene::nodeDeleted, this, &Nodeeditor::nodeDeleted);
 }
 
 // Remove pointers
@@ -73,9 +74,16 @@ void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
         this->_properties_node->setParent(nullptr);
     }
 
-    this->_properties->layout()->addWidget(shared);
-    this->_properties_node = shared;
-    this->_properties_node->show();
+    if (shared)
+    {
+        this->_properties->layout()->addWidget(shared);
+        this->_properties_node = shared;
+        this->_properties_node->show();
+    }
+    else
+    {
+        this->_properties_node = nullptr;
+    }
 }
 
 // Handler for placing nodes in the properties node if the node has support
@@ -93,6 +101,12 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     {
         InputTextureNode *selected = static_cast<InputTextureNode *>(node);
 
+        QWidget *shared = selected->sharedWidget();
+        this->_updatePropertieNodesShared(shared);
+    }
+    else if (name == MathNode().name())
+    {
+        MathNode *selected = static_cast<MathNode *>(node);
         QWidget *shared = selected->sharedWidget();
         this->_updatePropertieNodesShared(shared);
     }
@@ -158,6 +172,11 @@ void Nodeeditor::outputComputingFinished()
     qDebug("Output node done computing normal map");
     // Inform parents that there are new normal and height maps (main.cpp)
     emit this->outputUpdated(this->getNormalMap(), this->getHeightMap());
+}
+
+void Nodeeditor::nodeDeleted(QtNodes::Node &node)
+{
+    this->_updatePropertieNodesShared(nullptr);
 }
 
 // Returns the active output node height map or an empty QImage

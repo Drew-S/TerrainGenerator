@@ -40,6 +40,8 @@ public slots:
     void outputComputingStarted();
     // Called when the active output node has finished calculations
     void outputComputingFinished();
+    // Called when a node is deleted, update properties panel if necessary
+    void nodeDeleted(QtNodes::Node &node);
 
 signals:
     // When the output node has completed rendering the normal map emit a
