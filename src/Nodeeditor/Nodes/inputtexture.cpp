@@ -117,12 +117,18 @@ std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex 
 
 void InputTextureNode::_loadFile()
 {
+    // QFileDialog::getOpenFileName cannot be interacted with in a headless testing environment
+    // Since we can assume QFileDialog works as expected we use a fixed test file for testing
+#ifdef TEST_MODE
+    QString filename = QDir::cleanPath(QString(PWD) + QString("/assets/textures/test.png"));
+#else
     QString filename = QFileDialog::getOpenFileName(
         nullptr,
         tr("Open Image"),
         "/home/drew/Documents/School/Active/COMP_495/project/assets/textures",
         // QDir::homePath(),
         tr("Image Files (*.png *.jpg)"));
+#endif
 
     int index = TEXTURES->addTexture(filename);
     if (index != -1)
@@ -180,6 +186,7 @@ QJsonObject InputTextureNode::save() const
     QJsonObject data;
     data["name"] = this->name();
     data["image_generated"] = this->_new_file;
+    data["image"] = this->_texture->filename();
     return data;
 }
 
