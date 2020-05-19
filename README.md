@@ -13,6 +13,17 @@
 
 ### Nodeeditor
 
+**NOTE**: In order to fix a couple graphical problems with the nodeeditor library (at the cost of performance for large files) a couple of lines need to be commented out in the source code before being built:
+
+- File: `lib/nodeeditor/src/FlowView.cpp`, Line: `47`
+    - Comment out `setCacheMode(QGraphicsView::CacheBackground);`
+    - `// setCacheMode(QGraphicsView::CacheBackground);`
+- File: `lib/nodeeditor/src/NodeGraphicsObject.cpp`, Line: `38`
+    - Comment out `setCacheMode( QGraphicsItem::DeviceCoordinateCache );`
+    - `// setCacheMode( QGraphicsItem::DeviceCoordinateCache );`
+
+Performance should not dwindle until large dataflow diagrams are being used.
+
 ```
 cd lib
 git clone https://github.com/paceholder/nodeeditor.git
