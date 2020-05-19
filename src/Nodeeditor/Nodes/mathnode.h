@@ -13,7 +13,7 @@
 #include "ui_MathNode.h"
 
 // Apply a mathematical function per pixel to an intensity map (map/map) (map/value) (value/value)
-class MathNode : public QtNodes::NodeDataModel
+class ConverterMathNode : public QtNodes::NodeDataModel
 {
     Q_OBJECT
 public:
@@ -29,8 +29,8 @@ public:
         MAX,
         POW
     };
-    MathNode();
-    ~MathNode();
+    ConverterMathNode();
+    ~ConverterMathNode();
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -89,7 +89,7 @@ private:
     void _gen_in();                      // none set
 
     // The algorithm to use for mixing
-    MathNode::Mode _mode = MathNode::MIX;
+    ConverterMathNode::Mode _mode = ConverterMathNode::MIX;
 
     // The results
     IntensityMap _pixmap;

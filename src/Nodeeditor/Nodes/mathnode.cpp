@@ -6,8 +6,8 @@
 #include <QDoubleSpinBox>
 #include <QDebug>
 
-// Create a MathNode
-MathNode::MathNode()
+// Create a ConverterMathNode
+ConverterMathNode::ConverterMathNode()
 {
     // Ui setup
     this->_widget = new QWidget();
@@ -16,63 +16,63 @@ MathNode::MathNode()
     this->_shared_ui.setupUi(this->_shared_widget);
 
     // Ui connections
-    QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MathNode::comboChanged);
-    QObject::connect(this->_ui.val_in_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MathNode::val0Changed);
-    QObject::connect(this->_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MathNode::val1Changed);
+    QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterMathNode::comboChanged);
+    QObject::connect(this->_ui.val_in_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val0Changed);
+    QObject::connect(this->_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val1Changed);
 
-    QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MathNode::comboChanged);
-    QObject::connect(this->_shared_ui.val_in_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MathNode::val0Changed);
-    QObject::connect(this->_shared_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MathNode::val1Changed);
+    QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterMathNode::comboChanged);
+    QObject::connect(this->_shared_ui.val_in_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val0Changed);
+    QObject::connect(this->_shared_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val1Changed);
 
     // Generate default result
     this->_gen();
 }
 
-MathNode::~MathNode() {}
+ConverterMathNode::~ConverterMathNode() {}
 
 // Title shown at the top of the node
-QString MathNode::caption() const
+QString ConverterMathNode::caption() const
 {
     return QString("Math");
 }
 
 // Title shown in the selection list
-QString MathNode::name() const
+QString ConverterMathNode::name() const
 {
-    return QString("MathNode");
+    return QString("ConverterMathNode");
 }
 
-void MathNode::name(QString name)
+void ConverterMathNode::name(QString name)
 {
     (void)name;
 }
 
 // The widget that is embedded into the node
-QWidget *MathNode::embeddedWidget()
+QWidget *ConverterMathNode::embeddedWidget()
 {
     return this->_widget;
 }
 
 // The widget that is displayed in the properties panel
-QWidget *MathNode::sharedWidget()
+QWidget *ConverterMathNode::sharedWidget()
 {
     return this->_shared_widget;
 }
 
 // Needed for NodeDataModel, not sure where it is used
-QString MathNode::modelName()
+QString ConverterMathNode::modelName()
 {
     return QString("Math Node");
 }
 
 // Get the number of in and out ports
-unsigned int MathNode::nPorts(QtNodes::PortType port_type) const
+unsigned int ConverterMathNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 2 : 1;
 }
 
 // Get the input/output data type
-QtNodes::NodeDataType MathNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+QtNodes::NodeDataType ConverterMathNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
     (void)port_type;
     (void)port_index;
@@ -80,7 +80,7 @@ QtNodes::NodeDataType MathNode::dataType(QtNodes::PortType port_type, QtNodes::P
 }
 
 // Set the input data for a port
-void MathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
     if (node_data)
     {
@@ -103,7 +103,7 @@ void MathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::
 }
 
 // Generate the output intensity map
-void MathNode::_gen()
+void ConverterMathNode::_gen()
 {
     if (this->_in_0_set && !this->_in_1_set)
         this->_gen_in_1(false);
@@ -123,35 +123,35 @@ void MathNode::_gen()
 // Generates intensity map by applying transform (pixel by pixel) from one map to the other
 // IntensityMap A, B, C
 // C = A (op) B
-void MathNode::_gen_in_both()
+void ConverterMathNode::_gen_in_both()
 {
     IntensityMap map_0 = this->_in_0->intensityMap();
     IntensityMap map_1 = this->_in_1->intensityMap();
     switch (this->_mode)
     {
-    case MathNode::MIX:
-        this->_pixmap = map_0.transform(&MathNode::mix, &map_1);
+    case ConverterMathNode::MIX:
+        this->_pixmap = map_0.transform(&ConverterMathNode::mix, &map_1);
         break;
-    case MathNode::ADD:
-        this->_pixmap = map_0.transform(&MathNode::add, &map_1);
+    case ConverterMathNode::ADD:
+        this->_pixmap = map_0.transform(&ConverterMathNode::add, &map_1);
         break;
-    case MathNode::SUBTRACT:
-        this->_pixmap = map_0.transform(&MathNode::subtract, &map_1);
+    case ConverterMathNode::SUBTRACT:
+        this->_pixmap = map_0.transform(&ConverterMathNode::subtract, &map_1);
         break;
-    case MathNode::MULTIPLY:
-        this->_pixmap = map_0.transform(&MathNode::multiply, &map_1);
+    case ConverterMathNode::MULTIPLY:
+        this->_pixmap = map_0.transform(&ConverterMathNode::multiply, &map_1);
         break;
-    case MathNode::DIVIDE:
-        this->_pixmap = map_0.transform(&MathNode::divide, &map_1);
+    case ConverterMathNode::DIVIDE:
+        this->_pixmap = map_0.transform(&ConverterMathNode::divide, &map_1);
         break;
-    case MathNode::MIN:
-        this->_pixmap = map_0.transform(&MathNode::min, &map_1);
+    case ConverterMathNode::MIN:
+        this->_pixmap = map_0.transform(&ConverterMathNode::min, &map_1);
         break;
-    case MathNode::MAX:
-        this->_pixmap = map_0.transform(&MathNode::max, &map_1);
+    case ConverterMathNode::MAX:
+        this->_pixmap = map_0.transform(&ConverterMathNode::max, &map_1);
         break;
-    case MathNode::POW:
-        this->_pixmap = map_0.transform(&MathNode::pow, &map_1);
+    case ConverterMathNode::POW:
+        this->_pixmap = map_0.transform(&ConverterMathNode::pow, &map_1);
         break;
     default:
         break;
@@ -161,7 +161,7 @@ void MathNode::_gen_in_both()
 // IntensityMap A, C
 // double B
 // C = A (op) B
-void MathNode::_gen_in_1(bool second)
+void ConverterMathNode::_gen_in_1(bool second)
 {
     IntensityMap map;
     double val;
@@ -178,29 +178,29 @@ void MathNode::_gen_in_1(bool second)
 
     switch (this->_mode)
     {
-    case MathNode::MIX:
-        this->_pixmap = map.transform(&MathNode::mix, val);
+    case ConverterMathNode::MIX:
+        this->_pixmap = map.transform(&ConverterMathNode::mix, val);
         break;
-    case MathNode::ADD:
-        this->_pixmap = map.transform(&MathNode::add, val);
+    case ConverterMathNode::ADD:
+        this->_pixmap = map.transform(&ConverterMathNode::add, val);
         break;
-    case MathNode::SUBTRACT:
-        this->_pixmap = map.transform(&MathNode::subtract, val);
+    case ConverterMathNode::SUBTRACT:
+        this->_pixmap = map.transform(&ConverterMathNode::subtract, val);
         break;
-    case MathNode::MULTIPLY:
-        this->_pixmap = map.transform(&MathNode::multiply, val);
+    case ConverterMathNode::MULTIPLY:
+        this->_pixmap = map.transform(&ConverterMathNode::multiply, val);
         break;
-    case MathNode::DIVIDE:
-        this->_pixmap = map.transform(&MathNode::divide, val);
+    case ConverterMathNode::DIVIDE:
+        this->_pixmap = map.transform(&ConverterMathNode::divide, val);
         break;
-    case MathNode::MIN:
-        this->_pixmap = map.transform(&MathNode::min, val);
+    case ConverterMathNode::MIN:
+        this->_pixmap = map.transform(&ConverterMathNode::min, val);
         break;
-    case MathNode::MAX:
-        this->_pixmap = map.transform(&MathNode::max, val);
+    case ConverterMathNode::MAX:
+        this->_pixmap = map.transform(&ConverterMathNode::max, val);
         break;
-    case MathNode::POW:
-        this->_pixmap = map.transform(&MathNode::pow, val);
+    case ConverterMathNode::POW:
+        this->_pixmap = map.transform(&ConverterMathNode::pow, val);
         break;
     default:
         break;
@@ -211,33 +211,33 @@ void MathNode::_gen_in_1(bool second)
 // IntensityMap C
 // double A, B
 // C = A (op) B
-void MathNode::_gen_in()
+void ConverterMathNode::_gen_in()
 {
     // TODO: Use render/preview resolution
     switch (this->_mode)
     {
-    case MathNode::MIX:
+    case ConverterMathNode::MIX:
         this->_pixmap = IntensityMap(128, 128, mix(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::ADD:
+    case ConverterMathNode::ADD:
         this->_pixmap = IntensityMap(128, 128, add(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::SUBTRACT:
+    case ConverterMathNode::SUBTRACT:
         this->_pixmap = IntensityMap(128, 128, subtract(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::MULTIPLY:
+    case ConverterMathNode::MULTIPLY:
         this->_pixmap = IntensityMap(128, 128, multiply(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::DIVIDE:
+    case ConverterMathNode::DIVIDE:
         this->_pixmap = IntensityMap(128, 128, divide(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::MIN:
+    case ConverterMathNode::MIN:
         this->_pixmap = IntensityMap(128, 128, min(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::MAX:
+    case ConverterMathNode::MAX:
         this->_pixmap = IntensityMap(128, 128, max(this->_val_in_0, this->_val_in_1));
         break;
-    case MathNode::POW:
+    case ConverterMathNode::POW:
         this->_pixmap = IntensityMap(128, 128, pow(this->_val_in_0, this->_val_in_1));
         break;
     default:
@@ -246,7 +246,7 @@ void MathNode::_gen_in()
 }
 
 // When a connection is deleted default to use the double value instead
-void MathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+void ConverterMathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     int port = (int)connection.getPortIndex(QtNodes::PortType::In);
     if (port == 0)
@@ -264,14 +264,14 @@ void MathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 }
 
 // When the UI updates a value, update local reference and regenerated the results
-void MathNode::val0Changed(double value)
+void ConverterMathNode::val0Changed(double value)
 {
     this->_val_in_0 = value;
     this->_ui.val_in_0->setValue(this->_val_in_0);
     this->_shared_ui.val_in_0->setValue(this->_val_in_0);
     this->_gen();
 }
-void MathNode::val1Changed(double value)
+void ConverterMathNode::val1Changed(double value)
 {
     this->_val_in_1 = value;
     this->_ui.val_in_1->setValue(this->_val_in_1);
@@ -280,15 +280,15 @@ void MathNode::val1Changed(double value)
 }
 
 // Change the transform method used
-void MathNode::comboChanged(int index)
+void ConverterMathNode::comboChanged(int index)
 {
-    this->_mode = (MathNode::Mode)index;
+    this->_mode = (ConverterMathNode::Mode)index;
     this->_ui.mode->setCurrentIndex(this->_mode);
     this->_shared_ui.mode->setCurrentIndex(this->_mode);
 }
 
 // Save the node to a object for saving to a file
-QJsonObject MathNode::save() const
+QJsonObject ConverterMathNode::save() const
 {
     QJsonObject data;
     data["name"] = this->name();
@@ -300,50 +300,50 @@ QJsonObject MathNode::save() const
 }
 
 // Restore a node from the json data
-void MathNode::restore(QJsonObject const &data)
+void ConverterMathNode::restore(QJsonObject const &data)
 {
-    this->_mode = (MathNode::Mode)data["mode"].toInt();
+    this->_mode = (ConverterMathNode::Mode)data["mode"].toInt();
     this->_val_in_0 = data["value_0"].toDouble(1.00);
     this->_val_in_1 = data["value_1"].toDouble(1.00);
 }
 
 // Get the resulting pixmap for output
-std::shared_ptr<QtNodes::NodeData> MathNode::outData(QtNodes::PortIndex port)
+std::shared_ptr<QtNodes::NodeData> ConverterMathNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
     return std::make_shared<IntensityMapData>(this->_pixmap);
 }
 
 // Agorithms to use for transformations
-double MathNode::mix(double a, double b)
+double ConverterMathNode::mix(double a, double b)
 {
     return (a + b) / 2.00;
 }
-double MathNode::add(double a, double b)
+double ConverterMathNode::add(double a, double b)
 {
     return a + b;
 }
-double MathNode::subtract(double a, double b)
+double ConverterMathNode::subtract(double a, double b)
 {
     return a - b;
 }
-double MathNode::multiply(double a, double b)
+double ConverterMathNode::multiply(double a, double b)
 {
     return a * b;
 }
-double MathNode::divide(double a, double b)
+double ConverterMathNode::divide(double a, double b)
 {
     return b == 0.00 ? 0.00 : a / b;
 }
-double MathNode::min(double a, double b)
+double ConverterMathNode::min(double a, double b)
 {
     return a < b ? a : b;
 }
-double MathNode::max(double a, double b)
+double ConverterMathNode::max(double a, double b)
 {
     return a > b ? a : b;
 }
-double MathNode::pow(double a, double b)
+double ConverterMathNode::pow(double a, double b)
 {
     return pow(a, b);
 }
