@@ -13,6 +13,7 @@
 #include "./Nodes/inputtexture.h"
 #include "./Nodes/inputsimplexnoise.h"
 #include "./Nodes/mathnode.h"
+#include "./Nodes/colorsplit.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
