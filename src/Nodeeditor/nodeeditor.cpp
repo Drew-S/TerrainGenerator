@@ -20,6 +20,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<OutputNode>("Output");
     registry->registerModel<InputTextureNode>("Input");
     registry->registerModel<InputSimplexNoiseNode>("Input");
+    registry->registerModel<MathNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -42,6 +43,7 @@ Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
     // Create a scene and a view, attach models to the scene
     this->_scene = new QtNodes::FlowScene(registerDataModels());
     this->_view = new QtNodes::FlowView(this->_scene);
+    this->_view->setSceneRect(-32767, -32726, 32727 * 2, 327267 * 2);
     this->_properties = properties;
     this->_properties->setLayout(new QHBoxLayout());
 

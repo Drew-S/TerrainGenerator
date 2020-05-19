@@ -99,7 +99,7 @@ QtNodes::NodeDataType OutputNode::dataType(QtNodes::PortType port_type, QtNodes:
 void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
     (void)port;
-    if (node_data != nullptr)
+    if (node_data)
     {
         // Cast pointer into VectorMapData pointer
         this->_pixmap = std::dynamic_pointer_cast<IntensityMapData>(node_data);
