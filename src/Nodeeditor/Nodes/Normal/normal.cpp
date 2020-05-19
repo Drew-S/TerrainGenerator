@@ -91,8 +91,15 @@ QImage NormalMapGenerator::toImage()
 // it is clamped back to the corner (other options could be to wrap)
 double NormalMapGenerator::_getHeightIntensity(int x, int y)
 {
-    if (x < 0 || y < 0 || x >= this->_width || y >= this->_height)
-        return 0.00;
+    if (x < 0)
+        x = 0;
+    else if (x >= this->_width)
+        x = this->_width - 1;
+    if (y < 0)
+        y = 0;
+    else if (y >= this->_height)
+        y = this->_height - 1;
+
     double height = this->_height_map->at(x, y);
 
     // TODO: add strength control element
