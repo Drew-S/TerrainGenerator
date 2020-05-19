@@ -37,48 +37,78 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="mode">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <property name="text">
-       <string>Mix</string>
-      </property>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
-      <property name="text">
-       <string>Add</string>
-      </property>
+      <widget class="QComboBox" name="mode">
+       <item>
+        <property name="text">
+         <string>Mix</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Subtract</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Multiply</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Divide</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Min</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Max</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Pow</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>Subtract</string>
-      </property>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
-     <item>
-      <property name="text">
-       <string>Multiply</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Divide</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Min</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Max</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Pow</string>
-      </property>
-     </item>
-    </widget>
+    </layout>
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="val_in_1">
