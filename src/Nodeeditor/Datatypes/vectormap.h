@@ -47,6 +47,14 @@ public:
     // Return vector map scaled via image (linear interpolation)
     VectorMap scaled(int width, int height);
 
+    // Check if the map is using a solid fill color (all pixels the same)
+    bool usingFill();
+
+    // Transform a vector map using a provided lambda
+    //                                  pixel       value
+    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dvec4 value);
+    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMap *map);
+
     // Get a specific value
     glm::dvec4 at(int x, int y);
 
@@ -65,4 +73,5 @@ private:
     // Used to convert image to vector map
     void _saveImage(QImage image);
     glm::dvec4 _fill{0.00, 0.00, 0.00, 0.00};
+    bool _use_fill = false;
 };

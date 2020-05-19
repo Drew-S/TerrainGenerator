@@ -17,6 +17,7 @@ VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
 {
     qDebug("Creating Vector Map with only size set: (%dx%d)", width, height);
     this->_fill = fill;
+    this->_use_fill = true;
     this->width = width;
     this->height = height;
 }
@@ -125,6 +126,48 @@ VectorMap VectorMap::scaled(int width, int height)
     return VectorMap(image);
 }
 
+// Check if the map is using a solid fill color
+bool VectorMap::usingFill()
+{
+    return this->_use_fill;
+}
+
+// Transform a vector map using a provided lambda
+VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dvec4 value)
+{
+    VectorMap map;
+    if (this->usingFill())
+    {
+        map = VectorMap(this->width, this->height, func(this->_fill, value));
+    }
+    else
+    {
+        map = VectorMap(this->width, this->height);
+        for (int y = 0; y < this->height; y++)
+            for (int x = 0; x < this->width; x++)
+                map.append(func(this->at(x, y), value));
+    }
+
+    return map;
+}
+VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMap *map)
+{
+    VectorMap out;
+    if (this->usingFill() && map->usingFill())
+    {
+        out = VectorMap(this->width, this->height, func(this->_fill, map->at(0, 0)));
+    }
+    else
+    {
+        out = VectorMap(this->width, this->height);
+        for (int y = 0; y < this->height; y++)
+            for (int x = 0; x < this->width; x++)
+                out.append(func(this->at(x, y), map->at(x, y)));
+    }
+
+    return out;
+}
+
 // Get a value at a specific index, returns the fill color if beyond bounds
 // or empty pixels
 glm::dvec4 VectorMap::at(int x, int y)
@@ -143,6 +186,7 @@ bool VectorMap::append(glm::dvec4 value)
 {
     if ((int)this->values.size() >= this->width * this->height)
         return false;
+    this->_use_fill = false;
     this->values.push_back(value);
     return true;
 }
@@ -153,6 +197,7 @@ bool VectorMap::set(int x, int y, glm::dvec4 value)
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
     int index = y * this->width + x;
+    this->_use_fill = false;
     if (index >= (int)this->values.size())
         for (int i = (int)this->values.size(); i < index; i++)
             this->values.push_back(this->_fill);
