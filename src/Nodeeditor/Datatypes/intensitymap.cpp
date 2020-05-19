@@ -19,6 +19,7 @@ IntensityMap::IntensityMap(int width, int height, double fill)
     this->width = width;
     this->height = height;
     this->_fill = fill;
+    this->_use_fill = true;
 }
 
 // Set size and values from a 1D vector array
@@ -52,13 +53,20 @@ QImage IntensityMap::toImage(bool print_qimage)
     if (print_qimage)
         qDebug("Converting Intensity map to QImage");
     QImage image(this->width, this->height, QImage::Format_RGBA64);
-    for (int y = 0; y < this->height; y++)
+    if (this->usingFill())
     {
-        for (int x = 0; x < this->width; x++)
+        image.fill(QColor::fromRgbF(this->_fill, this->_fill, this->_fill, this->_fill));
+    }
+    else
+    {
+        for (int y = 0; y < this->height; y++)
         {
-            double h = this->at(x, y);
-            QColor color = QColor::fromRgbF(h, h, h);
-            image.setPixelColor(x, y, color);
+            for (int x = 0; x < this->width; x++)
+            {
+                double h = this->at(x, y);
+                QColor color = QColor::fromRgbF(h, h, h);
+                image.setPixelColor(x, y, color);
+            }
         }
     }
     return image;
@@ -82,10 +90,18 @@ IntensityMap IntensityMap::scaled(int width, int height)
 // Apply a transformation function on a per pixel basis
 IntensityMap IntensityMap::transform(double func(double, double), double value)
 {
-    IntensityMap map(this->width, this->height);
-    for (int y = 0; y < this->height; y++)
-        for (int x = 0; x < this->width; x++)
-            map.append(func(this->at(x, y), value));
+    IntensityMap map;
+    if (this->usingFill())
+    {
+        map = IntensityMap(this->width, this->height, func(this->_fill, value));
+    }
+    else
+    {
+        map = IntensityMap(this->width, this->height);
+        for (int y = 0; y < this->height; y++)
+            for (int x = 0; x < this->width; x++)
+                map.append(func(this->at(x, y), value));
+    }
 
     return map;
 }
@@ -93,10 +109,18 @@ IntensityMap IntensityMap::transform(double func(double, double), double value)
 // Apply a transformation function on a per pixel basis
 IntensityMap IntensityMap::transform(double func(double, double), IntensityMap *map)
 {
-    IntensityMap out(this->width, this->height);
-    for (int y = 0; y < this->height; y++)
-        for (int x = 0; x < this->width; x++)
-            out.append(func(this->at(x, y), map->at(x, y)));
+    IntensityMap out;
+    if (this->usingFill() && map->usingFill())
+    {
+        out = IntensityMap(this->width, this->height, func(this->_fill, map->at(0, 0)));
+    }
+    else
+    {
+        out = IntensityMap(this->width, this->height);
+        for (int y = 0; y < this->height; y++)
+            for (int x = 0; x < this->width; x++)
+                out.append(func(this->at(x, y), map->at(x, y)));
+    }
 
     return out;
 }
@@ -114,11 +138,18 @@ double IntensityMap::at(int x, int y)
     return this->values[index];
 }
 
+bool IntensityMap::usingFill()
+{
+    return this->_use_fill;
+}
+
 // Append a value to the end of the array
 bool IntensityMap::append(double value)
 {
     if ((int)this->values.size() >= this->width * this->height)
         return false;
+
+    this->_use_fill = false;
     this->values.push_back(value);
     return true;
 }
@@ -128,6 +159,8 @@ bool IntensityMap::set(int x, int y, double value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
+
+    this->_use_fill = false;
 
     this->values[y * this->width + x] = value;
     return true;

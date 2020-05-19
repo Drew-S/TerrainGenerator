@@ -49,6 +49,9 @@ public:
     // Get a specific value
     double at(int x, int y);
 
+    // Check if the map is using a solid fill color (all pixels the same)
+    bool usingFill();
+
     // Append a value (for filling with generated data) (bool whether can/successful)
     bool append(double value);
 
@@ -64,4 +67,5 @@ private:
     // Used to convert image to intensity map
     void _saveImage(QImage image, IntensityMap::Channel channel);
     double _fill = 0.00;
+    bool _use_fill = false;
 };
