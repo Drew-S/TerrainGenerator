@@ -81,3 +81,5 @@ make
 ```
 ./test/build/test
 ```
+
+**TODO**: Add usage documentation to docs, add help to application with built in reference and searching.
