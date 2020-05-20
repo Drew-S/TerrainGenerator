@@ -38,7 +38,7 @@ public:
     // Get the port datatype
     QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
 
-    // Get the output data (the VectorMapData)
+    // Get the output data (the IntensityMapData)
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Save and load the node

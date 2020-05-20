@@ -14,6 +14,7 @@
 #include "./Nodes/inputsimplexnoise.h"
 #include "./Nodes/mathnode.h"
 #include "./Nodes/colorsplit.h"
+#include "./Nodes/colorcombine.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject

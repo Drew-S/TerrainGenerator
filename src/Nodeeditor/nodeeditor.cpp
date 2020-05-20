@@ -22,6 +22,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<InputSimplexNoiseNode>("Input");
     registry->registerModel<ConverterMathNode>("Converters");
     registry->registerModel<ConverterColorSplit>("Converters");
+    registry->registerModel<ConverterColorCombine>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -108,6 +109,12 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     else if (name == ConverterMathNode().name())
     {
         ConverterMathNode *selected = static_cast<ConverterMathNode *>(node);
+        QWidget *shared = selected->sharedWidget();
+        this->_updatePropertieNodesShared(shared);
+    }
+    else if (name == ConverterColorCombine().name())
+    {
+        ConverterColorCombine *selected = static_cast<ConverterColorCombine *>(node);
         QWidget *shared = selected->sharedWidget();
         this->_updatePropertieNodesShared(shared);
     }
