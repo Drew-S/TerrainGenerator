@@ -11,13 +11,13 @@
 
 // Node that converts a VectorMap input and splits the colour channels out into
 // individual IntensityMap for rgba
-class ConverterColorSplit : public QtNodes::NodeDataModel
+class ConverterColorSplitNode : public QtNodes::NodeDataModel
 {
     Q_OBJECT
 
 public:
-    ConverterColorSplit();
-    ~ConverterColorSplit();
+    ConverterColorSplitNode();
+    ~ConverterColorSplitNode();
 
     // Title shown at the top of the node
     QString caption() const override;

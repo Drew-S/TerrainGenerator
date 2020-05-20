@@ -4,45 +4,45 @@
 
 #include <glm/vec4.hpp>
 
-ConverterColorSplit::ConverterColorSplit() {}
-ConverterColorSplit::~ConverterColorSplit() {}
+ConverterColorSplitNode::ConverterColorSplitNode() {}
+ConverterColorSplitNode::~ConverterColorSplitNode() {}
 
 // Caption name shown in the node
-QString ConverterColorSplit::caption() const
+QString ConverterColorSplitNode::caption() const
 {
     return QString("Color Splitter");
 }
 
 // The name of the node
-QString ConverterColorSplit::name() const
+QString ConverterColorSplitNode::name() const
 {
     return QString("ColorSplitNode");
 }
-void ConverterColorSplit::name(QString name)
+void ConverterColorSplitNode::name(QString name)
 {
     (void)name;
 }
 
 // The embedded widget (none)
-QWidget *ConverterColorSplit::embeddedWidget()
+QWidget *ConverterColorSplitNode::embeddedWidget()
 {
     return nullptr;
 }
 
 // The model name of the node
-QString ConverterColorSplit::modelName()
+QString ConverterColorSplitNode::modelName()
 {
     return QString("Color Split Node");
 }
 
 // Get the number of ports (1 in, 4 out)
-unsigned int ConverterColorSplit::nPorts(QtNodes::PortType port_type) const
+unsigned int ConverterColorSplitNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 1 : 4;
 }
 
 // Get the port data type, VectorMap in, IntensityMap outputs, outputs are labelled independently
-QtNodes::NodeDataType ConverterColorSplit::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+QtNodes::NodeDataType ConverterColorSplitNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
     // (void)port_index;
     // return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
@@ -69,7 +69,7 @@ QtNodes::NodeDataType ConverterColorSplit::dataType(QtNodes::PortType port_type,
 }
 
 // When the input is set mark as set and split the channels out
-void ConverterColorSplit::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+void ConverterColorSplitNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
     (void)port;
     if (node_data)
@@ -81,7 +81,7 @@ void ConverterColorSplit::setInData(std::shared_ptr<QtNodes::NodeData> node_data
 }
 
 // Get a channel for one of the output channels
-std::shared_ptr<QtNodes::NodeData> ConverterColorSplit::outData(QtNodes::PortIndex port)
+std::shared_ptr<QtNodes::NodeData> ConverterColorSplitNode::outData(QtNodes::PortIndex port)
 {
     switch ((int)port)
     {
@@ -101,7 +101,7 @@ std::shared_ptr<QtNodes::NodeData> ConverterColorSplit::outData(QtNodes::PortInd
 }
 
 // Save the model for file
-QJsonObject ConverterColorSplit::save() const
+QJsonObject ConverterColorSplitNode::save() const
 {
     QJsonObject data;
     data["name"] = this->name();
@@ -109,13 +109,13 @@ QJsonObject ConverterColorSplit::save() const
 }
 
 // Load the model (no internal data to load)
-void ConverterColorSplit::restore(QJsonObject const &data)
+void ConverterColorSplitNode::restore(QJsonObject const &data)
 {
     (void)data;
 }
 
 // When the connection is deleted reset the model to use default outputs
-void ConverterColorSplit::inputConnectionDeleted(QtNodes::Connection const &connection)
+void ConverterColorSplitNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     this->_set = false;
     this->_red = IntensityMap(1, 1, 1.00);
@@ -126,7 +126,7 @@ void ConverterColorSplit::inputConnectionDeleted(QtNodes::Connection const &conn
 }
 
 // Splits the channels outputs
-void ConverterColorSplit::_generate()
+void ConverterColorSplitNode::_generate()
 {
     VectorMap map = this->_input->vectorMap();
 
