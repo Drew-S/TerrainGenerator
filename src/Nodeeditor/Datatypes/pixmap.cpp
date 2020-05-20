@@ -18,7 +18,7 @@ IntensityMapData::IntensityMapData(IntensityMap const &intensity_map)
 // Returns the type of this connector
 QtNodes::NodeDataType IntensityMapData::type() const
 {
-    return {"IntensityMap", "sampler2D"};
+    return {"IntensityMap", "mono"};
 }
 
 // Get the underlying data container
@@ -42,7 +42,7 @@ VectorMapData::VectorMapData(VectorMap const &vector_map) : _vector_map(vector_m
 // Returns the type of this connector
 QtNodes::NodeDataType VectorMapData::type() const
 {
-    return {"VectorMap", "sampler2D"};
+    return {"VectorMap", "rgba"};
 }
 // Get the underlying data container
 VectorMap VectorMapData::vectorMap() const
