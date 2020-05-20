@@ -4,60 +4,60 @@
 #include <QDoubleSpinBox>
 
 // TODO: Long term, fork nodeeditor to include better stylings
-ConverterColorCombine::ConverterColorCombine()
+ConverterColorCombineNode::ConverterColorCombineNode()
 {
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
 
-    QObject::connect(this->_ui.spin_red, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::redChanged);
-    QObject::connect(this->_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::greenChanged);
-    QObject::connect(this->_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::blueChanged);
-    QObject::connect(this->_ui.spin_alpha, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::alphaChanged);
+    QObject::connect(this->_ui.spin_red, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::redChanged);
+    QObject::connect(this->_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::greenChanged);
+    QObject::connect(this->_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::blueChanged);
+    QObject::connect(this->_ui.spin_alpha, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::alphaChanged);
 
-    QObject::connect(this->_shared_ui.spin_red, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::redChanged);
-    QObject::connect(this->_shared_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::greenChanged);
-    QObject::connect(this->_shared_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::blueChanged);
-    QObject::connect(this->_shared_ui.spin_alpha, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombine::alphaChanged);
+    QObject::connect(this->_shared_ui.spin_red, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::redChanged);
+    QObject::connect(this->_shared_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::greenChanged);
+    QObject::connect(this->_shared_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::blueChanged);
+    QObject::connect(this->_shared_ui.spin_alpha, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::alphaChanged);
 }
 
-ConverterColorCombine::~ConverterColorCombine() {}
+ConverterColorCombineNode::~ConverterColorCombineNode() {}
 
-QString ConverterColorCombine::caption() const
+QString ConverterColorCombineNode::caption() const
 {
     return QString("Colour Combiner");
 }
 
-QString ConverterColorCombine::name() const
+QString ConverterColorCombineNode::name() const
 {
     return QString("ColorCombineNode");
 }
-void ConverterColorCombine::name(QString name)
+void ConverterColorCombineNode::name(QString name)
 {
     (void)name;
 }
 
-QWidget *ConverterColorCombine::embeddedWidget()
+QWidget *ConverterColorCombineNode::embeddedWidget()
 {
     return this->_widget;
 }
-QWidget *ConverterColorCombine::sharedWidget()
+QWidget *ConverterColorCombineNode::sharedWidget()
 {
     return this->_shared_widget;
 }
 
-QString ConverterColorCombine::modelName()
+QString ConverterColorCombineNode::modelName()
 {
     return QString("Color Combine Node");
 }
 
-unsigned int ConverterColorCombine::nPorts(QtNodes::PortType port_type) const
+unsigned int ConverterColorCombineNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 4 : 1;
 }
 
-QtNodes::NodeDataType ConverterColorCombine::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
     if (port_type == QtNodes::PortType::Out)
         return VectorMapData().type();
@@ -81,13 +81,13 @@ QtNodes::NodeDataType ConverterColorCombine::dataType(QtNodes::PortType port_typ
     }
 }
 
-std::shared_ptr<QtNodes::NodeData> ConverterColorCombine::outData(QtNodes::PortIndex port)
+std::shared_ptr<QtNodes::NodeData> ConverterColorCombineNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
     return std::make_shared<VectorMapData>(this->_pixmap);
 }
 
-void ConverterColorCombine::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
+void ConverterColorCombineNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
 {
     if (node_data)
     {
@@ -122,7 +122,7 @@ void ConverterColorCombine::setInData(std::shared_ptr<QtNodes::NodeData> node_da
     }
 }
 
-QJsonObject ConverterColorCombine::save() const
+QJsonObject ConverterColorCombineNode::save() const
 {
     QJsonObject data;
     data["name"] = this->name();
@@ -132,7 +132,7 @@ QJsonObject ConverterColorCombine::save() const
     data["alpha"] = this->_alpha_val;
 }
 
-void ConverterColorCombine::restore(QJsonObject const &data)
+void ConverterColorCombineNode::restore(QJsonObject const &data)
 {
     this->_red_val = data["red"].toDouble(1.00);
     this->_green_val = data["green"].toDouble(1.00);
@@ -140,7 +140,7 @@ void ConverterColorCombine::restore(QJsonObject const &data)
     this->_alpha_val = data["alpha"].toDouble(1.00);
 }
 
-void ConverterColorCombine::inputConnectionDeleted(QtNodes::Connection const &connection)
+void ConverterColorCombineNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     switch ((int)connection.getPortIndex(QtNodes::PortType::In))
     {
@@ -169,28 +169,28 @@ void ConverterColorCombine::inputConnectionDeleted(QtNodes::Connection const &co
 }
 
 // When ui changes update
-void ConverterColorCombine::redChanged(double value)
+void ConverterColorCombineNode::redChanged(double value)
 {
     this->_red_val = value;
     this->_ui.spin_red->setValue(this->_red_val);
     this->_shared_ui.spin_red->setValue(this->_red_val);
     this->_generate();
 }
-void ConverterColorCombine::greenChanged(double value)
+void ConverterColorCombineNode::greenChanged(double value)
 {
     this->_green_val = value;
     this->_ui.spin_green->setValue(this->_green_val);
     this->_shared_ui.spin_green->setValue(this->_green_val);
     this->_generate();
 }
-void ConverterColorCombine::blueChanged(double value)
+void ConverterColorCombineNode::blueChanged(double value)
 {
     this->_blue_val = value;
     this->_ui.spin_blue->setValue(this->_blue_val);
     this->_shared_ui.spin_blue->setValue(this->_blue_val);
     this->_generate();
 }
-void ConverterColorCombine::alphaChanged(double value)
+void ConverterColorCombineNode::alphaChanged(double value)
 {
     this->_alpha_val = value;
     this->_ui.spin_alpha->setValue(this->_alpha_val);
@@ -198,7 +198,7 @@ void ConverterColorCombine::alphaChanged(double value)
     this->_generate();
 }
 
-void ConverterColorCombine::_generate()
+void ConverterColorCombineNode::_generate()
 {
     if (!this->_red_set && !this->_green_set && !this->_blue_set && !this->_alpha_set)
     {

@@ -13,13 +13,13 @@
 
 #include <glm/vec4.hpp>
 
-class ConverterColorCombine : public QtNodes::NodeDataModel
+class ConverterColorCombineNode : public QtNodes::NodeDataModel
 {
     Q_OBJECT
 
 public:
-    ConverterColorCombine();
-    ~ConverterColorCombine();
+    ConverterColorCombineNode();
+    ~ConverterColorCombineNode();
 
     // Title shown at the top of the node
     QString caption() const override;
