@@ -82,11 +82,11 @@ public slots:
 
 private:
     // Generate the output pixmap
-    void _gen();
+    void _generate();
     // Mixing methods of generation
-    void _gen_in_both();                 // both set
-    void _gen_in_1(bool second = false); // 1 set
-    void _gen_in();                      // none set
+    void _generateInBoth();                 // both set
+    void _generateIn1(bool second = false); // 1 set
+    void _generateIn();                     // none set
 
     // The algorithm to use for mixing
     ConverterMathNode::Mode _mode = ConverterMathNode::MIX;

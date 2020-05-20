@@ -25,7 +25,7 @@ ConverterMathNode::ConverterMathNode()
     QObject::connect(this->_shared_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val1Changed);
 
     // Generate default result
-    this->_gen();
+    this->_generate();
 }
 
 ConverterMathNode::~ConverterMathNode() {}
@@ -98,24 +98,24 @@ void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, 
             this->_ui.val_in_1->setReadOnly(true);
         }
 
-        this->_gen();
+        this->_generate();
     }
 }
 
 // Generate the output intensity map
-void ConverterMathNode::_gen()
+void ConverterMathNode::_generate()
 {
     if (this->_in_0_set && !this->_in_1_set)
-        this->_gen_in_1(false);
+        this->_generateIn1(false);
 
     else if (!this->_in_0_set && this->_in_1_set)
-        this->_gen_in_1(true);
+        this->_generateIn1(true);
 
     else if (this->_in_0_set && this->_in_1_set)
-        this->_gen_in_both();
+        this->_generateInBoth();
 
     else
-        this->_gen_in();
+        this->_generateIn();
 
     emit this->dataUpdated(0);
 }
@@ -123,7 +123,7 @@ void ConverterMathNode::_gen()
 // Generates intensity map by applying transform (pixel by pixel) from one map to the other
 // IntensityMap A, B, C
 // C = A (op) B
-void ConverterMathNode::_gen_in_both()
+void ConverterMathNode::_generateInBoth()
 {
     IntensityMap map_0 = this->_in_0->intensityMap();
     IntensityMap map_1 = this->_in_1->intensityMap();
@@ -161,7 +161,7 @@ void ConverterMathNode::_gen_in_both()
 // IntensityMap A, C
 // double B
 // C = A (op) B
-void ConverterMathNode::_gen_in_1(bool second)
+void ConverterMathNode::_generateIn1(bool second)
 {
     IntensityMap map;
     double val;
@@ -211,7 +211,7 @@ void ConverterMathNode::_gen_in_1(bool second)
 // IntensityMap C
 // double A, B
 // C = A (op) B
-void ConverterMathNode::_gen_in()
+void ConverterMathNode::_generateIn()
 {
     // TODO: Use render/preview resolution
     switch (this->_mode)
@@ -260,7 +260,7 @@ void ConverterMathNode::inputConnectionDeleted(QtNodes::Connection const &connec
         this->_ui.val_in_1->setReadOnly(false);
     }
 
-    this->_gen();
+    this->_generate();
 }
 
 // When the UI updates a value, update local reference and regenerated the results
@@ -269,14 +269,14 @@ void ConverterMathNode::val0Changed(double value)
     this->_val_in_0 = value;
     this->_ui.val_in_0->setValue(this->_val_in_0);
     this->_shared_ui.val_in_0->setValue(this->_val_in_0);
-    this->_gen();
+    this->_generate();
 }
 void ConverterMathNode::val1Changed(double value)
 {
     this->_val_in_1 = value;
     this->_ui.val_in_1->setValue(this->_val_in_1);
     this->_shared_ui.val_in_1->setValue(this->_val_in_1);
-    this->_gen();
+    this->_generate();
 }
 
 // Change the transform method used
