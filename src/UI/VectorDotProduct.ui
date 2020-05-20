@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VectorDotProduct</class>
+ <widget class="QWidget" name="VectorDotProduct">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>255</width>
+    <height>102</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>255</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgba(0,0,0,0);</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_x_0">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>x </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>999999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_y_0">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>y </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_z_0">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>z </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_w_0">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>w </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_x_1">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>x </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_y_1">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>y </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_z_1">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>z </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_w_1">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>w </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

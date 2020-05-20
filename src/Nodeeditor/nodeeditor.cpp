@@ -10,6 +10,11 @@
 #include "./Datatypes/pixmap.h"
 #include "./Datatypes/converters.h"
 
+#define NODE_CAST(NODE)                         \
+    NODE *selected = static_cast<NODE *>(node); \
+    QWidget *shared = selected->sharedWidget(); \
+    this->_updatePropertieNodesShared(shared);
+
 // This block of code is used to register all the different nodes
 // TODO: Figure out a way for stretch goals to dynamically load models through plugins
 static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
@@ -21,8 +26,9 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<InputTextureNode>("Input");
     registry->registerModel<InputSimplexNoiseNode>("Input");
     registry->registerModel<ConverterMathNode>("Converters");
-    registry->registerModel<ConverterColorSplit>("Converters");
-    registry->registerModel<ConverterColorCombine>("Converters");
+    registry->registerModel<ConverterColorSplitNode>("Converters");
+    registry->registerModel<ConverterColorCombineNode>("Converters");
+    registry->registerModel<ConverterVectorDotNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -94,29 +100,23 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     QString name = node->name();
     if (name == InputSimplexNoiseNode().name())
     {
-        InputSimplexNoiseNode *selected = static_cast<InputSimplexNoiseNode *>(node);
-
-        QWidget *shared = selected->sharedWidget();
-        this->_updatePropertieNodesShared(shared);
+        NODE_CAST(InputSimplexNoiseNode)
     }
     else if (name == InputTextureNode().name())
     {
-        InputTextureNode *selected = static_cast<InputTextureNode *>(node);
-
-        QWidget *shared = selected->sharedWidget();
-        this->_updatePropertieNodesShared(shared);
+        NODE_CAST(InputTextureNode)
     }
     else if (name == ConverterMathNode().name())
     {
-        ConverterMathNode *selected = static_cast<ConverterMathNode *>(node);
-        QWidget *shared = selected->sharedWidget();
-        this->_updatePropertieNodesShared(shared);
+        NODE_CAST(ConverterMathNode)
     }
-    else if (name == ConverterColorCombine().name())
+    else if (name == ConverterColorCombineNode().name())
     {
-        ConverterColorCombine *selected = static_cast<ConverterColorCombine *>(node);
-        QWidget *shared = selected->sharedWidget();
-        this->_updatePropertieNodesShared(shared);
+        NODE_CAST(ConverterColorCombineNode)
+    }
+    else if (name == ConverterVectorDotNode().name())
+    {
+        NODE_CAST(ConverterVectorDotNode)
     }
     else if (swap)
     {
