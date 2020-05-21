@@ -17,6 +17,7 @@
 #include "./Nodes/colorcombine.h"
 #include "./Nodes/vectordot.h"
 #include "./Nodes/vectorintensity.h"
+#include "./Nodes/vectormath.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject

@@ -92,7 +92,7 @@ private:
     ConverterMathNode::Mode _mode = ConverterMathNode::MIX;
 
     // The results
-    IntensityMap _pixmap;
+    IntensityMap _pixmap{1, 1, 1.00};
 
     // Input maps for input ports
     std::shared_ptr<IntensityMapData> _in_0;

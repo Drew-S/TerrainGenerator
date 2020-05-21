@@ -30,6 +30,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<ConverterColorCombineNode>("Converters");
     registry->registerModel<ConverterVectorDotNode>("Converters");
     registry->registerModel<ConverterVectorIntensityNode>("Converters");
+    registry->registerModel<ConverterVectorMathNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -95,33 +96,37 @@ void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
     }
 }
 
-// Handler for placing nodes in the properties node if the node has support
+// Handler for placing shared widget in the properties container if the node supports it
 void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 {
-    QString name = node->name();
-    if (name == InputSimplexNoiseNode().name())
+    QString name = node->modelName();
+    if (name == InputSimplexNoiseNode().modelName())
     {
         NODE_CAST(InputSimplexNoiseNode)
     }
-    else if (name == InputTextureNode().name())
+    else if (name == InputTextureNode().modelName())
     {
         NODE_CAST(InputTextureNode)
     }
-    else if (name == ConverterMathNode().name())
+    else if (name == ConverterMathNode().modelName())
     {
         NODE_CAST(ConverterMathNode)
     }
-    else if (name == ConverterColorCombineNode().name())
+    else if (name == ConverterColorCombineNode().modelName())
     {
         NODE_CAST(ConverterColorCombineNode)
     }
-    else if (name == ConverterVectorDotNode().name())
+    else if (name == ConverterVectorDotNode().modelName())
     {
         NODE_CAST(ConverterVectorDotNode)
     }
-    else if (name == ConverterVectorIntensityNode().name())
+    else if (name == ConverterVectorIntensityNode().modelName())
     {
         NODE_CAST(ConverterVectorIntensityNode)
+    }
+    else if (name == ConverterVectorMathNode().modelName())
+    {
+        NODE_CAST(ConverterVectorMathNode)
     }
     else if (swap)
     {
@@ -136,9 +141,9 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 // is null, set the active output to the newly created output node.
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
-    QString name = node.nodeDataModel()->name();
+    QString name = node.nodeDataModel()->modelName();
     // Created node is output and active output is null
-    if (name == OutputNode().name() && !this->_active_output)
+    if (name == OutputNode().modelName() && !this->_active_output)
     {
         qDebug("Setting active output node");
         // Save pointer to the output node
@@ -154,9 +159,9 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
 // When a node is double clicked, if it is an output node update the active output node
 void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
 {
-    QString name = node.nodeDataModel()->name();
+    QString name = node.nodeDataModel()->modelName();
     // If the node is an output node
-    if (name == OutputNode().name())
+    if (name == OutputNode().modelName())
     {
         qDebug("Updating active output node");
         // Disconnect old listeners
