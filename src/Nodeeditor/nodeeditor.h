@@ -12,7 +12,7 @@
 #include "./Nodes/output.h"
 #include "./Nodes/inputtexture.h"
 #include "./Nodes/inputsimplexnoise.h"
-#include "./Nodes/mathnode.h"
+#include "./Nodes/math.h"
 #include "./Nodes/colorsplit.h"
 #include "./Nodes/colorcombine.h"
 #include "./Nodes/vectordot.h"
