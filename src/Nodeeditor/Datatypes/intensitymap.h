@@ -17,6 +17,7 @@ public:
         RED,
         GREEN,
         BLUE,
+        ALPHA,
         AVERAGE,
         MIN,
         MAX

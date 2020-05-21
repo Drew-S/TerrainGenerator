@@ -188,6 +188,11 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
         qDebug("Converting image with channel blue");
         break;
 
+        // Use only the blue channel
+    case IntensityMap::ALPHA:
+        qDebug("Converting image with channel alpha");
+        break;
+
         // Average the red, green, and blue channels
     case IntensityMap::AVERAGE:
         qDebug("Converting image with channels averaged");
@@ -226,9 +231,14 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
                 this->values.push_back(color.blueF());
                 break;
 
+                // Use only the alpha channel
+            case IntensityMap::ALPHA:
+                this->values.push_back(color.alphaF());
+                break;
+
                 // Average the red, green, and blue channels
             case IntensityMap::AVERAGE:
-                this->values.push_back((color.redF() + color.greenF() + color.blueF()) / 3.00);
+                this->values.push_back((color.redF() + color.greenF() + color.blueF() + color.alphaF()) / 4.00);
                 break;
 
                 // Select the smallest of the red, green, and blue channels
@@ -238,6 +248,9 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
                 if (c < min)
                     min = c;
                 c = color.blueF();
+                if (c < min)
+                    min = c;
+                c = color.alphaF();
                 if (c < min)
                     min = c;
                 this->values.push_back(min);
@@ -250,6 +263,9 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
                 if (c > max)
                     max = c;
                 c = color.blueF();
+                if (c > max)
+                    max = c;
+                c = color.alphaF();
                 if (c > max)
                     max = c;
                 this->values.push_back(max);
