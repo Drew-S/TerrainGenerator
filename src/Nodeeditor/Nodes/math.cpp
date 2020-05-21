@@ -9,6 +9,7 @@
 // Create a ConverterMathNode
 ConverterMathNode::ConverterMathNode()
 {
+    qDebug("Creating Math Node, attaching listeners and UI widget");
     // Ui setup
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
@@ -105,6 +106,7 @@ void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, 
 // Generate the output intensity map
 void ConverterMathNode::_generate()
 {
+    qDebug("Applying transformation, generating output");
     if (this->_in_0_set && !this->_in_1_set)
         this->_generateIn1(false);
 
@@ -290,9 +292,10 @@ void ConverterMathNode::comboChanged(int index)
 // Save the node to a object for saving to a file
 QJsonObject ConverterMathNode::save() const
 {
+    qDebug("Saving math node");
     QJsonObject data;
     data["name"] = this->name();
-    data["mode"] = this->_mode;
+    data["mode"] = (int)this->_mode;
     data["value_0"] = this->_val_in_0;
     data["value_1"] = this->_val_in_1;
 
@@ -302,7 +305,8 @@ QJsonObject ConverterMathNode::save() const
 // Restore a node from the json data
 void ConverterMathNode::restore(QJsonObject const &data)
 {
-    this->_mode = (ConverterMathNode::Mode)data["mode"].toInt();
+    qDebug("Restoring math node");
+    this->_mode = (ConverterMathNode::Mode)data["mode"].toInt(0);
     this->_val_in_0 = data["value_0"].toDouble(1.00);
     this->_val_in_1 = data["value_1"].toDouble(1.00);
 }

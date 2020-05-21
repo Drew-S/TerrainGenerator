@@ -1,10 +1,15 @@
 #include "colorsplit.h"
 
+#include <QDebug>
+
 #include "../Datatypes/vectormap.h"
 
 #include <glm/vec4.hpp>
 
-ConverterColorSplitNode::ConverterColorSplitNode() {}
+ConverterColorSplitNode::ConverterColorSplitNode()
+{
+    qDebug("Creating colour split node");
+}
 ConverterColorSplitNode::~ConverterColorSplitNode() {}
 
 // Caption name shown in the node
@@ -103,6 +108,7 @@ std::shared_ptr<QtNodes::NodeData> ConverterColorSplitNode::outData(QtNodes::Por
 // Save the model for file
 QJsonObject ConverterColorSplitNode::save() const
 {
+    qDebug("Saving color split node");
     QJsonObject data;
     data["name"] = this->name();
     return data;
@@ -111,6 +117,7 @@ QJsonObject ConverterColorSplitNode::save() const
 // Load the model (no internal data to load)
 void ConverterColorSplitNode::restore(QJsonObject const &data)
 {
+    qDebug("Restoring color split node");
     (void)data;
 }
 
@@ -128,6 +135,7 @@ void ConverterColorSplitNode::inputConnectionDeleted(QtNodes::Connection const &
 // Splits the channels outputs
 void ConverterColorSplitNode::_generate()
 {
+    qDebug("Splitting color channels to output");
     VectorMap map = this->_input->vectorMap();
 
     this->_red = IntensityMap(map.width, map.height);

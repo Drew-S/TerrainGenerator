@@ -2,10 +2,12 @@
 
 #include <QColor>
 #include <QDoubleSpinBox>
+#include <QDebug>
 
 // TODO: Long term, fork nodeeditor to include better stylings
 ConverterColorCombineNode::ConverterColorCombineNode()
 {
+    qDebug("Created new Color combine node, attaching listeners and UI widget");
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
@@ -124,16 +126,21 @@ void ConverterColorCombineNode::setInData(std::shared_ptr<QtNodes::NodeData> nod
 
 QJsonObject ConverterColorCombineNode::save() const
 {
+    qDebug("Saving combine node");
     QJsonObject data;
+
     data["name"] = this->name();
     data["red"] = this->_red_val;
     data["green"] = this->_green_val;
     data["blue"] = this->_blue_val;
     data["alpha"] = this->_alpha_val;
+
+    return data;
 }
 
 void ConverterColorCombineNode::restore(QJsonObject const &data)
 {
+    qDebug("Restoring combine node");
     this->_red_val = data["red"].toDouble(1.00);
     this->_green_val = data["green"].toDouble(1.00);
     this->_blue_val = data["blue"].toDouble(1.00);
@@ -200,6 +207,7 @@ void ConverterColorCombineNode::alphaChanged(double value)
 
 void ConverterColorCombineNode::_generate()
 {
+    qDebug("Combinging values into output");
     if (!this->_red_set && !this->_green_set && !this->_blue_set && !this->_alpha_set)
     {
         this->_pixmap = VectorMap(1, 1, glm::dvec4(this->_red_val, this->_green_val, this->_blue_val, this->_alpha_val));

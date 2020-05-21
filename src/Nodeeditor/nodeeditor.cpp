@@ -99,32 +99,32 @@ void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
 // Handler for placing shared widget in the properties container if the node supports it
 void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 {
-    QString name = node->modelName();
-    if (name == InputSimplexNoiseNode().modelName())
+    QString name = node->name();
+    if (name == InputSimplexNoiseNode().name())
     {
         NODE_CAST(InputSimplexNoiseNode)
     }
-    else if (name == InputTextureNode().modelName())
+    else if (name == InputTextureNode().name())
     {
         NODE_CAST(InputTextureNode)
     }
-    else if (name == ConverterMathNode().modelName())
+    else if (name == ConverterMathNode().name())
     {
         NODE_CAST(ConverterMathNode)
     }
-    else if (name == ConverterColorCombineNode().modelName())
+    else if (name == ConverterColorCombineNode().name())
     {
         NODE_CAST(ConverterColorCombineNode)
     }
-    else if (name == ConverterVectorDotNode().modelName())
+    else if (name == ConverterVectorDotNode().name())
     {
         NODE_CAST(ConverterVectorDotNode)
     }
-    else if (name == ConverterVectorIntensityNode().modelName())
+    else if (name == ConverterVectorIntensityNode().name())
     {
         NODE_CAST(ConverterVectorIntensityNode)
     }
-    else if (name == ConverterVectorMathNode().modelName())
+    else if (name == ConverterVectorMathNode().name())
     {
         NODE_CAST(ConverterVectorMathNode)
     }
@@ -141,9 +141,9 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 // is null, set the active output to the newly created output node.
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
-    QString name = node.nodeDataModel()->modelName();
+    QString name = node.nodeDataModel()->name();
     // Created node is output and active output is null
-    if (name == OutputNode().modelName() && !this->_active_output)
+    if (name == OutputNode().name() && !this->_active_output)
     {
         qDebug("Setting active output node");
         // Save pointer to the output node
@@ -159,9 +159,9 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
 // When a node is double clicked, if it is an output node update the active output node
 void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
 {
-    QString name = node.nodeDataModel()->modelName();
+    QString name = node.nodeDataModel()->name();
     // If the node is an output node
-    if (name == OutputNode().modelName())
+    if (name == OutputNode().name())
     {
         qDebug("Updating active output node");
         // Disconnect old listeners

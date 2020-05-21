@@ -2,9 +2,12 @@
 
 #include <QDoubleSpinBox>
 #include <QComboBox>
+#include <QDebug>
 
+// Creates the node
 ConverterVectorMathNode::ConverterVectorMathNode()
 {
+    qDebug("Creating Vector Math Node, attaching listeners and UI widget");
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
 
@@ -69,6 +72,7 @@ QWidget *ConverterVectorMathNode::sharedWidget()
 }
 
 // Needed for NodeDataModel, not sure where it is used
+// TODO: test, may have misread library and this function does nothing/does not exist
 QString ConverterVectorMathNode::modelName()
 {
     return QString("Vector Math Node");
@@ -91,13 +95,40 @@ QtNodes::NodeDataType ConverterVectorMathNode::dataType(QtNodes::PortType port_t
 // Save and load the node for project files
 QJsonObject ConverterVectorMathNode::save() const
 {
+    qDebug("Saving vector math node");
     QJsonObject data;
     data["name"] = this->name();
+    data["mode"] = (int)this->_mode;
+
+    QJsonObject vec0;
+    vec0["x"] = this->_val_in_0.x;
+    vec0["y"] = this->_val_in_0.y;
+    vec0["z"] = this->_val_in_0.z;
+
+    QJsonObject vec1;
+    vec1["x"] = this->_val_in_0.x;
+    vec1["y"] = this->_val_in_0.y;
+    vec1["z"] = this->_val_in_0.z;
+
+    dat["vec0"] = vec0;
+    dat["vec1"] = vec1;
+
     return data;
 }
 void ConverterVectorMathNode::restore(QJsonObject const &data)
 {
-    (void)data;
+    qDebug("Restoring vector math node");
+    this->_mode = (ConverterVectorMathNode::Mode)data["mode"].toInt(0);
+
+    this->_val_in_0.x = data["vec0"].toObject()["x"].toDouble(1.00);
+    this->_val_in_0.y = data["vec0"].toObject()["y"].toDouble(1.00);
+    this->_val_in_0.z = data["vec0"].toObject()["z"].toDouble(1.00);
+
+    this->_val_in_1.x = data["vec1"].toObject()["x"].toDouble(1.00);
+    this->_val_in_1.y = data["vec1"].toObject()["y"].toDouble(1.00);
+    this->_val_in_1.z = data["vec1"].toObject()["z"].toDouble(1.00);
+
+    this->_generate();
 }
 
 // Get the output data
@@ -126,6 +157,7 @@ void ConverterVectorMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_
     }
 }
 
+// When input deleted, use default values
 void ConverterVectorMathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     int port = (int)connection.getPortIndex(QtNodes::PortType::In);
@@ -141,6 +173,7 @@ void ConverterVectorMathNode::inputConnectionDeleted(QtNodes::Connection const &
     }
 }
 
+// Input handlers
 void ConverterVectorMathNode::x0Changed(double value)
 {
     this->_val_in_0.x = value;
@@ -185,8 +218,17 @@ void ConverterVectorMathNode::z1Changed(double value)
     this->_generate();
 }
 
+void ConverterVectorMathNode::modeChanged(int index)
+{
+    this->_mode = (ConverterVectorMathNode::Mode)index;
+    this->_generate();
+}
+
+// Generate the output
+// TODO: Should be able to colllapse _generate*() into a single function nicely
 void ConverterVectorMathNode::_generate()
 {
+    qDebug("Applying transformation, generating output");
     if (this->_in_0_set && this->_in_1_set)
         this->_generateInBoth();
     else if (this->_in_0_set && !this->_in_1_set)
@@ -199,12 +241,7 @@ void ConverterVectorMathNode::_generate()
     emit this->dataUpdated(0);
 }
 
-void ConverterVectorMathNode::modeChanged(int index)
-{
-    this->_mode = (ConverterVectorMathNode::Mode)index;
-    this->_generate();
-}
-
+// Generates the output when both maps are set
 void ConverterVectorMathNode::_generateInBoth()
 {
     VectorMap map_0 = this->_in_0->vectorMap();
@@ -229,6 +266,7 @@ void ConverterVectorMathNode::_generateInBoth()
     }
 }
 
+// Generates the output when one map is set
 void ConverterVectorMathNode::_generateIn1(bool second)
 {
     VectorMap map;
@@ -264,6 +302,7 @@ void ConverterVectorMathNode::_generateIn1(bool second)
     }
 }
 
+// Generates the output when neither map is set
 void ConverterVectorMathNode::_generateIn()
 {
 
@@ -287,6 +326,7 @@ void ConverterVectorMathNode::_generateIn()
     }
 }
 
+// Algorithms to use to manipulate the functions
 glm::dvec4 ConverterVectorMathNode::add(glm::dvec4 a, glm::dvec4 b)
 {
     return a + b;

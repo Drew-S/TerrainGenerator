@@ -1,9 +1,11 @@
 #include "vectorintensity.h"
 
 #include <QComboBox>
+#include <QDebug>
 
 ConverterVectorIntensityNode::ConverterVectorIntensityNode()
 {
+    qDebug("Creating Vector to Intensity Converter Node, attaching listeners and UI widget");
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
 
@@ -71,13 +73,16 @@ std::shared_ptr<QtNodes::NodeData> ConverterVectorIntensityNode::outData(QtNodes
 // Save and load the node
 QJsonObject ConverterVectorIntensityNode::save() const
 {
+    qDebug("Saving vector to intensity converter node");
     QJsonObject data;
     data["name"] = this->name();
+    data["channel"] = (int)this->_channel;
     return data;
 }
 void ConverterVectorIntensityNode::restore(QJsonObject const &data)
 {
-    (void)data;
+    qDebug("Restoring vector to intensity converter node");
+    this->_channel = (IntensityMap::Channel)data["channel"].toInt(0);
 }
 
 // Needed for all nodes, even if there are no inputs
@@ -95,6 +100,7 @@ void ConverterVectorIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> 
 // Generate resulting output
 void ConverterVectorIntensityNode::_generate()
 {
+    qDebug("Generating output");
     if (this->_set)
     {
         VectorMap map = this->_input->vectorMap();

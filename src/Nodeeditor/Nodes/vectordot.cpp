@@ -1,10 +1,12 @@
 #include "vectordot.h"
 
 #include <QDoubleSpinBox>
+#include <QDebug>
 
 // Create Vector Dot Product Node
 ConverterVectorDotNode::ConverterVectorDotNode()
 {
+    qDebug("Creating Vector Dot Product Node, attaching listeners and UI widget");
     // Setup ui
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
@@ -87,6 +89,7 @@ std::shared_ptr<QtNodes::NodeData> ConverterVectorDotNode::outData(QtNodes::Port
 // Save the internal settings for file saving
 QJsonObject ConverterVectorDotNode::save() const
 {
+    qDebug("Saving vector dot product node");
     QJsonObject data;
     data["name"] = this->name();
 
@@ -111,6 +114,7 @@ QJsonObject ConverterVectorDotNode::save() const
 // Restores the node from the given save data
 void ConverterVectorDotNode::restore(QJsonObject const &data)
 {
+    qDebug("Restoring vector dot product node");
     this->_in_val_0 = glm::dvec4(
         data["val0"].toObject()["x"].toDouble(1.00),
         data["val0"].toObject()["y"].toDouble(1.00),
@@ -241,6 +245,7 @@ void ConverterVectorDotNode::w1Changed(double value)
 // Generate the output value
 void ConverterVectorDotNode::_generate()
 {
+    qDebug("Applying tranformation, generating output");
     if (this->_in_set_0 && this->_in_set_1)
         this->_generateInBoth();
 
