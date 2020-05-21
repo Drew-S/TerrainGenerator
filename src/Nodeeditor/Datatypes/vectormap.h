@@ -32,7 +32,7 @@ public:
     ~VectorMap();
 
     // Converters to create from/to an intensity map
-    IntensityMap toIntensityMap();
+    IntensityMap toIntensityMap(IntensityMap::Channel channel = IntensityMap::BLUE);
     static VectorMap fromIntensityMap(
         IntensityMap &map,
         glm::dvec4 color = glm::dvec4(1.00, 1.00, 1.00, 1.00),

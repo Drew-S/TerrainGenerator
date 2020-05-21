@@ -49,13 +49,71 @@ VectorMap::~VectorMap() {}
 
 // Convert to an intensity map
 // TODO: Add support for channel selecting
-IntensityMap VectorMap::toIntensityMap()
+IntensityMap VectorMap::toIntensityMap(IntensityMap::Channel channel)
 {
     qDebug("Converting Vector Map to Intensity Map");
     IntensityMap map(this->width, this->height);
+    double c, min, max;
+    glm::dvec4 val;
     for (int y = 0; y < this->height; y++)
+    {
         for (int x = 0; x < this->width; x++)
-            map.append(this->at(x, y).z);
+        {
+            switch (channel)
+            {
+            case IntensityMap::RED:
+                map.append(this->at(x, y).r);
+                break;
+
+            case IntensityMap::GREEN:
+                map.append(this->at(x, y).g);
+                break;
+
+            case IntensityMap::BLUE:
+                map.append(this->at(x, y).b);
+                break;
+
+            case IntensityMap::ALPHA:
+                map.append(this->at(x, y).a);
+                break;
+
+            case IntensityMap::AVERAGE:
+                val = this->at(x, y);
+                map.append((val.x + val.y + val.z + val.w) / 4.00);
+                break;
+
+            case IntensityMap::MIN:
+                val = this->at(x, y);
+                min = val.x;
+                c = val.y;
+                if (c < min)
+                    min = c;
+                c = val.z;
+                if (c < min)
+                    min = c;
+                c = val.w;
+                if (c < min)
+                    min = c;
+                map.append(min);
+                break;
+
+            case IntensityMap::MAX:
+                val = this->at(x, y);
+                max = val.x;
+                c = val.y;
+                if (c > max)
+                    max = c;
+                c = val.z;
+                if (c > max)
+                    max = c;
+                c = val.w;
+                if (c > max)
+                    max = c;
+                map.append(max);
+                break;
+            }
+        }
+    }
 
     qDebug("Completed conversion");
 
