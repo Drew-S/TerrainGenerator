@@ -24,13 +24,9 @@ public:
 
     // Title shown in the selection list
     QString name() const override;
-    void name(QString name);
 
     // The image label that is embedded in the node
     QWidget *embeddedWidget();
-
-    // Needed for NodeDataModel, not sure where it is used
-    QString modelName();
 
     // Get the number of ports (4 output, 1 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;

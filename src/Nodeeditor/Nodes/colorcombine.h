@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: Make rich comments that can double as documentation
+
 #include "../Datatypes/intensitymap.h"
 #include "../Datatypes/pixmap.h"
 
@@ -26,14 +28,10 @@ public:
 
     // Title shown in the selection list
     QString name() const override;
-    void name(QString name);
 
     // The embedded control widget
     QWidget *embeddedWidget();
     QWidget *sharedWidget();
-
-    // Needed for NodeDataModel, not sure where it is used
-    QString modelName();
 
     // Get the number of ports (1 output, 4 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
@@ -48,7 +46,7 @@ public:
     QJsonObject save() const override;
     void restore(QJsonObject const &data) override;
 
-    // Needed for all nodes, even if there are no inputs
+    // Set the input node
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
 public slots:

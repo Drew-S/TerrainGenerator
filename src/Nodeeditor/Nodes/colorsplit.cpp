@@ -15,29 +15,19 @@ ConverterColorSplitNode::~ConverterColorSplitNode() {}
 // Caption name shown in the node
 QString ConverterColorSplitNode::caption() const
 {
-    return QString("Color Splitter");
+    return QString("Split Colour Channels");
 }
 
 // The name of the node
 QString ConverterColorSplitNode::name() const
 {
-    return QString("ColorSplitNode");
-}
-void ConverterColorSplitNode::name(QString name)
-{
-    (void)name;
+    return QString("Colour Split");
 }
 
 // The embedded widget (none)
 QWidget *ConverterColorSplitNode::embeddedWidget()
 {
     return nullptr;
-}
-
-// The model name of the node
-QString ConverterColorSplitNode::modelName()
-{
-    return QString("Color Split Node");
 }
 
 // Get the number of ports (1 in, 4 out)

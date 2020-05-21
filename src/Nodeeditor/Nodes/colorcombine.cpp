@@ -26,20 +26,19 @@ ConverterColorCombineNode::ConverterColorCombineNode()
 
 ConverterColorCombineNode::~ConverterColorCombineNode() {}
 
+// Title shown at the top of the node
 QString ConverterColorCombineNode::caption() const
 {
-    return QString("Colour Combiner");
+    return QString("Combine Color Channels");
 }
 
+// Title shown in the selection list
 QString ConverterColorCombineNode::name() const
 {
-    return QString("ColorCombineNode");
-}
-void ConverterColorCombineNode::name(QString name)
-{
-    (void)name;
+    return QString("Colour Combine");
 }
 
+// The embedded control widget
 QWidget *ConverterColorCombineNode::embeddedWidget()
 {
     return this->_widget;
@@ -49,16 +48,13 @@ QWidget *ConverterColorCombineNode::sharedWidget()
     return this->_shared_widget;
 }
 
-QString ConverterColorCombineNode::modelName()
-{
-    return QString("Color Combine Node");
-}
-
+// Get the number of ports (1 output, 4 input)
 unsigned int ConverterColorCombineNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 4 : 1;
 }
 
+// Get the port datatype
 QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
     if (port_type == QtNodes::PortType::Out)
@@ -83,12 +79,14 @@ QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port
     }
 }
 
+// Get the output data (the VectorMapData)
 std::shared_ptr<QtNodes::NodeData> ConverterColorCombineNode::outData(QtNodes::PortIndex port)
 {
     (void)port;
     return std::make_shared<VectorMapData>(this->_pixmap);
 }
 
+// Set the input node
 void ConverterColorCombineNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
 {
     if (node_data)
@@ -124,6 +122,7 @@ void ConverterColorCombineNode::setInData(std::shared_ptr<QtNodes::NodeData> nod
     }
 }
 
+// Save and load the node
 QJsonObject ConverterColorCombineNode::save() const
 {
     qDebug("Saving combine node");
@@ -147,6 +146,7 @@ void ConverterColorCombineNode::restore(QJsonObject const &data)
     this->_alpha_val = data["alpha"].toDouble(1.00);
 }
 
+// On input being deleted update data
 void ConverterColorCombineNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     switch ((int)connection.getPortIndex(QtNodes::PortType::In))
@@ -205,6 +205,7 @@ void ConverterColorCombineNode::alphaChanged(double value)
     this->_generate();
 }
 
+// Generates the output
 void ConverterColorCombineNode::_generate()
 {
     qDebug("Combinging values into output");

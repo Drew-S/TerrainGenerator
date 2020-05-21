@@ -41,17 +41,13 @@ InputSimplexNoiseNode::~InputSimplexNoiseNode() {}
 // Title shown at the top of the node
 QString InputSimplexNoiseNode::caption() const
 {
-    return "Simplex Noise Texture";
+    return "Generate Simplex Noise Texture";
 }
 
 // Title shown in the selection list
 QString InputSimplexNoiseNode::name() const
 {
-    return "InputSimplexNoiseNode";
-}
-void InputSimplexNoiseNode::name(QString name)
-{
-    (void)name;
+    return "Simplex Noise Texture";
 }
 
 // The image label that is embedded in the node
@@ -62,12 +58,6 @@ QWidget *InputSimplexNoiseNode::embeddedWidget()
 QWidget *InputSimplexNoiseNode::sharedWidget()
 {
     return this->_shared_widget;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-QString InputSimplexNoiseNode::modelName()
-{
-    return "Input Simplex Noise Node";
 }
 
 // Get the number of in and out ports

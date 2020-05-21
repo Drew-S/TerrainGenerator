@@ -49,11 +49,7 @@ QString ConverterVectorDotNode::caption() const
 // Name of the widget shown in the selection list
 QString ConverterVectorDotNode::name() const
 {
-    return QString("VectorDotNode");
-}
-void ConverterVectorDotNode::name(QString name)
-{
-    (void)name;
+    return QString("Vector Dot Product");
 }
 
 // The embedded and shared interaction widget

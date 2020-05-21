@@ -52,17 +52,13 @@ InputTextureNode::~InputTextureNode() {}
 // Title shown at the top of the node
 QString InputTextureNode::caption() const
 {
-    return "Input Texture";
+    return "Texture";
 }
 
 // Title shown in the selection list
 QString InputTextureNode::name() const
 {
-    return "InputTextureNode";
-}
-void InputTextureNode::name(QString name)
-{
-    (void)name;
+    return "Texture";
 }
 
 // The image label that is embedded in the node
@@ -72,16 +68,9 @@ QWidget *InputTextureNode::embeddedWidget()
 }
 
 // The image label that is shared with the properties
-QWidget *
-InputTextureNode::sharedWidget()
+QWidget *InputTextureNode::sharedWidget()
 {
     return this->_shared;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-QString InputTextureNode::modelName()
-{
-    return "Input Texture Node";
 }
 
 // Get the number of in and out ports

@@ -21,17 +21,13 @@ ConverterVectorIntensityNode::~ConverterVectorIntensityNode() {}
 // Title shown at the top of the node
 QString ConverterVectorIntensityNode::caption() const
 {
-    return QString("Vector to Intensity Map Converter");
+    return QString("Vector to Intensity Map");
 }
 
 // Title shown in the selection list
 QString ConverterVectorIntensityNode::name() const
 {
-    return QString("VectorIntensityConverter");
-}
-void ConverterVectorIntensityNode::name(QString name)
-{
-    (void)name;
+    return QString("Vector to Intensity Converter");
 }
 
 // The image label that is embedded in the node
@@ -42,12 +38,6 @@ QWidget *ConverterVectorIntensityNode::embeddedWidget()
 QWidget *ConverterVectorIntensityNode::sharedWidget()
 {
     return this->_shared_widget;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-QString ConverterVectorIntensityNode::modelName()
-{
-    return QString("Vector Intensity Map Converter");
 }
 
 // Get the number of ports (1 output, 1 input)

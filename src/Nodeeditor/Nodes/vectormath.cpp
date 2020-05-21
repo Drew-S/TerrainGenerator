@@ -44,21 +44,15 @@ ConverterVectorMathNode::ConverterVectorMathNode()
 ConverterVectorMathNode::~ConverterVectorMathNode() {}
 
 // Title shown at the top of the node
-// TODO: Fix captions for all nodes
 QString ConverterVectorMathNode::caption() const
 {
-    return QString("VectorMath");
+    return QString("Vector Math");
 }
 
 // Title shown in the selection list
-// TODO: Fix names for all nodes
 QString ConverterVectorMathNode::name() const
 {
-    return QString("VectorMathNode");
-}
-void ConverterVectorMathNode::name(QString name)
-{
-    (void)name;
+    return QString("Vector Math");
 }
 
 // The embedded and shared widgets
@@ -69,13 +63,6 @@ QWidget *ConverterVectorMathNode::embeddedWidget()
 QWidget *ConverterVectorMathNode::sharedWidget()
 {
     return this->_shared_widget;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-// TODO: test, may have misread library and this function does nothing/does not exist
-QString ConverterVectorMathNode::modelName()
-{
-    return QString("Vector Math Node");
 }
 
 // Get the number of ports (1 output, 2 input)
@@ -110,8 +97,8 @@ QJsonObject ConverterVectorMathNode::save() const
     vec1["y"] = this->_val_in_0.y;
     vec1["z"] = this->_val_in_0.z;
 
-    dat["vec0"] = vec0;
-    dat["vec1"] = vec1;
+    data["vec0"] = vec0;
+    data["vec1"] = vec1;
 
     return data;
 }

@@ -40,12 +40,7 @@ QString ConverterMathNode::caption() const
 // Title shown in the selection list
 QString ConverterMathNode::name() const
 {
-    return QString("ConverterMathNode");
-}
-
-void ConverterMathNode::name(QString name)
-{
-    (void)name;
+    return QString("Math");
 }
 
 // The widget that is embedded into the node
@@ -58,12 +53,6 @@ QWidget *ConverterMathNode::embeddedWidget()
 QWidget *ConverterMathNode::sharedWidget()
 {
     return this->_shared_widget;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-QString ConverterMathNode::modelName()
-{
-    return QString("Math Node");
 }
 
 // Get the number of in and out ports

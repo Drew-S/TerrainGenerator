@@ -55,23 +55,13 @@ QString OutputNode::caption() const
 // Title shown in the selection list
 QString OutputNode::name() const
 {
-    return QString("OutputNode");
-}
-void OutputNode::name(QString name)
-{
-    (void)name;
+    return QString("Output");
 }
 
 // The image label that is embedded in the node
 QWidget *OutputNode::embeddedWidget()
 {
     return this->_widget;
-}
-
-// Needed for NodeDataModel, not sure where it is used
-QString OutputNode::modelName()
-{
-    return QString("Output Node");
 }
 
 // Get the number of in and out ports
