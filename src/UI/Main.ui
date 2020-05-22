@@ -190,6 +190,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="combo_preview">
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
           <item>
            <property name="text">
             <string>128 x 128</string>
@@ -236,6 +239,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="combo_render">
+          <property name="currentIndex">
+           <number>3</number>
+          </property>
           <item>
            <property name="text">
             <string>128 x 128</string>
@@ -277,6 +283,13 @@
          <widget class="Line" name="line_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="use_render">
+          <property name="text">
+           <string>Use render resolution for preview?</string>
           </property>
          </widget>
         </item>

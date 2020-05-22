@@ -46,7 +46,7 @@ private:
     QDir _system_asset_directory;  // /user/share/TerrainGenerator/...
     QDir _user_asset_directory;    // /home/<user>/.TerrainGenerator/...
     int _mesh_resolution = 256;    // Vertices on OpenGL preview mesh
-    int _preview_resolution = 512; // Image resolution during design
+    int _preview_resolution = 256; // Image resolution during design
     int _render_resolution = 1024; // Image resolution when rendering/exporting
     bool _render_mode = false;     // Whether to use render resolution or preview
 };

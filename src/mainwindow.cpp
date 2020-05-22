@@ -29,6 +29,7 @@ using json = nlohmann::json;
 #include <QRegExp>
 #include <QList>
 #include <QComboBox>
+#include <QCheckBox>
 
 #include "Globals/settings.h"
 #include "Globals/stencillist.h"
@@ -83,6 +84,10 @@ void MainWindow::setup(Ui::MainWindow *ui)
     QObject::connect(this->_main_ui->combo_render, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         Q_CHECK_PTR(SETTINGS);
         SETTINGS->setRenderResolution((int)pow(2, index + 7));
+    });
+    QObject::connect(this->_main_ui->use_render, &QCheckBox::stateChanged, [=](int state) {
+        Q_CHECK_PTR(SETTINGS);
+        SETTINGS->setRenderMode(state == 2);
     });
 
     // Fix Nodeeditor and OpenGL widget splitter size
