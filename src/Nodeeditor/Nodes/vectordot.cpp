@@ -55,10 +55,12 @@ QString ConverterVectorDotNode::name() const
 // The embedded and shared interaction widget
 QWidget *ConverterVectorDotNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 QWidget *ConverterVectorDotNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
@@ -71,14 +73,14 @@ unsigned int ConverterVectorDotNode::nPorts(QtNodes::PortType port_type) const
 // Get the ports data type, VectorMap in and IntensityMap out
 QtNodes::NodeDataType ConverterVectorDotNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_index;
+    Q_UNUSED(port_index);
     return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
 }
 
 // Get the resulting data from the output port
 std::shared_ptr<QtNodes::NodeData> ConverterVectorDotNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_pixmap);
 }
 
@@ -149,6 +151,9 @@ void ConverterVectorDotNode::setInData(std::shared_ptr<QtNodes::NodeData> node_d
             this->_ui.spin_z_1->setReadOnly(true);
             this->_ui.spin_w_1->setReadOnly(true);
             break;
+        default:
+            Q_UNREACHABLE();
+            break;
         }
         this->_generate();
     }
@@ -172,6 +177,9 @@ void ConverterVectorDotNode::inputConnectionDeleted(QtNodes::Connection const &c
         this->_ui.spin_y_1->setReadOnly(false);
         this->_ui.spin_z_1->setReadOnly(false);
         this->_ui.spin_w_1->setReadOnly(false);
+        break;
+    default:
+        Q_UNREACHABLE();
         break;
     }
     this->_generate();
@@ -260,6 +268,8 @@ void ConverterVectorDotNode::_generate()
 // Generate when both inputs have maps
 void ConverterVectorDotNode::_generateInBoth()
 {
+    Q_CHECK_PTR(this->_in_0);
+    Q_CHECK_PTR(this->_in_1);
     VectorMap map0 = this->_in_0->vectorMap();
     VectorMap map1 = this->_in_1->vectorMap();
 
@@ -277,11 +287,13 @@ void ConverterVectorDotNode::_generateIn1(bool second)
     glm::dvec4 val;
     if (second)
     {
+        Q_CHECK_PTR(this->_in_1);
         map = this->_in_1->vectorMap();
         val = this->_in_val_0;
     }
     else
     {
+        Q_CHECK_PTR(this->_in_0);
         map = this->_in_0->vectorMap();
         val = this->_in_val_1;
     }

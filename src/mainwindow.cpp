@@ -39,7 +39,7 @@ using json = nlohmann::json;
 
 MainWindow::MainWindow()
 {
-    qDebug("Using temp directory: %s", qPrintable(Settings::getInstance()->tmpDir().path()));
+    qDebug("Using temp directory: %s", qPrintable(SETTINGS->tmpDir().path()));
 }
 MainWindow::~MainWindow() {}
 
@@ -99,6 +99,8 @@ void MainWindow::_saveAsFile()
 
     qDebug("Directory to save project set to: %s", qPrintable(directory));
 
+    Q_CHECK_PTR(this->_save_ui);
+
     this->_save_ui->directory_label->setText(directory);
     this->_save_as_directory = directory;
 }
@@ -141,6 +143,7 @@ void MainWindow::_saveAsAccept()
             this->_save_as_dialogue->reject();
             return;
         }
+        Q_CHECK_PTR(this->_editor);
 
         // // Get project data
         QJsonObject global;
@@ -198,6 +201,7 @@ void MainWindow::_saveAsAccept()
                 }
             }
         }
+        Q_CHECK_PTR(this->_save_as_dialogue);
 
         // Update save file
         global["nodes"] = QJsonDocument::fromJson(QByteArray(nodeeditor.dump().c_str())).object();
@@ -236,8 +240,9 @@ void MainWindow::_saveAsAccept()
 // Open up the save as dialogue
 void MainWindow::saveAs()
 {
+    Q_CHECK_PTR(this->_save_as_dialogue);
     qDebug("Open saving dialogue");
-    this->_save_as_dialogue->exec();
+    this->_save_as_dialogue->show();
 }
 
 // Load data from a project file
@@ -287,6 +292,8 @@ void MainWindow::load()
     // Set some data
     this->_save_as_pack = settings.value("packed_externals", false);
 
+    Q_CHECK_PTR(SETTINGS);
+
     // Extract images if using a packed save file
     if (this->_save_as_pack)
     {
@@ -307,7 +314,7 @@ void MainWindow::load()
             QByteArray image_file_data = file.readAll();
 
             // Filename with temp path /tmp/TerrainGenerator_XXXXXX/file.png
-            std::string temp_image_file = Settings::getInstance()->tmpDir().path().toStdString() + "/" + zip.getCurrentFileName().toStdString();
+            std::string temp_image_file = SETTINGS->tmpDir().path().toStdString() + "/" + zip.getCurrentFileName().toStdString();
             file.close();
 
             // Write image to temp file
@@ -332,7 +339,7 @@ void MainWindow::load()
             {
                 QString image = settings["nodes"]["nodes"][i]["model"].value("image", "").c_str();
 
-                settings["nodes"]["nodes"][i]["model"]["image"] = Settings::getInstance()->tmpDir().path().toStdString() + "/" + image.toStdString();
+                settings["nodes"]["nodes"][i]["model"]["image"] = SETTINGS->tmpDir().path().toStdString() + "/" + image.toStdString();
             }
         }
     }
@@ -340,6 +347,8 @@ void MainWindow::load()
 
     // Recreate QJson form of json
     document = QJsonDocument::fromJson(QByteArray(settings.dump().c_str()));
+
+    Q_CHECK_PTR(this->_editor);
 
     // Load nodeeditor
     this->_editor->load(document["nodes"].toObject());

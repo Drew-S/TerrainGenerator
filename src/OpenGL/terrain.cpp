@@ -10,6 +10,7 @@
 // number of vertices in the x and z coordinates, this results in resolution^2 vertices
 Terrain::Terrain(int resolution)
 {
+    Q_ASSERT(resolution > 0);
     qDebug("Setting up terrain");
     // When created set the supplied resolution
     this->setResolution(resolution);
@@ -81,6 +82,7 @@ void Terrain::initializeGL()
 // Draw the terrain (technically, it can be drawn twice)
 void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity)
 {
+    Q_CHECK_PTR(f);
     // Draw the terrain
     // TODO: Add terrain color selector and line color selector
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -95,6 +97,7 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D c
 // Draws the terrain givent the provided information
 void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color)
 {
+    Q_CHECK_PTR(f);
     // Bind the buffers
     this->_vao.bind();
     this->_vertex_buffer.bind();
@@ -153,6 +156,7 @@ void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D 
 // Convert row and col index 2D vector into 1D vector index
 static int getIndex(int row, int col, int resolution)
 {
+    Q_ASSERT(resolution > 0);
     return row * resolution + col;
 }
 
@@ -196,6 +200,7 @@ void Terrain::setResolution(int resolution)
 // Update the current height map texture with a new height map
 void Terrain::setHeightMap(QImage height_map)
 {
+    Q_CHECK_PTR(this->_height);
     qDebug("Updating Height Map");
     delete this->_height;
     this->_height = new QOpenGLTexture(height_map);
@@ -206,6 +211,7 @@ void Terrain::setHeightMap(QImage height_map)
 // Update the current normal map texture with a new normal map
 void Terrain::setNormalMap(QImage normal_map)
 {
+    Q_CHECK_PTR(this->_normal);
     qDebug("Updating Normal Map");
     delete this->_normal;
     this->_normal = new QOpenGLTexture(normal_map);

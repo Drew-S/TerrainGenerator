@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
+
 Camera::Camera() {}
 Camera::~Camera() {}
 
@@ -92,6 +94,7 @@ float Camera::zoom(float value)
 }
 float Camera::zoom()
 {
+    Q_BETWEEN(1.0f, this->_zoom, 20.0f);
     return this->_zoom;
 }
 
@@ -107,6 +110,7 @@ float Camera::setRotationX(float value)
 {
     this->_rotation_x = value;
     this->_clampRotationX(); // limits rotation
+    Q_BETWEEN(0.0f, this->_rotation_x, 90.0f);
     return this->_rotation_x;
 }
 
@@ -130,8 +134,8 @@ float Camera::rotationY()
 // Applies rotation limits above the terrain
 void Camera::_clampRotationX()
 {
-    if (this->_rotation_x < 0.0)
-        this->_rotation_x = 0.0;
-    if (this->_rotation_x > 90.0)
-        this->_rotation_x = 90.0;
+    if (this->_rotation_x < 0.0f)
+        this->_rotation_x = 0.0f;
+    if (this->_rotation_x > 90.0f)
+        this->_rotation_x = 90.0f;
 }

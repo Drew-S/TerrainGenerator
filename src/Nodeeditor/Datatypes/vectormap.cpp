@@ -7,6 +7,8 @@ VectorMap::VectorMap() {}
 // Set initial size without data
 VectorMap::VectorMap(int width, int height)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Vector Map with only size set: (%dx%d)", width, height);
     this->width = width;
     this->height = height;
@@ -15,6 +17,8 @@ VectorMap::VectorMap(int width, int height)
 // Set initial size with a specificied fill color
 VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Vector Map with only size set: (%dx%d)", width, height);
     this->_fill = fill;
     this->_use_fill = true;
@@ -25,6 +29,8 @@ VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
 // Set size and values from a 1D vector array
 VectorMap::VectorMap(int width, int height, std::vector<glm::dvec4> values)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Vector Map with data: (%dx%d), %d pixels set", width, height, width * height);
     this->width = width;
     this->height = height;
@@ -48,7 +54,6 @@ VectorMap::VectorMap(QPixmap image)
 VectorMap::~VectorMap() {}
 
 // Convert to an intensity map
-// TODO: Add support for channel selecting
 IntensityMap VectorMap::toIntensityMap(IntensityMap::Channel channel)
 {
     qDebug("Converting Vector Map to Intensity Map");
@@ -111,6 +116,10 @@ IntensityMap VectorMap::toIntensityMap(IntensityMap::Channel channel)
                     max = c;
                 map.append(max);
                 break;
+
+            default:
+                Q_UNREACHABLE();
+                break;
             }
         }
     }
@@ -146,6 +155,9 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, Vecto
                 break;
             case VectorMap::MASK_ALPHA:
                 vec.append(glm::dvec4(color.x, color.y, color.z, v * color.a));
+                break;
+            default:
+                Q_UNREACHABLE();
                 break;
             }
         }
@@ -210,6 +222,7 @@ VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dve
 }
 VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMap *map)
 {
+    Q_CHECK_PTR(map);
     VectorMap out;
     if (this->usingFill() && map->usingFill())
     {

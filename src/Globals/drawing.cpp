@@ -17,26 +17,25 @@
 #include <QPen>
 #include <QBrush>
 
-// #include <glm/vec4.hpp>
-
-// #include "../Nodeeditor/Datatypes/vectormap.h"
-
 bool DrawingDialogue::_instance = false;
 DrawingDialogue *DrawingDialogue::_single = nullptr;
 
 // Create the dialogue
 // TODO: include overlay of heightmap on OpenGL terrain
-// TODO: implement history/save/apply system
 DrawingDialogue::DrawingDialogue()
 {
+    Q_CHECK_PTR(STENCILS);
     // Set the initial stencil value
     this->_active_stencil = STENCILS->stencil(0);
+
+    Q_CHECK_PTR(this->_active_stencil);
 
     // Setup ui and attach listeners
     this->_ui.setupUi(&this->_dialogue);
 
     // Update brush size
     QObject::connect(this->_ui.spin_brush_size, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
+        Q_ASSERT(value >= 0);
         this->_brush = value;
         if (this->_active_stencil)
             this->_active_stencil->setBrush(this->_brush);
@@ -44,6 +43,7 @@ DrawingDialogue::DrawingDialogue()
 
     // Update opacity of brush
     QObject::connect(this->_ui.spin_opacity, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
+        Q_ASSERT(0.0 <= value && value <= 100.0);
         this->_opacity = value;
         if (this->_active_stencil)
             this->_active_stencil->setAlpha(this->_opacity / 100.00);
@@ -51,6 +51,7 @@ DrawingDialogue::DrawingDialogue()
 
     // Update flow rate of brush
     QObject::connect(this->_ui.spin_flow_rate, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
+        Q_ASSERT(0.0 <= value && value <= 100.0);
         this->_flow_rate = value;
     });
 
@@ -86,8 +87,8 @@ DrawingDialogue::DrawingDialogue()
             ui.setupUi(&dialogue);
             if (dialogue.exec() == QDialog::Accepted)
             {
-                this->_dialogue.accept();
                 this->_applied = true;
+                this->_dialogue.accept();
             }
         }
         else
@@ -171,6 +172,9 @@ DrawingDialogue::DrawingDialogue()
                     this->_active_stencil_button = i;
                     this->_stencil_buttons[this->_active_stencil_button]->setChecked(true);
                     this->_active_stencil = STENCILS->stencil(i);
+
+                    Q_CHECK_PTR(this->_active_stencil);
+
                     this->_active_stencil->setBrush(this->_brush);
                     this->_active_stencil->setAlpha(this->_opacity / 100.00);
                     this->_active_stencil->setColor(this->_color);
@@ -191,6 +195,8 @@ DrawingDialogue::DrawingDialogue()
 
     this->_brush_indicator->setZValue(1.0);
 
+    Q_CHECK_PTR(TEXTURES);
+
     for (int i = 0; i < TEXTURES->count(); i++)
         this->newTexture(i);
 }
@@ -209,18 +215,20 @@ DrawingDialogue *DrawingDialogue::getInstance()
         _instance = true;
         _single = new DrawingDialogue();
     }
+    Q_CHECK_PTR(_single);
     return _single;
 }
 
 // Show the dialogue
 void DrawingDialogue::show()
 {
-    this->_dialogue.exec();
+    this->_dialogue.show();
 }
 
 // Show the dialogue with the selected texture
 void DrawingDialogue::show(int index)
 {
+    Q_CHECK_PTR(TEXTURES);
     Texture *texture = TEXTURES->at(index);
     if (texture != nullptr)
     {
@@ -243,6 +251,8 @@ void DrawingDialogue::show(int index)
 
         this->_history.clear();
 
+        Q_CHECK_PTR(this->_scene);
+
         this->_pixmap = this->_scene->addPixmap(this->_combined_pixmap);
 
         this->_scene->setSceneRect(-10.00, -10.00, (double)this->_combined_pixmap.width() + 10.00, (double)this->_combined_pixmap.height() + 10.00);
@@ -262,13 +272,13 @@ void DrawingDialogue::show(int index)
         // Show surfaces
         this->textureUpdated();
     }
-    this->_dialogue.exec();
+    this->_dialogue.show();
 }
 
 // Handle drawing and zooming of the texture
 bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
 {
-    (void)object;
+    Q_UNUSED(object);
     if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *key = dynamic_cast<QKeyEvent *>(event);
@@ -276,6 +286,9 @@ bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
             this->undo();
         return true;
     }
+
+    Q_CHECK_PTR(this->_active_stencil);
+
     // Zoom into/out the texture
     if (event->type() == QEvent::Wheel)
     {
@@ -291,11 +304,11 @@ bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
     // On a click, place a stencil
     else if (event->type() == QEvent::MouseButtonPress)
     {
+        Q_CHECK_PTR(this->_drawing_painter);
         QMouseEvent *mouse = dynamic_cast<QMouseEvent *>(event);
         if (mouse->buttons() == Qt::LeftButton)
         {
             this->_prev = this->_ui.interact_window->mapToScene(mouse->pos());
-            // this->_original_texture->draw(this->_active_stencil, this->_prev);
             this->_active_stencil->draw(this->_drawing_painter, this->_prev);
             this->textureUpdated();
             this->_applied = false;
@@ -306,13 +319,14 @@ bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
     // On mouse release update history stack
     else if (event->type() == QEvent::MouseButtonRelease)
     {
+        Q_CHECK_PTR(this->_applied_painter);
         QMouseEvent *mouse = dynamic_cast<QMouseEvent *>(event);
         if (mouse->button() == Qt::LeftButton)
         {
             this->_history.push_back(this->_drawing_pixmap);
             this->_drawing_pixmap.fill(QColor(255, 255, 255, 0));
             // TODO: Replace hardcoded pixmap count history limit with memory based application level settings option
-            if ((int)this->_history.size() == 10)
+            if ((int)this->_history.size() >= 10)
             {
                 this->_applied_painter->drawPixmap(0, 0, this->_history[0]);
                 this->_history.erase(this->_history.begin());
@@ -323,17 +337,17 @@ bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
     // On drag place stencils
     else if (event->type() == QEvent::MouseMove)
     {
+        Q_CHECK_PTR(this->_drawing_painter);
         QMouseEvent *mouse = dynamic_cast<QMouseEvent *>(event);
         QPointF pos = this->_ui.interact_window->mapToScene(mouse->pos());
         if (mouse->buttons() == Qt::LeftButton)
         {
             QLineF line(this->_prev, pos);
             // Only draw new stencils if the line is longer than the flow rate value
-            if (line.length() >= 101.00 - this->_flow_rate)
+            if (line.length() >= 102.00 - this->_flow_rate)
             {
                 if (this->_original_texture != nullptr)
                 {
-                    // this->_original_texture->draw(this->_active_stencil, pos);
                     this->_active_stencil->draw(this->_drawing_painter, pos);
                     this->textureUpdated();
                 }
@@ -341,6 +355,8 @@ bool DrawingDialogue::eventFilter(QObject *object, QEvent *event)
                 return true;
             }
         }
+
+        Q_CHECK_PTR(this->_brush_indicator);
 
         // Update brush location/size
         this->_brush_indicator->setRect(
@@ -364,6 +380,7 @@ void DrawingDialogue::undo()
 // When the texture is updated (drawn on) update the visual pixmap
 void DrawingDialogue::textureUpdated()
 {
+    Q_CHECK_PTR(this->_original_texture);
     this->_combined_pixmap = this->_original_texture->pixmap();
     QPainter *painter = new QPainter(&this->_combined_pixmap);
     painter->drawPixmap(0, 0, this->_applied_pixmap);
@@ -371,7 +388,6 @@ void DrawingDialogue::textureUpdated()
         painter->drawPixmap(0, 0, this->_history[i]);
 
     painter->drawPixmap(0, 0, this->_drawing_pixmap);
-    // this->_pixmap->setPixmap(this->_original_texture->pixmap());
     this->_pixmap->setPixmap(this->_combined_pixmap);
 
     delete painter;

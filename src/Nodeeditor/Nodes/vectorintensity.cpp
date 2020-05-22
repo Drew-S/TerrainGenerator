@@ -33,30 +33,33 @@ QString ConverterVectorIntensityNode::name() const
 // The image label that is embedded in the node
 QWidget *ConverterVectorIntensityNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 QWidget *ConverterVectorIntensityNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
 // Get the number of ports (1 output, 1 input)
 unsigned int ConverterVectorIntensityNode::nPorts(QtNodes::PortType port_type) const
 {
-    (void)port_type;
+    Q_UNUSED(port_type);
     return 1;
 }
 
 // Get the port datatype
 QtNodes::NodeDataType ConverterVectorIntensityNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_index;
+    Q_UNUSED(port_index);
     return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
 }
 
 // Get the output data (the IntensityMapData)
 std::shared_ptr<QtNodes::NodeData> ConverterVectorIntensityNode::outData(QtNodes::PortIndex port)
 {
+    Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_output);
 }
 
@@ -78,7 +81,7 @@ void ConverterVectorIntensityNode::restore(QJsonObject const &data)
 // Needed for all nodes, even if there are no inputs
 void ConverterVectorIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
 {
-    (void)port_index;
+    Q_UNUSED(port_index);
     if (node_data)
     {
         this->_input = std::dynamic_pointer_cast<VectorMapData>(node_data);
@@ -102,7 +105,7 @@ void ConverterVectorIntensityNode::_generate()
 // When the connection is deleted use default value
 void ConverterVectorIntensityNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
-    (void)connection;
+    Q_UNUSED(connection);
     this->_set = false;
     this->_generate();
 }

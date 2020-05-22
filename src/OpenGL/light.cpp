@@ -5,6 +5,8 @@
 
 #include <GL/gl.h>
 
+#define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
+
 // TODO: Add control to set light color
 #define LIGHT_COLOR 1.0f, 1.0f, 1.0f
 
@@ -98,6 +100,7 @@ float Light::rotateX(float value)
 {
     this->_rotation_x += value;
     this->_clampRotationX(); // Limits the rotation
+    Q_BETWEEN(0.0f, this->_rotation_x, 90.0f);
     return this->_rotation_x;
 }
 

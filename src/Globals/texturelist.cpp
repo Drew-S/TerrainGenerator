@@ -29,16 +29,28 @@ Texture::Texture(int w, int h, QString filename)
 Texture::~Texture() {}
 
 // Return a pixmap
-QPixmap Texture::pixmap() { return this->_pixmap; }
+QPixmap Texture::pixmap()
+{
+    return this->_pixmap;
+}
 
 // Return an image
-QImage Texture::image() { return this->_pixmap.toImage(); }
+QImage Texture::image()
+{
+    return this->_pixmap.toImage();
+}
 
 // Return an icon
-QIcon Texture::icon() { return QIcon(this->_pixmap); }
+QIcon Texture::icon()
+{
+    return QIcon(this->_pixmap);
+}
 
 // Return a vector map
-VectorMap Texture::vectorMap() { return VectorMap(this->_pixmap); }
+VectorMap Texture::vectorMap()
+{
+    return VectorMap(this->_pixmap);
+}
 
 // Replace the underlying pixmap
 void Texture::replace(QPixmap pixmap)
@@ -64,6 +76,8 @@ QString Texture::filename()
 // Draw the stencil onto the pixmap
 void Texture::draw(Stencil *stencil, QPointF pos)
 {
+    Q_CHECK_PTR(stencil);
+    Q_CHECK_PTR(this->_painter);
     stencil->draw(this->_painter, pos);
     emit this->updated();
 }
@@ -102,6 +116,7 @@ TextureList *TextureList::getInstance()
         _instance = true;
         _single = new TextureList();
     }
+    Q_CHECK_PTR(_single);
     return _single;
 }
 
@@ -138,5 +153,7 @@ Texture *TextureList::at(int index)
 {
     if (index < 0 || index >= (int)this->_textures.size())
         return nullptr;
+
+    Q_CHECK_PTR(this->_textures[index]);
     return this->_textures[index];
 }

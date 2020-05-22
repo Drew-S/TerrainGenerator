@@ -39,7 +39,6 @@ unsigned int ConverterColorSplitNode::nPorts(QtNodes::PortType port_type) const
 // Get the port data type, VectorMap in, IntensityMap outputs, outputs are labelled independently
 QtNodes::NodeDataType ConverterColorSplitNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    // (void)port_index;
     // return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
     if (port_type == QtNodes::PortType::In)
         return VectorMapData().type();
@@ -60,13 +59,16 @@ QtNodes::NodeDataType ConverterColorSplitNode::dataType(QtNodes::PortType port_t
     case 3:
         return {type.id, "alpha"};
         break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
 }
 
 // When the input is set mark as set and split the channels out
 void ConverterColorSplitNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     if (node_data)
     {
         this->_input = std::dynamic_pointer_cast<VectorMapData>(node_data);
@@ -92,6 +94,9 @@ std::shared_ptr<QtNodes::NodeData> ConverterColorSplitNode::outData(QtNodes::Por
     case 3:
         return std::make_shared<IntensityMapData>(this->_alpha);
         break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
 }
 
@@ -107,13 +112,14 @@ QJsonObject ConverterColorSplitNode::save() const
 // Load the model (no internal data to load)
 void ConverterColorSplitNode::restore(QJsonObject const &data)
 {
+    Q_UNUSED(data);
     qDebug("Restoring color split node");
-    (void)data;
 }
 
 // When the connection is deleted reset the model to use default outputs
 void ConverterColorSplitNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
+    Q_UNUSED(connection);
     this->_set = false;
     this->_red = IntensityMap(1, 1, 1.00);
     this->_green = IntensityMap(1, 1, 1.00);

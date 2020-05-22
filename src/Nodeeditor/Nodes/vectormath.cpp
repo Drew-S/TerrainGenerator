@@ -58,10 +58,12 @@ QString ConverterVectorMathNode::name() const
 // The embedded and shared widgets
 QWidget *ConverterVectorMathNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 QWidget *ConverterVectorMathNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
@@ -74,8 +76,8 @@ unsigned int ConverterVectorMathNode::nPorts(QtNodes::PortType port_type) const
 // Get the port datatype (only imports VectorMapData)
 QtNodes::NodeDataType ConverterVectorMathNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_type;
-    (void)port_index;
+    Q_UNUSED(port_type);
+    Q_UNUSED(port_index);
     return VectorMapData().type();
 }
 
@@ -121,6 +123,7 @@ void ConverterVectorMathNode::restore(QJsonObject const &data)
 // Get the output data
 std::shared_ptr<QtNodes::NodeData> ConverterVectorMathNode::outData(QtNodes::PortIndex port)
 {
+    Q_UNUSED(port);
     return std::make_shared<VectorMapData>(this->_output);
 }
 
@@ -139,6 +142,9 @@ void ConverterVectorMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_
             this->_in_1 = std::dynamic_pointer_cast<VectorMapData>(node_data);
             this->_in_1_set = true;
             break;
+        default:
+            Q_UNREACHABLE();
+            break;
         }
         this->_generate();
     }
@@ -148,15 +154,19 @@ void ConverterVectorMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_
 void ConverterVectorMathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     int port = (int)connection.getPortIndex(QtNodes::PortType::In);
-    if (port == 0)
+    switch (port)
     {
+    case 0:
         this->_in_0_set = false;
         this->_generate();
-    }
-    else if (port == 1)
-    {
+        break;
+    case 1:
         this->_in_1_set = false;
         this->_generate();
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
 }
 
@@ -231,6 +241,8 @@ void ConverterVectorMathNode::_generate()
 // Generates the output when both maps are set
 void ConverterVectorMathNode::_generateInBoth()
 {
+    Q_CHECK_PTR(this->_in_0);
+    Q_CHECK_PTR(this->_in_1);
     VectorMap map_0 = this->_in_0->vectorMap();
     VectorMap map_1 = this->_in_1->vectorMap();
     switch (this->_mode)
@@ -260,11 +272,13 @@ void ConverterVectorMathNode::_generateIn1(bool second)
     glm::dvec4 val;
     if (second)
     {
+        Q_CHECK_PTR(this->_in_1);
         map = this->_in_1->vectorMap();
         val = this->_val_in_0;
     }
     else
     {
+        Q_CHECK_PTR(this->_in_1);
         map = this->_in_0->vectorMap();
         val = this->_val_in_1;
     }

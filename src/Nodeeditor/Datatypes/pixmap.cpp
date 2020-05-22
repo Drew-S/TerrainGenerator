@@ -4,11 +4,6 @@
 
 // Create intensity connector containers from a variety of sources
 IntensityMapData::IntensityMapData() {}
-// IntensityMapData::IntensityMapData(QPixmap const &pixmap)
-// {
-//     qDebug("Creating Intensity Map connector data with QPixmap");
-//     this->_intensity_map = IntensityMap(pixmap, IntensityMap::AVERAGE);
-// }
 IntensityMapData::IntensityMapData(IntensityMap const &intensity_map)
     : _intensity_map(intensity_map)
 {
@@ -28,12 +23,7 @@ IntensityMap IntensityMapData::intensityMap() const
 }
 
 // Create vector connector containers from a variety of sources
-VectorMapData::VectorMapData(){};
-// VectorMapData::VectorMapData(QPixmap const &pixmap)
-// {
-//     qDebug("Creating Vector Map connector data with QPixmap");
-//     this->_vector_map = VectorMap(pixmap);
-// }
+VectorMapData::VectorMapData() {}
 VectorMapData::VectorMapData(VectorMap const &vector_map) : _vector_map(vector_map)
 {
     qDebug("Creating Vector Map connector data with Vector Map");

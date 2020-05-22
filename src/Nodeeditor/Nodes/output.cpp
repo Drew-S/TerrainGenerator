@@ -33,7 +33,6 @@ OutputNode::OutputNode()
 
     this->_widget = new QWidget();
     this->_widget->setLayout(layout);
-    // this->_widget->setAttribute(Qt::WA_NoSystemBackground);
     this->_widget->setStyleSheet("QWidget { background-color: rgba(0,0,0,0); } QLabel { background-color: rgba(117, 117, 117, 255); border: 1px solid black; }");
 
     QImage normal(1, 1, QImage::Format_Indexed8);
@@ -61,6 +60,7 @@ QString OutputNode::name() const
 // The image label that is embedded in the node
 QWidget *OutputNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 
@@ -73,28 +73,26 @@ unsigned int OutputNode::nPorts(QtNodes::PortType port_type) const
 // Get the output data (nothing)
 std::shared_ptr<QtNodes::NodeData> OutputNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     return nullptr;
 }
 
 // Get the data type for the port inputs and output
 QtNodes::NodeDataType OutputNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_type;
-    (void)port_index;
+    Q_UNUSED(port_type);
+    Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
 // Set the input pixmap data
 void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     if (node_data)
     {
         // Cast pointer into VectorMapData pointer
         this->_pixmap = std::dynamic_pointer_cast<IntensityMapData>(node_data);
-        if (this->_pixmap == nullptr)
-            throw 0;
 
         // Get width and height
         int w = this->_height_label->width();
@@ -156,7 +154,7 @@ void OutputNode::_generateNormalMap(IntensityMap height_map)
 // Input is removed so we reset the height and normal maps
 void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
-    (void)connection;
+    Q_UNUSED(connection);
     this->_pixmap = nullptr;
     this->_height_map = QImage();
 
@@ -181,6 +179,6 @@ QJsonObject OutputNode::save() const
 // Restore the node from a file
 void OutputNode::restore(QJsonObject const &data)
 {
+    Q_UNUSED(data);
     qDebug("Restore Output Node");
-    (void)data;
 }

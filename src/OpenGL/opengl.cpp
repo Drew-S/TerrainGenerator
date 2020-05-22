@@ -54,6 +54,7 @@ OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
     // Attach overlay controls
     this->_controls = new QWidget(this);
 
+    // TODO: Use _ui private and remove this->_control*
     Ui::OpenGLControls ui;
     ui.setupUi(this->_controls);
 
@@ -88,6 +89,9 @@ OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 // Clean up objects
 OpenGL::~OpenGL()
 {
+    Q_CHECK_PTR(this->_terrain);
+    Q_CHECK_PTR(this->_camera);
+    Q_CHECK_PTR(this->_light);
     delete this->_terrain;
     delete this->_camera;
     delete this->_light;
@@ -111,6 +115,7 @@ void OpenGL::initializeGL()
     // Set sky color
     f->glClearColor(SKY);
 
+    Q_CHECK_PTR(this->_terrain);
     // Initialize terrain's OpenGL
     this->_terrain->initializeGL();
 }
@@ -118,6 +123,8 @@ void OpenGL::initializeGL()
 // On widget being resize, recalculate the camera perspective, and update the control widget size
 void OpenGL::resizeGL(int w, int h)
 {
+    Q_CHECK_PTR(this->_terrain);
+    Q_CHECK_PTR(this->_controls);
     this->_camera->resize(w, h);
     this->_controls->setGeometry(0, -10, w, h);
 }
@@ -133,6 +140,9 @@ void OpenGL::paintGL()
     // Set sky color
     f->glClearColor(SKY);
 
+    Q_CHECK_PTR(this->_camera);
+    Q_CHECK_PTR(this->_light);
+    Q_CHECK_PTR(this->_terrain);
     // Get camera details
     QMatrix4x4 camera_matrix = this->_camera->matrix();
     QVector3D camera_pos = this->_camera->position();
@@ -260,6 +270,8 @@ void OpenGL::paintGL()
 // On mouse wheel activity, zoom in (was implemented early to debug OpenGL implementation)
 void OpenGL::wheelEvent(QWheelEvent *event)
 {
+    Q_CHECK_PTR(this->_camera);
+    Q_CHECK_PTR(this->_control_cam_zoom);
     float camera_zoom;
     if (event->angleDelta().y() < 0)
         camera_zoom = this->_camera->zoom(0.25f);
@@ -272,7 +284,6 @@ void OpenGL::wheelEvent(QWheelEvent *event)
 // When the OpenGL widget is clicked, enable dragging and set the starting point
 void OpenGL::mousePressEvent(QMouseEvent *event)
 {
-    // if (event->button() == Qt::LeftButton)
     this->_prev = event->pos();
 }
 
@@ -287,6 +298,14 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
     // Get and update the relative movement
     QPoint delta = this->_prev - event->pos();
     this->_prev = event->pos();
+
+    Q_CHECK_PTR(this->_light);
+    Q_CHECK_PTR(this->_control_sun_rotation_x);
+    Q_CHECK_PTR(this->_control_sun_rotation_y);
+
+    Q_CHECK_PTR(this->_camera);
+    Q_CHECK_PTR(this->_control_cam_rotation_x);
+    Q_CHECK_PTR(this->_control_cam_rotation_y);
 
     // If shift is clicked rotated the sun instead
     if (modifiers.testFlag(Qt::ShiftModifier))
@@ -311,11 +330,13 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
 // When the sun widgets are changed
 void OpenGL::sunRotationX(int value)
 {
+    Q_CHECK_PTR(this->_light);
     this->_light->setRotationX((float)value);
     this->update();
 }
 void OpenGL::sunRotationY(int value)
 {
+    Q_CHECK_PTR(this->_light);
     this->_light->setRotationY(360.0f - (float)value);
     this->update();
 }
@@ -323,16 +344,19 @@ void OpenGL::sunRotationY(int value)
 // When the camera widgets are changed
 void OpenGL::camRotationX(int value)
 {
+    Q_CHECK_PTR(this->_camera);
     this->_camera->setRotationX((float)value);
     this->update();
 }
 void OpenGL::camRotationY(int value)
 {
+    Q_CHECK_PTR(this->_camera);
     this->_camera->setRotationY((float)value);
     this->update();
 }
 void OpenGL::camZoom(int value)
 {
+    Q_CHECK_PTR(this->_camera);
     this->_camera->setZoom(((float)value) / 4.0f);
     this->update();
 }
@@ -340,6 +364,7 @@ void OpenGL::camZoom(int value)
 // When the nodeeditor has new updated textures
 void OpenGL::nodeeditorOutputUpdated(QImage normal_map, QImage height_map)
 {
+    Q_CHECK_PTR(this->_terrain);
     this->_terrain->setHeightMap(height_map);
     this->_terrain->setNormalMap(normal_map);
     this->update();

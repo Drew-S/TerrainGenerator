@@ -80,6 +80,7 @@ void Stencil::setAlpha(double value)
 // Draw onto the given painter with the position
 void Stencil::draw(QPainter *painter, QPointF pos)
 {
+    Q_CHECK_PTR(painter);
     painter->drawPixmap(
         pos.x() - (this->_brush / 2.00),
         pos.y() - (this->_brush / 2.00),
@@ -99,8 +100,6 @@ QString Stencil::name()
 {
     return QFileInfo(this->_filename)
         .fileName()
-        // TODO: remove brush-prefix
-        .replace(QRegExp("^brush(-*)", Qt::CaseInsensitive), "")
         .replace(QRegExp("\\.(jpg|png|jpeg)$", Qt::CaseInsensitive), "")
         .replace(QRegExp("-"), " ");
 }
@@ -168,5 +167,6 @@ StencilList *StencilList::getInstance()
         _instance = true;
         _single = new StencilList();
     }
+    Q_CHECK_PTR(_single);
     return _single;
 }

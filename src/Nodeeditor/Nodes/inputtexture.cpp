@@ -64,12 +64,14 @@ QString InputTextureNode::name() const
 // The image label that is embedded in the node
 QWidget *InputTextureNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 
 // The image label that is shared with the properties
 QWidget *InputTextureNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared);
     return this->_shared;
 }
 
@@ -82,22 +84,22 @@ unsigned int InputTextureNode::nPorts(QtNodes::PortType port_type) const
 // Get the data type for the port inputs and output
 QtNodes::NodeDataType InputTextureNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_type;
-    (void)port_index;
+    Q_UNUSED(port_type);
+    Q_UNUSED(port_index);
     return VectorMapData().type();
 }
 
 // Needed for all nodes, even if there are no inputs
 void InputTextureNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
-    (void)node_data;
-    (void)port;
+    Q_UNUSED(node_data);
+    Q_UNUSED(port);
 }
 
 // Get the data attached to a port
 std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     if (this->_texture != nullptr)
         return std::make_shared<VectorMapData>(this->_texture->vectorMap());
 
@@ -119,6 +121,7 @@ void InputTextureNode::_loadFile()
         tr("Image Files (*.png *.jpg)"));
 #endif
 
+    Q_CHECK_PTR(TEXTURES);
     int index = TEXTURES->addTexture(filename);
     if (index != -1)
     {
@@ -134,6 +137,7 @@ void InputTextureNode::_newFileAccept()
 {
     this->_dialogue->accept();
 
+    Q_CHECK_PTR(TEXTURES);
     int index = TEXTURES->addTexture(this->_new_file_res, this->_new_file_res);
     if (index != -1)
     {
@@ -182,6 +186,7 @@ QJsonObject InputTextureNode::save() const
 // Restore the node from a save
 void InputTextureNode::restore(QJsonObject const &data)
 {
+    // TODO: Reimplement loading with new data.
     qDebug("Restoring Input Texture Node");
     // this->_filename = data["image"].toString();
 }

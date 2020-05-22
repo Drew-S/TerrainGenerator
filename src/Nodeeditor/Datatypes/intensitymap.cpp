@@ -7,6 +7,8 @@ IntensityMap::IntensityMap(){};
 // Set initial size without data
 IntensityMap::IntensityMap(int width, int height)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Intensity Map with only size set: (%dx%d)", width, height);
     this->width = width;
     this->height = height;
@@ -15,6 +17,8 @@ IntensityMap::IntensityMap(int width, int height)
 // Set initial size with a fill value
 IntensityMap::IntensityMap(int width, int height, double fill)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Intensity Map with only size set: (%dx%d)", width, height);
     this->width = width;
     this->height = height;
@@ -25,6 +29,8 @@ IntensityMap::IntensityMap(int width, int height, double fill)
 // Set size and values from a 1D vector array
 IntensityMap::IntensityMap(int width, int height, std::vector<double> values)
 {
+    Q_ASSERT(width > 0);
+    Q_ASSERT(height > 0);
     qDebug("Creating Intensity Map with data: (%dx%d), %d pixels set", width, height, width * height);
     this->width = width;
     this->height = height;
@@ -50,6 +56,8 @@ IntensityMap::~IntensityMap() {}
 // Convert the intensity map to an image
 QImage IntensityMap::toImage(bool print_qimage)
 {
+    // Small debugging fix, since pixmap uses qimage to get data,
+    // we overwrite printing with pixmap debug
     if (print_qimage)
         qDebug("Converting Intensity map to QImage");
     QImage image(this->width, this->height, QImage::Format_RGBA64);
@@ -109,6 +117,7 @@ IntensityMap IntensityMap::transform(double func(double, double), double value)
 // Apply a transformation function on a per pixel basis
 IntensityMap IntensityMap::transform(double func(double, double), IntensityMap *map)
 {
+    Q_CHECK_PTR(map);
     IntensityMap out;
     if (this->usingFill() && map->usingFill())
     {
@@ -207,6 +216,10 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
     case IntensityMap::MAX:
         qDebug("Converting image with maximum channel");
         break;
+
+    default:
+        Q_UNREACHABLE();
+        break;
     }
     for (int y = 0; y < this->height; y++)
     {
@@ -269,6 +282,10 @@ void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
                 if (c > max)
                     max = c;
                 this->values.push_back(max);
+                break;
+
+            default:
+                Q_UNREACHABLE();
                 break;
             }
         }

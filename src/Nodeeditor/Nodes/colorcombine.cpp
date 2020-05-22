@@ -41,10 +41,12 @@ QString ConverterColorCombineNode::name() const
 // The embedded control widget
 QWidget *ConverterColorCombineNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 QWidget *ConverterColorCombineNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
@@ -76,13 +78,16 @@ QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port
     case 3:
         return {type.id, "alpha"};
         break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
 }
 
 // Get the output data (the VectorMapData)
 std::shared_ptr<QtNodes::NodeData> ConverterColorCombineNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     return std::make_shared<VectorMapData>(this->_pixmap);
 }
 
@@ -116,6 +121,9 @@ void ConverterColorCombineNode::setInData(std::shared_ptr<QtNodes::NodeData> nod
             this->_alpha_set = true;
             this->_ui.spin_alpha->setReadOnly(true);
             this->_shared_ui.spin_alpha->setReadOnly(true);
+            break;
+        default:
+            Q_UNREACHABLE();
             break;
         }
         this->_generate();
@@ -171,6 +179,9 @@ void ConverterColorCombineNode::inputConnectionDeleted(QtNodes::Connection const
         this->_ui.spin_alpha->setReadOnly(false);
         this->_shared_ui.spin_alpha->setReadOnly(false);
         break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
     this->_generate();
 }
@@ -224,6 +235,7 @@ void ConverterColorCombineNode::_generate()
 
         if (this->_red_set)
         {
+            Q_CHECK_PTR(this->_red);
             red = this->_red->intensityMap();
             width = red.width;
             height = red.height;
@@ -231,6 +243,7 @@ void ConverterColorCombineNode::_generate()
 
         if (this->_green_set)
         {
+            Q_CHECK_PTR(this->_green);
             green = this->_green->intensityMap();
             if (width == 128)
             {
@@ -241,6 +254,7 @@ void ConverterColorCombineNode::_generate()
 
         if (this->_blue_set)
         {
+            Q_CHECK_PTR(this->_blue);
             blue = this->_blue->intensityMap();
             if (width == 128)
             {
@@ -251,6 +265,7 @@ void ConverterColorCombineNode::_generate()
 
         if (this->_alpha_set)
         {
+            Q_CHECK_PTR(this->_alpha);
             alpha = this->_alpha->intensityMap();
             if (width == 128)
             {

@@ -53,10 +53,12 @@ QString InputSimplexNoiseNode::name() const
 // The image label that is embedded in the node
 QWidget *InputSimplexNoiseNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 QWidget *InputSimplexNoiseNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
@@ -69,15 +71,15 @@ unsigned int InputSimplexNoiseNode::nPorts(QtNodes::PortType port_type) const
 // Get the data type for the port inputs and output
 QtNodes::NodeDataType InputSimplexNoiseNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_type;
-    (void)port_index;
+    Q_UNUSED(port_type);
+    Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
 // Get the data attached to a port
 std::shared_ptr<QtNodes::NodeData> InputSimplexNoiseNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_intensity_map);
 }
 
@@ -169,8 +171,8 @@ void InputSimplexNoiseNode::restore(QJsonObject const &data)
 // Sets data from an input port, not yet implemented
 void InputSimplexNoiseNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
-    (void)node_data;
-    (void)port;
+    Q_UNUSED(node_data);
+    Q_UNUSED(port);
 }
 
 // Listeners for updating generation parameters and re-running generation

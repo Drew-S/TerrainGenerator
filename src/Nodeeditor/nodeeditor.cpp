@@ -10,7 +10,7 @@
 #include "./Datatypes/pixmap.h"
 #include "./Datatypes/converters.h"
 
-#define NODE_CAST(NODE)                         \
+#define CAST_NODE(NODE)                         \
     NODE *selected = static_cast<NODE *>(node); \
     QWidget *shared = selected->sharedWidget(); \
     this->_updatePropertieNodesShared(shared);
@@ -49,6 +49,8 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 // Create a node editor manager
 Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
 {
+    Q_CHECK_PTR(target);
+    Q_CHECK_PTR(properties);
     qDebug("Setting up nodeeditor widget");
     // Create a scene and a view, attach models to the scene
     this->_scene = new QtNodes::FlowScene(registerDataModels());
@@ -69,6 +71,9 @@ Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
 // Remove pointers
 Nodeeditor::~Nodeeditor()
 {
+    Q_CHECK_PTR(this->_view);
+    Q_CHECK_PTR(this->_scene);
+    Q_CHECK_PTR(this->_active_output);
     delete this->_view;
     delete this->_scene;
     delete this->_active_output;
@@ -99,34 +104,35 @@ void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
 // Handler for placing shared widget in the properties container if the node supports it
 void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 {
+    Q_CHECK_PTR(node);
     QString name = node->name();
     if (name == InputSimplexNoiseNode().name())
     {
-        NODE_CAST(InputSimplexNoiseNode)
+        CAST_NODE(InputSimplexNoiseNode)
     }
     else if (name == InputTextureNode().name())
     {
-        NODE_CAST(InputTextureNode)
+        CAST_NODE(InputTextureNode)
     }
     else if (name == ConverterMathNode().name())
     {
-        NODE_CAST(ConverterMathNode)
+        CAST_NODE(ConverterMathNode)
     }
     else if (name == ConverterColorCombineNode().name())
     {
-        NODE_CAST(ConverterColorCombineNode)
+        CAST_NODE(ConverterColorCombineNode)
     }
     else if (name == ConverterVectorDotNode().name())
     {
-        NODE_CAST(ConverterVectorDotNode)
+        CAST_NODE(ConverterVectorDotNode)
     }
     else if (name == ConverterVectorIntensityNode().name())
     {
-        NODE_CAST(ConverterVectorIntensityNode)
+        CAST_NODE(ConverterVectorIntensityNode)
     }
     else if (name == ConverterVectorMathNode().name())
     {
-        NODE_CAST(ConverterVectorMathNode)
+        CAST_NODE(ConverterVectorMathNode)
     }
     else if (swap)
     {
@@ -194,6 +200,7 @@ void Nodeeditor::outputComputingFinished()
 
 void Nodeeditor::nodeDeleted(QtNodes::Node &node)
 {
+    Q_UNUSED(node);
     this->_updatePropertieNodesShared(nullptr);
 }
 

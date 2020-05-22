@@ -6,6 +6,8 @@
 #include <QDoubleSpinBox>
 #include <QDebug>
 
+#define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
+
 // Create a ConverterMathNode
 ConverterMathNode::ConverterMathNode()
 {
@@ -46,12 +48,14 @@ QString ConverterMathNode::name() const
 // The widget that is embedded into the node
 QWidget *ConverterMathNode::embeddedWidget()
 {
+    Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 
 // The widget that is displayed in the properties panel
 QWidget *ConverterMathNode::sharedWidget()
 {
+    Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
@@ -64,8 +68,8 @@ unsigned int ConverterMathNode::nPorts(QtNodes::PortType port_type) const
 // Get the input/output data type
 QtNodes::NodeDataType ConverterMathNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    (void)port_type;
-    (void)port_index;
+    Q_UNUSED(port_type);
+    Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
@@ -74,18 +78,21 @@ void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, 
 {
     if (node_data)
     {
-        if (port == 0)
+        switch (port)
         {
+        case 0:
             this->_in_0 = std::dynamic_pointer_cast<IntensityMapData>(node_data);
             this->_in_0_set = true;
             this->_ui.val_in_0->setReadOnly(true);
-        }
-
-        else if (port == 1)
-        {
+            break;
+        case 1:
             this->_in_1 = std::dynamic_pointer_cast<IntensityMapData>(node_data);
             this->_in_1_set = true;
             this->_ui.val_in_1->setReadOnly(true);
+            break;
+        default:
+            Q_UNREACHABLE();
+            break;
         }
 
         this->_generate();
@@ -116,6 +123,8 @@ void ConverterMathNode::_generate()
 // C = A (op) B
 void ConverterMathNode::_generateInBoth()
 {
+    Q_CHECK_PTR(this->_in_0);
+    Q_CHECK_PTR(this->_in_1);
     IntensityMap map_0 = this->_in_0->intensityMap();
     IntensityMap map_1 = this->_in_1->intensityMap();
     switch (this->_mode)
@@ -145,6 +154,7 @@ void ConverterMathNode::_generateInBoth()
         this->_pixmap = map_0.transform(&ConverterMathNode::pow, &map_1);
         break;
     default:
+        Q_UNREACHABLE();
         break;
     }
 }
@@ -158,11 +168,13 @@ void ConverterMathNode::_generateIn1(bool second)
     double val;
     if (second)
     {
+        Q_CHECK_PTR(this->_in_1);
         map = this->_in_1->intensityMap();
         val = this->_val_in_0;
     }
     else
     {
+        Q_CHECK_PTR(this->_in_0);
         map = this->_in_0->intensityMap();
         val = this->_val_in_1;
     }
@@ -194,6 +206,7 @@ void ConverterMathNode::_generateIn1(bool second)
         this->_pixmap = map.transform(&ConverterMathNode::pow, val);
         break;
     default:
+        Q_UNREACHABLE();
         break;
     }
 }
@@ -232,6 +245,7 @@ void ConverterMathNode::_generateIn()
         this->_pixmap = IntensityMap(128, 128, pow(this->_val_in_0, this->_val_in_1));
         break;
     default:
+        Q_UNREACHABLE();
         break;
     }
 }
@@ -240,15 +254,19 @@ void ConverterMathNode::_generateIn()
 void ConverterMathNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     int port = (int)connection.getPortIndex(QtNodes::PortType::In);
-    if (port == 0)
+    switch (port)
     {
+    case 0:
         this->_in_0_set = false;
         this->_ui.val_in_0->setReadOnly(false);
-    }
-    else if (port == 1)
-    {
+        break;
+    case 1:
         this->_in_1_set = false;
         this->_ui.val_in_1->setReadOnly(false);
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
     }
 
     this->_generate();
@@ -273,6 +291,7 @@ void ConverterMathNode::val1Changed(double value)
 // Change the transform method used
 void ConverterMathNode::comboChanged(int index)
 {
+    Q_BETWEEN(0, index, 7);
     this->_mode = (ConverterMathNode::Mode)index;
     this->_ui.mode->setCurrentIndex(this->_mode);
     this->_shared_ui.mode->setCurrentIndex(this->_mode);
@@ -303,7 +322,7 @@ void ConverterMathNode::restore(QJsonObject const &data)
 // Get the resulting pixmap for output
 std::shared_ptr<QtNodes::NodeData> ConverterMathNode::outData(QtNodes::PortIndex port)
 {
-    (void)port;
+    Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_pixmap);
 }
 
