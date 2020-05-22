@@ -118,7 +118,7 @@ void InputSimplexNoiseNode::_generate()
     {
         size = SETTINGS->previewResolution();
         int render_size = SETTINGS->renderResolution();
-        ratio = size / (float)render_size;
+        ratio = render_size / (float)size;
     }
     // Ratio compensates the preview resolution to better reflect the render output
     this->_intensity_map = IntensityMap(size, size);

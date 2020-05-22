@@ -65,7 +65,6 @@ private:
 
     IntensityMap::Channel _channel = IntensityMap::AVERAGE;
 
-    // TODO: rename other files "_pixmap" to "_output"
     IntensityMap _output{1, 1, 1.00};
 
     // UI
