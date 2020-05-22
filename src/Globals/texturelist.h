@@ -31,10 +31,10 @@ public:
     ~Texture();
 
     // Convert to pixmap
-    QPixmap pixmap();
+    QPixmap pixmap(int scale = -1);
 
     // Convert to image
-    QImage image();
+    QImage image(int scale = -1);
 
     // Convert to icon
     QIcon icon();
@@ -44,13 +44,13 @@ public:
     QString filename();
 
     // Convert to vector map
-    VectorMap vectorMap();
+    VectorMap vectorMap(int scale = -1);
 
     // Replace the underlying pixmap
     void replace(QPixmap pixmap);
 
     // Convert to intensity map
-    IntensityMap intensityMap(IntensityMap::Channel channel);
+    IntensityMap intensityMap(IntensityMap::Channel channel, int scale = -1);
 
     // Draw on the texture with the stencil at a specific point,
     // if update emit updated() signal

@@ -29,15 +29,18 @@ Texture::Texture(int w, int h, QString filename)
 Texture::~Texture() {}
 
 // Return a pixmap
-QPixmap Texture::pixmap()
+QPixmap Texture::pixmap(int scale)
 {
-    return this->_pixmap;
+    if (scale == -1)
+        return this->_pixmap;
+    else
+        return this->_pixmap.scaled(scale, scale);
 }
 
 // Return an image
-QImage Texture::image()
+QImage Texture::image(int scale)
 {
-    return this->_pixmap.toImage();
+    return this->pixmap(scale).toImage();
 }
 
 // Return an icon
@@ -47,9 +50,9 @@ QIcon Texture::icon()
 }
 
 // Return a vector map
-VectorMap Texture::vectorMap()
+VectorMap Texture::vectorMap(int scale)
 {
-    return VectorMap(this->_pixmap);
+    return VectorMap(this->pixmap(scale));
 }
 
 // Replace the underlying pixmap
@@ -61,7 +64,7 @@ void Texture::replace(QPixmap pixmap)
 }
 
 // Return an intensity map
-IntensityMap Texture::intensityMap(IntensityMap::Channel channel) { return IntensityMap(this->_pixmap, channel); }
+IntensityMap Texture::intensityMap(IntensityMap::Channel channel, int scale) { return IntensityMap(this->pixmap(scale), channel); }
 
 QString Texture::name()
 {
