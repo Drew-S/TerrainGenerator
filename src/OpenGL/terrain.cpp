@@ -4,6 +4,7 @@
 #include <QOpenGLBuffer>
 #include <QColor>
 #include <QDir>
+#include <QFile>
 
 #include "Globals/settings.h"
 
@@ -53,13 +54,21 @@ void Terrain::initializeGL()
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
     // Initialize the vertex shader
-    // TODO: Implement shader file exist checks
     Q_CHECK_PTR(SETTINGS);
     QString assets = QDir::cleanPath(SETTINGS->getAssetDirectories()[0].path() + QString("/shaders"));
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, QDir::cleanPath(assets + QString("/terrain.vert")));
+    QString vert = QDir::cleanPath(assets + QString("/terrain.vert"));
+    QString frag = QDir::cleanPath(assets + QString("/terrain.frag"));
+
+    if (!QFile::exists(vert))
+        qFatal("Vertex shader program missing '%s'", vert);
+
+    if (!QFile::exists(frag))
+        qFatal("Fragment shader program missing '%s'", frag);
+
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, vert);
 
     // Initialize the frag shader (color)
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, QDir::cleanPath(assets + QString("/terrain.frag")));
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, frag);
 
     // Link and bind the shader program for use
     this->_program.link();
@@ -83,6 +92,11 @@ void Terrain::initializeGL()
     this->_vao.release();
 }
 
+void Terrain::setDrawLines(bool lines)
+{
+    this->_draw_lines = lines;
+}
+
 // Draw the terrain (technically, it can be drawn twice)
 void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity)
 {
@@ -93,9 +107,11 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D c
     this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(0.75f, 0.75f, 0.75f));
 
     // Draw the lines that make up the terrain faces
-    // TODO: Include a switch to toggle lines
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
+    if (this->_draw_lines)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
+    }
 }
 
 // Draws the terrain givent the provided information

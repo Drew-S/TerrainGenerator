@@ -294,6 +294,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="draw_lines">
+          <property name="text">
+           <string>Draw Terrain Lines?</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

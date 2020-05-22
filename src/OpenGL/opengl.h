@@ -21,6 +21,8 @@ public:
     explicit OpenGL(QWidget *parent = 0);
     ~OpenGL();
 
+    void setTerrainDrawLines(bool lines);
+
 public slots:
     // Called when the sun widgets are adjusted
     void sunRotationX(int value);

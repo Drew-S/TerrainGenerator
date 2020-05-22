@@ -97,6 +97,12 @@ OpenGL::~OpenGL()
     delete this->_light;
 }
 
+void OpenGL::setTerrainDrawLines(bool lines)
+{
+    this->_terrain->setDrawLines(lines);
+    this->update();
+}
+
 // Initialize OpenGL functions and objects
 void OpenGL::initializeGL()
 {

@@ -89,6 +89,10 @@ void MainWindow::setup(Ui::MainWindow *ui)
         Q_CHECK_PTR(SETTINGS);
         SETTINGS->setRenderMode(state == 2);
     });
+    QObject::connect(this->_main_ui->draw_lines, &QCheckBox::stateChanged, [this](int state) {
+        Q_CHECK_PTR(this->_open_gl);
+        this->_open_gl->setTerrainDrawLines(state == 2);
+    });
 
     // Fix Nodeeditor and OpenGL widget splitter size
     this->_main_ui->splitter_top_bottom->setSizes({300, 150});

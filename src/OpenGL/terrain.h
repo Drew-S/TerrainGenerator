@@ -38,6 +38,8 @@ public:
     void setHeightMap(QImage height_map);
     void setNormalMap(QImage normal_map);
 
+    void setDrawLines(bool lines);
+
 private:
     // Draws the terrain
     void _paintGL(QOpenGLFunctions *f,
@@ -46,6 +48,8 @@ private:
                   QVector3D light_color,
                   QVector3D light_pos,
                   float light_intensity, QVector3D color);
+
+    bool _draw_lines = false;
     // Plane transform (translate -0.5, 0, -0.5)
     QMatrix4x4 _transform;
     // Plane vertices
