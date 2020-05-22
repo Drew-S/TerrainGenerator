@@ -92,9 +92,36 @@ void Terrain::initializeGL()
     this->_vao.release();
 }
 
+// Set drawing lines mode
 void Terrain::setDrawLines(bool lines)
 {
     this->_draw_lines = lines;
+}
+
+// Set terrain colors
+void Terrain::setTerrainColor(QColor color)
+{
+    this->_terrain_color = QVector3D(color.redF(), color.greenF(), color.blueF());
+}
+
+void Terrain::setLineColor(QColor color)
+{
+    this->_line_color = QVector3D(color.redF(), color.greenF(), color.blueF());
+}
+
+bool Terrain::drawLines()
+{
+    return this->_draw_lines;
+}
+
+QColor Terrain::terrainColor()
+{
+    return QColor::fromRgbF(this->_terrain_color.x(), this->_terrain_color.y(), this->_terrain_color.z());
+}
+
+QColor Terrain::lineColor()
+{
+    return QColor::fromRgbF(this->_line_color.x(), this->_line_color.y(), this->_line_color.z());
 }
 
 // Draw the terrain (technically, it can be drawn twice)
@@ -102,15 +129,14 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D c
 {
     Q_CHECK_PTR(f);
     // Draw the terrain
-    // TODO: Add terrain color selector and line color selector
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(0.75f, 0.75f, 0.75f));
+    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_terrain_color);
 
     // Draw the lines that make up the terrain faces
     if (this->_draw_lines)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, QVector3D(1.0f, 1.0f, 1.0f));
+        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_line_color);
     }
 }
 

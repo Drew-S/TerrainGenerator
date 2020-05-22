@@ -30,6 +30,7 @@ using json = nlohmann::json;
 #include <QList>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QColorDialog>
 
 #include "Globals/settings.h"
 #include "Globals/stencillist.h"
@@ -92,6 +93,18 @@ void MainWindow::setup(Ui::MainWindow *ui)
     QObject::connect(this->_main_ui->draw_lines, &QCheckBox::stateChanged, [this](int state) {
         Q_CHECK_PTR(this->_open_gl);
         this->_open_gl->setTerrainDrawLines(state == 2);
+    });
+    QObject::connect(this->_main_ui->terrain_color, &QPushButton::clicked, [this]() {
+        Q_CHECK_PTR(this->_open_gl);
+        QColor color = QColorDialog::getColor(this->_open_gl->terrainColor());
+        if (color.isValid())
+            this->_open_gl->setTerrainColor(color);
+    });
+    QObject::connect(this->_main_ui->terrain_line_color, &QPushButton::clicked, [this]() {
+        Q_CHECK_PTR(this->_open_gl);
+        QColor color = QColorDialog::getColor(this->_open_gl->terrainLineColor());
+        if (color.isValid())
+            this->_open_gl->setTerrainLineColor(color);
     });
 
     // Fix Nodeeditor and OpenGL widget splitter size

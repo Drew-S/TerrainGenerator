@@ -99,8 +99,38 @@ OpenGL::~OpenGL()
 
 void OpenGL::setTerrainDrawLines(bool lines)
 {
+    Q_CHECK_PTR(this->_terrain);
     this->_terrain->setDrawLines(lines);
     this->update();
+}
+
+void OpenGL::setTerrainColor(QColor color)
+{
+    Q_CHECK_PTR(this->_terrain);
+    this->_terrain->setTerrainColor(color);
+    this->update();
+}
+void OpenGL::setTerrainLineColor(QColor color)
+{
+    Q_CHECK_PTR(this->_terrain);
+    this->_terrain->setLineColor(color);
+    this->update();
+}
+
+bool OpenGL::terrainDrawLines()
+{
+    Q_CHECK_PTR(this->_terrain);
+    return this->_terrain->drawLines();
+}
+QColor OpenGL::terrainColor()
+{
+    Q_CHECK_PTR(this->_terrain);
+    return this->_terrain->terrainColor();
+}
+QColor OpenGL::terrainLineColor()
+{
+    Q_CHECK_PTR(this->_terrain);
+    return this->_terrain->lineColor();
 }
 
 // Initialize OpenGL functions and objects

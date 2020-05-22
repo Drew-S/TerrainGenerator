@@ -22,6 +22,12 @@ public:
     ~OpenGL();
 
     void setTerrainDrawLines(bool lines);
+    void setTerrainColor(QColor color);
+    void setTerrainLineColor(QColor color);
+
+    bool terrainDrawLines();
+    QColor terrainColor();
+    QColor terrainLineColor();
 
 public slots:
     // Called when the sun widgets are adjusted

@@ -38,7 +38,15 @@ public:
     void setHeightMap(QImage height_map);
     void setNormalMap(QImage normal_map);
 
+    // Set adjustable values
     void setDrawLines(bool lines);
+    void setTerrainColor(QColor color);
+    void setLineColor(QColor color);
+
+    // Get adjustable values
+    bool drawLines();
+    QColor terrainColor();
+    QColor lineColor();
 
 private:
     // Draws the terrain
@@ -50,6 +58,8 @@ private:
                   float light_intensity, QVector3D color);
 
     bool _draw_lines = false;
+    QVector3D _terrain_color{0.75f, 0.75f, 0.75f};
+    QVector3D _line_color{1.0f, 1.0f, 1.0f};
     // Plane transform (translate -0.5, 0, -0.5)
     QMatrix4x4 _transform;
     // Plane vertices
