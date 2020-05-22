@@ -311,7 +311,11 @@ void ConverterVectorDotNode::_generateIn1(bool second)
 void ConverterVectorDotNode::_generateIn()
 {
     Q_CHECK_PTR(SETTINGS);
-    int size = SETTINGS->previewResolution();
+    int size;
+    if (SETTINGS->renderMode())
+        size = SETTINGS->renderResolution();
+    else
+        size = SETTINGS->previewResolution();
     this->_pixmap = IntensityMap(size, size, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
 }
 

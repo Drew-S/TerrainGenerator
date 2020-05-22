@@ -28,6 +28,8 @@ ConverterColorCombineNode::ConverterColorCombineNode()
     Q_CHECK_PTR(SETTINGS);
     QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
         Q_CHECK_PTR(SETTINGS);
+        if (SETTINGS->renderMode())
+            return;
         int size = SETTINGS->previewResolution();
         this->_pixmap.width = size;
         this->_pixmap.height = size;
@@ -238,11 +240,15 @@ void ConverterColorCombineNode::_generate()
     }
     else
     {
-        int size = SETTINGS->previewResolution();
-        IntensityMap red(1, 1, this->_red_val);
-        IntensityMap green(1, 1, this->_green_val);
-        IntensityMap blue(1, 1, this->_blue_val);
-        IntensityMap alpha(1, 1, this->_alpha_val);
+        int size;
+        if (SETTINGS->renderMode())
+            size = SETTINGS->renderResolution();
+        else
+            size = SETTINGS->previewResolution();
+        IntensityMap red(size, size, this->_red_val);
+        IntensityMap green(size, size, this->_green_val);
+        IntensityMap blue(size, size, this->_blue_val);
+        IntensityMap alpha(size, size, this->_alpha_val);
 
         if (this->_red_set)
         {
@@ -268,7 +274,6 @@ void ConverterColorCombineNode::_generate()
             alpha = this->_alpha->intensityMap();
         }
 
-        // TODO: use render resolutions
         this->_pixmap = VectorMap(size, size);
         for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)

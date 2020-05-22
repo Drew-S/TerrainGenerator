@@ -91,7 +91,6 @@ std::shared_ptr<QtNodes::NodeData> InputSimplexNoiseNode::outData(QtNodes::PortI
 }
 
 // Generates the noise texture
-// TODO: ALL NODES, create render version of calculations for final high res generation
 void InputSimplexNoiseNode::_generate()
 {
     qDebug("Generating Noise Map");
@@ -100,7 +99,11 @@ void InputSimplexNoiseNode::_generate()
 
     // Create a vector map to house information
     Q_CHECK_PTR(SETTINGS);
-    int size = SETTINGS->previewResolution();
+    int size;
+    if (SETTINGS->renderMode())
+        size = SETTINGS->renderResolution();
+    else
+        size = SETTINGS->previewResolution();
     int render_size = SETTINGS->renderResolution();
     // Ratio compensates the preview resolution to better reflect the render output
     double ratio = size / (double)render_size;

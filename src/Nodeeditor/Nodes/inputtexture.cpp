@@ -110,7 +110,11 @@ std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex 
 {
     Q_UNUSED(port);
     Q_CHECK_PTR(SETTINGS);
-    int size = SETTINGS->previewResolution();
+    int size;
+    if (SETTINGS->renderMode())
+        size = SETTINGS->renderResolution();
+    else
+        size = SETTINGS->previewResolution();
     if (this->_texture != nullptr)
         return std::make_shared<VectorMapData>(this->_texture->vectorMap(size));
 

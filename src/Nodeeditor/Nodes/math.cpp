@@ -220,8 +220,12 @@ void ConverterMathNode::_generateIn1(bool second)
 void ConverterMathNode::_generateIn()
 {
     Q_CHECK_PTR(SETTINGS);
-    int size = SETTINGS->previewResolution();
-    // TODO: Use render resolution
+    int size;
+    if (SETTINGS->renderMode())
+        size = SETTINGS->renderResolution();
+    else
+        size = SETTINGS->previewResolution();
+
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:

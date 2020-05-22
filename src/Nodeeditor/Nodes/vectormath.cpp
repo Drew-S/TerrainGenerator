@@ -309,7 +309,11 @@ void ConverterVectorMathNode::_generateIn1(bool second)
 void ConverterVectorMathNode::_generateIn()
 {
     Q_CHECK_PTR(SETTINGS);
-    int size = SETTINGS->previewResolution();
+    int size;
+    if (SETTINGS->renderMode())
+        size = SETTINGS->renderResolution();
+    else
+        size = SETTINGS->previewResolution();
     switch (this->_mode)
     {
     case ConverterVectorMathNode::ADD:
