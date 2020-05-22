@@ -124,10 +124,15 @@ TextureList *TextureList::getInstance()
 }
 
 // Add a texture with the given file, returns the index for at() use
-// TODO: Add duplicate file check
-// TODO: Add file exists check
 int TextureList::addTexture(QString filename)
 {
+    for (int i = 0; i < (int)this->_textures.size(); i++)
+        if (this->_textures[i]->filename() == filename)
+            return i;
+
+    // File exists check not needed, as filename is selected from
+    // filtered QFileDialog, ensuring the file exists
+
     Texture *t = new Texture(filename);
     this->_textures.push_back(t);
     emit this->textureAdded((int)this->_textures.size() - 1);
