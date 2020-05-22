@@ -54,6 +54,9 @@ InputTextureNode::InputTextureNode()
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
         emit this->dataUpdated(0);
     });
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        emit this->dataUpdated(0);
+    });
 }
 
 InputTextureNode::~InputTextureNode() {}

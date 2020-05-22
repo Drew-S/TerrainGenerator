@@ -35,6 +35,19 @@ ConverterColorCombineNode::ConverterColorCombineNode()
         this->_pixmap.height = size;
         emit this->dataUpdated(0);
     });
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (!SETTINGS->renderMode())
+            return;
+        int size = SETTTINGS->renderResolution();
+        this->_pixmap.width = size;
+        this->_pixmap.height = size;
+        emit this->dataUpdated(0);
+    });
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        if (!this->_red_set && !this->_green_set && !this->_blue_set && !this->_alpha_set)
+            this->_generate();
+    })
 }
 
 ConverterColorCombineNode::~ConverterColorCombineNode() {}

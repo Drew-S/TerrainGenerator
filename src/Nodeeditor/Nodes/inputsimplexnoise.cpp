@@ -38,6 +38,7 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     // Settings listener
     QObject::connect(SETTINGS, &Settings::previewResolutionChanged, this, &InputSimplexNoiseNode::_generate);
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, this, &InputSimplexNoiseNode::_generate);
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, this, &InputSimplexNoiseNode::_generate);
 
     // Generate values
     this->_generate();

@@ -29,6 +29,11 @@ ConverterMathNode::ConverterMathNode()
     QObject::connect(this->_shared_ui.val_in_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val0Changed);
     QObject::connect(this->_shared_ui.val_in_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterMathNode::val1Changed);
 
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        if (!this->_in_0_set && !this->_in_1_set)
+            this->_generate();
+    });
+
     // Generate default result
     this->_generate();
 }

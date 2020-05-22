@@ -1,5 +1,7 @@
 #include "vectorintensity.h"
 
+#include "Globals/settings.h"
+
 #include <QComboBox>
 #include <QDebug>
 
@@ -14,6 +16,40 @@ ConverterVectorIntensityNode::ConverterVectorIntensityNode()
 
     QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
     QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
+
+    Q_CHECK_PTR(SETTINGS);
+    QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (SETTINGS->renderMode())
+            return;
+        int size = SETTINGS->previewResolution();
+        this->_output.width = size;
+        this->_output.height = size;
+        emit this->dataUpdated(0);
+    });
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (!SETTINGS->renderMode())
+            return;
+        int size = SETTINGS->renderResolution();
+        this->_output.width = size;
+        this->_output.height = size;
+        emit this->dataUpdated(0);
+    });
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (!_set)
+        {
+            int size;
+            if (SETTINGS->renderMode())
+                size = SETTINGS->renderResolution();
+            else
+                size = SETTINGS->previewResolution();
+            this->_output.width = size;
+            this->_output.height = size;
+            emit this->dataUpdated(0);
+        }
+    });
 }
 
 ConverterVectorIntensityNode::~ConverterVectorIntensityNode() {}

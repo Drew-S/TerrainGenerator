@@ -39,6 +39,11 @@ ConverterVectorDotNode::ConverterVectorDotNode()
     QObject::connect(this->_shared_ui.spin_y_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y1Changed);
     QObject::connect(this->_shared_ui.spin_z_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::z1Changed);
     QObject::connect(this->_shared_ui.spin_w_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::w1Changed);
+
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        if (!this->_in_set_0 && !this->_in_set_1)
+            this->_generate();
+    });
 }
 ConverterVectorDotNode::~ConverterVectorDotNode() {}
 

@@ -41,6 +41,27 @@ ConverterVectorMathNode::ConverterVectorMathNode()
 
     // Shared mode changed
     QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorMathNode::modeChanged);
+
+    Q_CHECK_PTR(SETTINGS);
+    QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (SETTINGS->renderMode())
+            return;
+        if (!this->_in_0_set && !this->_in_1_set)
+            this->_generate();
+    });
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (!SETTINGS->renderMode())
+            return;
+        if (!this->_in_0_set && !this->_in_1_set)
+            this->_generate();
+    });
+    QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        if (!this->_in_0_set && !this->_in_1_set)
+            this->_generate();
+    });
 }
 
 ConverterVectorMathNode::~ConverterVectorMathNode() {}
