@@ -15,7 +15,11 @@ ConverterVectorDotNode::ConverterVectorDotNode()
 
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
+ConverterVectorDotNode::~ConverterVectorDotNode() {}
 
+void ConverterVectorDotNode::created()
+{
     // Attach vector 1 in embedded ui listeners
     QObject::connect(this->_ui.spin_x_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::x0Changed);
     QObject::connect(this->_ui.spin_y_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y0Changed);
@@ -45,10 +49,10 @@ ConverterVectorDotNode::ConverterVectorDotNode()
             this->_generate();
     });
 }
-ConverterVectorDotNode::~ConverterVectorDotNode() {}
 
 // Caption of the node in the embedded node widget
-QString ConverterVectorDotNode::caption() const
+QString
+ConverterVectorDotNode::caption() const
 {
     return QString("Vector Dot Product");
 }
@@ -88,7 +92,7 @@ QtNodes::NodeDataType ConverterVectorDotNode::dataType(QtNodes::PortType port_ty
 std::shared_ptr<QtNodes::NodeData> ConverterVectorDotNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
-    return std::make_shared<IntensityMapData>(this->_pixmap);
+    return std::make_shared<IntensityMapData>(this->_output);
 }
 
 // Save the internal settings for file saving
@@ -280,11 +284,11 @@ void ConverterVectorDotNode::_generateInBoth()
     VectorMap map0 = this->_in_0->vectorMap();
     VectorMap map1 = this->_in_1->vectorMap();
 
-    this->_pixmap = IntensityMap(map0.width, map0.height);
+    this->_output = IntensityMap(map0.width, map0.height);
 
     for (int y = 0; y < map0.height; y++)
         for (int x = 0; x < map0.width; x++)
-            this->_pixmap.append(ConverterVectorDotNode::dot(map0.at(x, y), map1.at(x, y)));
+            this->_output.append(ConverterVectorDotNode::dot(map0.at(x, y), map1.at(x, y)));
 }
 
 // Generates when only one input is set (use a constant vector for other)
@@ -305,11 +309,11 @@ void ConverterVectorDotNode::_generateIn1(bool second)
         val = this->_in_val_1;
     }
 
-    this->_pixmap = IntensityMap(map.width, map.height);
+    this->_output = IntensityMap(map.width, map.height);
 
     for (int y = 0; y < map.height; y++)
         for (int x = 0; x < map.width; x++)
-            this->_pixmap.append(ConverterVectorDotNode::dot(map.at(x, y), val));
+            this->_output.append(ConverterVectorDotNode::dot(map.at(x, y), val));
 }
 
 // Generates when neither input is set, use two constants to create a constant out
@@ -321,7 +325,7 @@ void ConverterVectorDotNode::_generateIn()
         size = SETTINGS->renderResolution();
     else
         size = SETTINGS->previewResolution();
-    this->_pixmap = IntensityMap(size, size, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
+    this->_output = IntensityMap(size, size, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
 }
 
 // Apply the dot algorithm to both vectors

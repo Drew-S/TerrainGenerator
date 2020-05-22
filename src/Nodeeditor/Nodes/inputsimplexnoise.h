@@ -15,8 +15,10 @@
 #include <QVector3D>
 #include <QJsonObject>
 
+#include "node.h"
+
 // Input Node for generating simplex noise maps
-class InputSimplexNoiseNode : public QtNodes::NodeDataModel
+class InputSimplexNoiseNode : public Node
 {
     Q_OBJECT
     friend class InputSimplexNoiseNode_Test;
@@ -24,6 +26,9 @@ class InputSimplexNoiseNode : public QtNodes::NodeDataModel
 public:
     InputSimplexNoiseNode();
     ~InputSimplexNoiseNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -65,7 +70,7 @@ private:
     void _generate();
     // Houses the pixmap to be passed
     IntensityMap _intensity_map;
-    QPixmap _pixmap;
+    QPixmap _output;
 
     // Generator for open simplex noise
     SimplexNoise _noise;

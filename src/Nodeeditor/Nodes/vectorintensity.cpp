@@ -13,7 +13,12 @@ ConverterVectorIntensityNode::ConverterVectorIntensityNode()
 
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
 
+ConverterVectorIntensityNode::~ConverterVectorIntensityNode() {}
+
+void ConverterVectorIntensityNode::created()
+{
     QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
     QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
 
@@ -28,6 +33,7 @@ ConverterVectorIntensityNode::ConverterVectorIntensityNode()
         emit this->dataUpdated(0);
     });
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        qDebug("Render Resolution Changed");
         Q_CHECK_PTR(SETTINGS);
         if (!SETTINGS->renderMode())
             return;
@@ -52,10 +58,9 @@ ConverterVectorIntensityNode::ConverterVectorIntensityNode()
     });
 }
 
-ConverterVectorIntensityNode::~ConverterVectorIntensityNode() {}
-
 // Title shown at the top of the node
-QString ConverterVectorIntensityNode::caption() const
+QString
+ConverterVectorIntensityNode::caption() const
 {
     return QString("Vector to Intensity Map");
 }

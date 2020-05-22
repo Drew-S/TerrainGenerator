@@ -14,12 +14,17 @@
 
 #include "ui_VectorIntensityNode.h"
 
-class ConverterVectorIntensityNode : public QtNodes::NodeDataModel
+#include "node.h"
+
+class ConverterVectorIntensityNode : public Node
 {
     Q_OBJECT
 public:
     ConverterVectorIntensityNode();
     ~ConverterVectorIntensityNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;

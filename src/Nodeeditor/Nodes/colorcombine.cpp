@@ -14,7 +14,12 @@ ConverterColorCombineNode::ConverterColorCombineNode()
     this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
 
+ConverterColorCombineNode::~ConverterColorCombineNode() {}
+
+void ConverterColorCombineNode::created()
+{
     QObject::connect(this->_ui.spin_red, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::redChanged);
     QObject::connect(this->_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::greenChanged);
     QObject::connect(this->_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::blueChanged);
@@ -31,29 +36,29 @@ ConverterColorCombineNode::ConverterColorCombineNode()
         if (SETTINGS->renderMode())
             return;
         int size = SETTINGS->previewResolution();
-        this->_pixmap.width = size;
-        this->_pixmap.height = size;
+        this->_output.width = size;
+        this->_output.height = size;
         emit this->dataUpdated(0);
     });
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        qDebug("Render Resolution Changed");
         Q_CHECK_PTR(SETTINGS);
         if (!SETTINGS->renderMode())
             return;
-        int size = SETTTINGS->renderResolution();
-        this->_pixmap.width = size;
-        this->_pixmap.height = size;
+        int size = SETTINGS->renderResolution();
+        this->_output.width = size;
+        this->_output.height = size;
         emit this->dataUpdated(0);
     });
     QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
         if (!this->_red_set && !this->_green_set && !this->_blue_set && !this->_alpha_set)
             this->_generate();
-    })
+    });
 }
 
-ConverterColorCombineNode::~ConverterColorCombineNode() {}
-
 // Title shown at the top of the node
-QString ConverterColorCombineNode::caption() const
+QString
+ConverterColorCombineNode::caption() const
 {
     return QString("Combine Color Channels");
 }
@@ -115,7 +120,7 @@ QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port
 std::shared_ptr<QtNodes::NodeData> ConverterColorCombineNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
-    return std::make_shared<VectorMapData>(this->_pixmap);
+    return std::make_shared<VectorMapData>(this->_output);
 }
 
 // Set the input node
@@ -249,7 +254,7 @@ void ConverterColorCombineNode::_generate()
     qDebug("Combinging values into output");
     if (!this->_red_set && !this->_green_set && !this->_blue_set && !this->_alpha_set)
     {
-        this->_pixmap = VectorMap(1, 1, glm::dvec4(this->_red_val, this->_green_val, this->_blue_val, this->_alpha_val));
+        this->_output = VectorMap(1, 1, glm::dvec4(this->_red_val, this->_green_val, this->_blue_val, this->_alpha_val));
     }
     else
     {
@@ -287,10 +292,10 @@ void ConverterColorCombineNode::_generate()
             alpha = this->_alpha->intensityMap();
         }
 
-        this->_pixmap = VectorMap(size, size);
+        this->_output = VectorMap(size, size);
         for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
-                this->_pixmap.append(glm::dvec4(
+                this->_output.append(glm::dvec4(
                     red.at(x, y),
                     green.at(x, y),
                     blue.at(x, y),

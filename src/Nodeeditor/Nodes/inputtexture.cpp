@@ -26,7 +26,10 @@ InputTextureNode::InputTextureNode()
     this->_new_texture_ui.setupUi(this->_dialogue);
     this->_shared_ui.setupUi(this->_shared);
     this->_ui.setupUi(this->_widget);
+}
 
+void InputTextureNode::created()
+{
     QObject::connect(this->_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
     QObject::connect(this->_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::show);
     QObject::connect(this->_ui.edit_button, &QToolButton::clicked, [this]() {
@@ -52,6 +55,7 @@ InputTextureNode::InputTextureNode()
         emit this->dataUpdated(0);
     });
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        qDebug("Render Resolution Changed");
         emit this->dataUpdated(0);
     });
     QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {

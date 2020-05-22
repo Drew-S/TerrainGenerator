@@ -18,7 +18,12 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     this->_ui.setupUi(this->_widget);
     this->_widget->setMinimumSize(281, 302);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
 
+InputSimplexNoiseNode::~InputSimplexNoiseNode() {}
+
+void InputSimplexNoiseNode::created()
+{
     // Attach listeners
     QObject::connect(this->_ui.spin_octives, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::octivesChanged);
     QObject::connect(this->_ui.spin_frequency, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::frequencyChanged);
@@ -37,17 +42,20 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     Q_CHECK_PTR(SETTINGS);
     // Settings listener
     QObject::connect(SETTINGS, &Settings::previewResolutionChanged, this, &InputSimplexNoiseNode::_generate);
-    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, this, &InputSimplexNoiseNode::_generate);
+    // QObject::connect(SETTINGS, &Settings::renderResolutionChanged, this, &InputSimplexNoiseNode::_generate);
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        qDebug("Render Resolution Changed");
+        this->_generate();
+    });
     QObject::connect(SETTINGS, &Settings::renderModeChanged, this, &InputSimplexNoiseNode::_generate);
 
     // Generate values
     this->_generate();
 }
 
-InputSimplexNoiseNode::~InputSimplexNoiseNode() {}
-
 // Title shown at the top of the node
-QString InputSimplexNoiseNode::caption() const
+QString
+InputSimplexNoiseNode::caption() const
 {
     return "Generate Simplex Noise Texture";
 }
@@ -101,13 +109,18 @@ void InputSimplexNoiseNode::_generate()
     // Create a vector map to house information
     Q_CHECK_PTR(SETTINGS);
     int size;
+    float ratio = 1.0f;
     if (SETTINGS->renderMode())
+    {
         size = SETTINGS->renderResolution();
+    }
     else
+    {
         size = SETTINGS->previewResolution();
-    int render_size = SETTINGS->renderResolution();
+        int render_size = SETTINGS->renderResolution();
+        ratio = size / (float)render_size;
+    }
     // Ratio compensates the preview resolution to better reflect the render output
-    double ratio = size / (double)render_size;
     this->_intensity_map = IntensityMap(size, size);
     // Generate the "image" with the specified size
     for (int x = 0; x < size; x++)
@@ -128,9 +141,9 @@ void InputSimplexNoiseNode::_generate()
     }
 
     // Set preview and emit completion of generation
-    this->_pixmap = this->_intensity_map.toPixmap();
-    this->_ui.label_pixmap->setPixmap(this->_pixmap.scaled(this->_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
-    this->_shared_ui.label_pixmap->setPixmap(this->_pixmap.scaled(this->_shared_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
+    this->_output = this->_intensity_map.toPixmap();
+    this->_ui.label_pixmap->setPixmap(this->_output.scaled(this->_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
+    this->_shared_ui.label_pixmap->setPixmap(this->_output.scaled(this->_shared_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
     emit this->dataUpdated(0);
 }
 

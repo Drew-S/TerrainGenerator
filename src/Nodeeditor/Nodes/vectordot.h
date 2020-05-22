@@ -14,12 +14,17 @@
 
 #include "ui_VectorDotProduct.h"
 
-class ConverterVectorDotNode : public QtNodes::NodeDataModel
+#include "node.h"
+
+class ConverterVectorDotNode : public Node
 {
     Q_OBJECT
 public:
     ConverterVectorDotNode();
     ~ConverterVectorDotNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -74,7 +79,7 @@ private:
     static double dot(glm::dvec4 a, glm::dvec4 b);
 
     // Results
-    IntensityMap _pixmap{1, 1, 1.00};
+    IntensityMap _output{1, 1, 1.00};
 
     // Input values
     std::shared_ptr<VectorMapData> _in_0;

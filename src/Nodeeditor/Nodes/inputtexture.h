@@ -14,13 +14,15 @@
 
 #include "Globals/texturelist.h"
 
+#include "node.h"
+
 #include "ui_InputTextureNode.h"
 #include "ui_NewTextureDialogue.h"
 #include "ui_InputDrawingNode.h"
 
 // Node for the nodeeditor that can load an image from the file system
 // Used as an input for other nodes
-class InputTextureNode : public QtNodes::NodeDataModel
+class InputTextureNode : public Node
 {
     Q_OBJECT
     friend class InputTextureNode_Test;
@@ -28,6 +30,9 @@ class InputTextureNode : public QtNodes::NodeDataModel
 public:
     InputTextureNode();
     ~InputTextureNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;

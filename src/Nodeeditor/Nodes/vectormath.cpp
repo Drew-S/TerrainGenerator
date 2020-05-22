@@ -15,7 +15,12 @@ ConverterVectorMathNode::ConverterVectorMathNode()
 
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
 
+ConverterVectorMathNode::~ConverterVectorMathNode() {}
+
+void ConverterVectorMathNode::created()
+{
     // First vector, embedded widget
     QObject::connect(this->_ui.spin_x_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorMathNode::x0Changed);
     QObject::connect(this->_ui.spin_y_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorMathNode::y0Changed);
@@ -51,6 +56,7 @@ ConverterVectorMathNode::ConverterVectorMathNode()
             this->_generate();
     });
     QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        qDebug("Render Resolution Changed");
         Q_CHECK_PTR(SETTINGS);
         if (!SETTINGS->renderMode())
             return;
@@ -64,10 +70,9 @@ ConverterVectorMathNode::ConverterVectorMathNode()
     });
 }
 
-ConverterVectorMathNode::~ConverterVectorMathNode() {}
-
 // Title shown at the top of the node
-QString ConverterVectorMathNode::caption() const
+QString
+ConverterVectorMathNode::caption() const
 {
     return QString("Vector Math");
 }

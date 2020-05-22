@@ -7,6 +7,8 @@
 #include <nodes/DataModelRegistry>
 #include <nodes/TypeConverter>
 
+#include "./Nodes/node.h"
+
 #include "./Datatypes/pixmap.h"
 #include "./Datatypes/converters.h"
 
@@ -148,6 +150,8 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
     QString name = node.nodeDataModel()->name();
+    Node *created_node = static_cast<Node *>(node.nodeDataModel());
+    created_node->created();
     // Created node is output and active output is null
     if (name == OutputNode().name() && !this->_active_output)
     {

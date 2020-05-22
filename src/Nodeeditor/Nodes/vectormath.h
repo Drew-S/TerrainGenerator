@@ -13,7 +13,9 @@
 
 #include "ui_VectorMathNode.h"
 
-class ConverterVectorMathNode : public QtNodes::NodeDataModel
+#include "node.h"
+
+class ConverterVectorMathNode : public Node
 {
     Q_OBJECT
 public:
@@ -27,6 +29,9 @@ public:
     };
     ConverterVectorMathNode();
     ~ConverterVectorMathNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;

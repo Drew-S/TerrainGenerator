@@ -14,9 +14,11 @@
 
 #include "../Datatypes/intensitymap.h"
 
+#include "node.h"
+
 // Node for managing the final output of the pipeline
 // Node that will generated normal map
-class OutputNode : public QtNodes::NodeDataModel
+class OutputNode : public Node
 {
 public:
     OutputNode();
@@ -59,7 +61,7 @@ private:
     void _generateNormalMap(IntensityMap height_map);
 
     // The shared pointer for the inputted pixmap
-    std::shared_ptr<IntensityMapData> _pixmap;
+    std::shared_ptr<IntensityMapData> _input;
 
     // Generator for the normal map
     NormalMapGenerator _normal_generator;

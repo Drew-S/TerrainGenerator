@@ -9,9 +9,11 @@
 #include <QObject>
 #include <QJsonObject>
 
+#include "node.h"
+
 // Node that converts a VectorMap input and splits the colour channels out into
 // individual IntensityMap for rgba
-class ConverterColorSplitNode : public QtNodes::NodeDataModel
+class ConverterColorSplitNode : public Node
 {
     Q_OBJECT
 

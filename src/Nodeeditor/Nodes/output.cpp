@@ -92,13 +92,13 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
     if (node_data)
     {
         // Cast pointer into VectorMapData pointer
-        this->_pixmap = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+        this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data);
 
         // Get width and height
         int w = this->_height_label->width();
         int h = this->_height_label->height();
 
-        IntensityMap height_map = this->_pixmap->intensityMap();
+        IntensityMap height_map = this->_input->intensityMap();
 
         this->_height_map = height_map.toImage();
 
@@ -155,7 +155,7 @@ void OutputNode::_generateNormalMap(IntensityMap height_map)
 void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     Q_UNUSED(connection);
-    this->_pixmap = nullptr;
+    this->_input = nullptr;
     this->_height_map = QImage();
 
     QImage normal(1, 1, QImage::Format_Indexed8);

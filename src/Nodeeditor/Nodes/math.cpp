@@ -19,6 +19,12 @@ ConverterMathNode::ConverterMathNode()
     this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
+
+ConverterMathNode::~ConverterMathNode() {}
+
+void ConverterMathNode::created()
+{
 
     // Ui connections
     QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterMathNode::comboChanged);
@@ -38,10 +44,9 @@ ConverterMathNode::ConverterMathNode()
     this->_generate();
 }
 
-ConverterMathNode::~ConverterMathNode() {}
-
 // Title shown at the top of the node
-QString ConverterMathNode::caption() const
+QString
+ConverterMathNode::caption() const
 {
     return QString("Math");
 }
@@ -137,28 +142,28 @@ void ConverterMathNode::_generateInBoth()
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:
-        this->_pixmap = map_0.transform(&ConverterMathNode::mix, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::mix, &map_1);
         break;
     case ConverterMathNode::ADD:
-        this->_pixmap = map_0.transform(&ConverterMathNode::add, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::add, &map_1);
         break;
     case ConverterMathNode::SUBTRACT:
-        this->_pixmap = map_0.transform(&ConverterMathNode::subtract, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::subtract, &map_1);
         break;
     case ConverterMathNode::MULTIPLY:
-        this->_pixmap = map_0.transform(&ConverterMathNode::multiply, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::multiply, &map_1);
         break;
     case ConverterMathNode::DIVIDE:
-        this->_pixmap = map_0.transform(&ConverterMathNode::divide, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::divide, &map_1);
         break;
     case ConverterMathNode::MIN:
-        this->_pixmap = map_0.transform(&ConverterMathNode::min, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::min, &map_1);
         break;
     case ConverterMathNode::MAX:
-        this->_pixmap = map_0.transform(&ConverterMathNode::max, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::max, &map_1);
         break;
     case ConverterMathNode::POW:
-        this->_pixmap = map_0.transform(&ConverterMathNode::pow, &map_1);
+        this->_output = map_0.transform(&ConverterMathNode::pow, &map_1);
         break;
     default:
         Q_UNREACHABLE();
@@ -189,28 +194,28 @@ void ConverterMathNode::_generateIn1(bool second)
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:
-        this->_pixmap = map.transform(&ConverterMathNode::mix, val);
+        this->_output = map.transform(&ConverterMathNode::mix, val);
         break;
     case ConverterMathNode::ADD:
-        this->_pixmap = map.transform(&ConverterMathNode::add, val);
+        this->_output = map.transform(&ConverterMathNode::add, val);
         break;
     case ConverterMathNode::SUBTRACT:
-        this->_pixmap = map.transform(&ConverterMathNode::subtract, val);
+        this->_output = map.transform(&ConverterMathNode::subtract, val);
         break;
     case ConverterMathNode::MULTIPLY:
-        this->_pixmap = map.transform(&ConverterMathNode::multiply, val);
+        this->_output = map.transform(&ConverterMathNode::multiply, val);
         break;
     case ConverterMathNode::DIVIDE:
-        this->_pixmap = map.transform(&ConverterMathNode::divide, val);
+        this->_output = map.transform(&ConverterMathNode::divide, val);
         break;
     case ConverterMathNode::MIN:
-        this->_pixmap = map.transform(&ConverterMathNode::min, val);
+        this->_output = map.transform(&ConverterMathNode::min, val);
         break;
     case ConverterMathNode::MAX:
-        this->_pixmap = map.transform(&ConverterMathNode::max, val);
+        this->_output = map.transform(&ConverterMathNode::max, val);
         break;
     case ConverterMathNode::POW:
-        this->_pixmap = map.transform(&ConverterMathNode::pow, val);
+        this->_output = map.transform(&ConverterMathNode::pow, val);
         break;
     default:
         Q_UNREACHABLE();
@@ -234,28 +239,28 @@ void ConverterMathNode::_generateIn()
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:
-        this->_pixmap = IntensityMap(size, size, mix(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, mix(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::ADD:
-        this->_pixmap = IntensityMap(size, size, add(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, add(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::SUBTRACT:
-        this->_pixmap = IntensityMap(size, size, subtract(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, subtract(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MULTIPLY:
-        this->_pixmap = IntensityMap(size, size, multiply(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, multiply(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::DIVIDE:
-        this->_pixmap = IntensityMap(size, size, divide(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, divide(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MIN:
-        this->_pixmap = IntensityMap(size, size, min(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, min(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MAX:
-        this->_pixmap = IntensityMap(size, size, max(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, max(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::POW:
-        this->_pixmap = IntensityMap(size, size, pow(this->_val_in_0, this->_val_in_1));
+        this->_output = IntensityMap(size, size, pow(this->_val_in_0, this->_val_in_1));
         break;
     default:
         Q_UNREACHABLE();
@@ -336,7 +341,7 @@ void ConverterMathNode::restore(QJsonObject const &data)
 std::shared_ptr<QtNodes::NodeData> ConverterMathNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
-    return std::make_shared<IntensityMapData>(this->_pixmap);
+    return std::make_shared<IntensityMapData>(this->_output);
 }
 
 // Agorithms to use for transformations

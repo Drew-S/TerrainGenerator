@@ -13,15 +13,20 @@
 #include <QObject>
 #include <QJsonObject>
 
+#include "node.h"
+
 #include <glm/vec4.hpp>
 
-class ConverterColorCombineNode : public QtNodes::NodeDataModel
+class ConverterColorCombineNode : public Node
 {
     Q_OBJECT
 
 public:
     ConverterColorCombineNode();
     ~ConverterColorCombineNode();
+
+    // When the node is created attach listeners
+    void created() override;
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -64,7 +69,7 @@ private:
     void _generate();
 
     // The resulting output (defaults to solid white)
-    VectorMap _pixmap{1, 1, glm::dvec4{1.00, 1.00, 1.00, 1.00}};
+    VectorMap _output{1, 1, glm::dvec4{1.00, 1.00, 1.00, 1.00}};
 
     // Input intensity maps for different colors
     std::shared_ptr<IntensityMapData> _red;
