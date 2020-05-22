@@ -4,6 +4,8 @@
 #include <QComboBox>
 #include <QDebug>
 
+#include "Globals/settings.h"
+
 // Creates the node
 ConverterVectorMathNode::ConverterVectorMathNode()
 {
@@ -306,23 +308,24 @@ void ConverterVectorMathNode::_generateIn1(bool second)
 // Generates the output when neither map is set
 void ConverterVectorMathNode::_generateIn()
 {
-
+    Q_CHECK_PTR(SETTINGS);
+    int size = SETTINGS->previewResolution();
     switch (this->_mode)
     {
     case ConverterVectorMathNode::ADD:
-        this->_output = VectorMap(128, 128, ConverterVectorMathNode::add(this->_val_in_0, this->_val_in_1));
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::add(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterVectorMathNode::SUBTRACT:
-        this->_output = VectorMap(128, 128, ConverterVectorMathNode::subtract(this->_val_in_0, this->_val_in_1));
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::subtract(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterVectorMathNode::MULTIPLY:
-        this->_output = VectorMap(128, 128, ConverterVectorMathNode::multiply(this->_val_in_0, this->_val_in_1));
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::multiply(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterVectorMathNode::DIVIDE:
-        this->_output = VectorMap(128, 128, ConverterVectorMathNode::divide(this->_val_in_0, this->_val_in_1));
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::divide(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterVectorMathNode::CROSS:
-        this->_output = VectorMap(128, 128, ConverterVectorMathNode::cross(this->_val_in_0, this->_val_in_1));
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::cross(this->_val_in_0, this->_val_in_1));
         break;
     }
 }

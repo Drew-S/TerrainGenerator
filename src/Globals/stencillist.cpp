@@ -6,6 +6,8 @@
 #include <QRegExp>
 #include <QFileInfo>
 
+#include "Globals/settings.h"
+
 #include "../Nodeeditor/Datatypes/vectormap.h"
 
 #include <glm/vec4.hpp>
@@ -126,19 +128,23 @@ StencilList *StencilList::_single = nullptr;
 StencilList::StencilList()
 {
     // Get a list of stencils and load them into the program
-    // TODO: Use absolute path system
-    QDir stencils("assets/stencils");
-    QStringList images = stencils.entryList(QStringList() << "*.jpg"
-                                                          << "*.png"
-                                                          << "*.jpeg",
-                                            QDir::Files);
-
+    Q_CHECK_PTR(SETTINGS);
+    std::vector<QDir> asset_dirs = SETTINGS->getAssetDirectories();
     qDebug("Initializing stencil brushes");
-    for (int i = 0; i < images.size(); i++)
+    for (int i = 0; i < (int)asset_dirs.size(); i++)
     {
-        this->_stencils.push_back(Stencil(QString("assets/stencils/") + images.at(i), i));
+        QDir stencils(QDir::cleanPath(asset_dirs[i].path() + QString("/stencils")));
+        QStringList images = stencils.entryList(QStringList() << "*.jpg"
+                                                              << "*.png"
+                                                              << "*.jpeg",
+                                                QDir::Files);
+        for (int i = 0; i < images.size(); i++)
+        {
+            this->_stencils.push_back(Stencil(QString("assets/stencils/") + images.at(i), i));
+        }
     }
 }
+
 StencilList::~StencilList()
 {
     _instance = false;

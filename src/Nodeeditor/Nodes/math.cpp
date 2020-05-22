@@ -2,6 +2,8 @@
 
 #include <math.h> // pow
 
+#include "Globals/settings.h"
+
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QDebug>
@@ -217,32 +219,34 @@ void ConverterMathNode::_generateIn1(bool second)
 // C = A (op) B
 void ConverterMathNode::_generateIn()
 {
-    // TODO: Use render/preview resolution
+    Q_CHECK_PTR(SETTINGS);
+    int size = SETTINGS->previewResolution();
+    // TODO: Use render resolution
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:
-        this->_pixmap = IntensityMap(128, 128, mix(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, mix(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::ADD:
-        this->_pixmap = IntensityMap(128, 128, add(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, add(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::SUBTRACT:
-        this->_pixmap = IntensityMap(128, 128, subtract(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, subtract(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MULTIPLY:
-        this->_pixmap = IntensityMap(128, 128, multiply(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, multiply(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::DIVIDE:
-        this->_pixmap = IntensityMap(128, 128, divide(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, divide(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MIN:
-        this->_pixmap = IntensityMap(128, 128, min(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, min(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::MAX:
-        this->_pixmap = IntensityMap(128, 128, max(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, max(this->_val_in_0, this->_val_in_1));
         break;
     case ConverterMathNode::POW:
-        this->_pixmap = IntensityMap(128, 128, pow(this->_val_in_0, this->_val_in_1));
+        this->_pixmap = IntensityMap(size, size, pow(this->_val_in_0, this->_val_in_1));
         break;
     default:
         Q_UNREACHABLE();

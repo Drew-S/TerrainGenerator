@@ -3,6 +3,9 @@
 #include <QOpenGLShader>
 #include <QOpenGLBuffer>
 #include <QColor>
+#include <QDir>
+
+#include "Globals/settings.h"
 
 #include <GL/gl.h>
 
@@ -50,12 +53,13 @@ void Terrain::initializeGL()
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
     // Initialize the vertex shader
-    // TODO: Long term include absolute path management
     // TODO: Implement shader file exist checks
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "assets/shaders/terrain.vert");
+    Q_CHECK_PTR(SETTINGS);
+    QString assets = QDir::cleanPath(SETTINGS->getAssetDirectories()[0].path() + QString("/shaders"));
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, QDir::cleanPath(assets + QString("/terrain.vert")));
 
     // Initialize the frag shader (color)
-    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "assets/shaders/terrain.frag");
+    this->_program.addShaderFromSourceFile(QOpenGLShader::Fragment, QDir::cleanPath(assets + QString("/terrain.frag")));
 
     // Link and bind the shader program for use
     this->_program.link();

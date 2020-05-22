@@ -1,5 +1,7 @@
 #include "colorcombine.h"
 
+#include "Globals/settings.h"
+
 #include <QColor>
 #include <QDoubleSpinBox>
 #include <QDebug>
@@ -22,6 +24,15 @@ ConverterColorCombineNode::ConverterColorCombineNode()
     QObject::connect(this->_shared_ui.spin_green, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::greenChanged);
     QObject::connect(this->_shared_ui.spin_blue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::blueChanged);
     QObject::connect(this->_shared_ui.spin_alpha, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterColorCombineNode::alphaChanged);
+
+    Q_CHECK_PTR(SETTINGS);
+    QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        int size = SETTINGS->previewResolution();
+        this->_pixmap.width = size;
+        this->_pixmap.height = size;
+        emit this->dataUpdated(0);
+    });
 }
 
 ConverterColorCombineNode::~ConverterColorCombineNode() {}
@@ -82,6 +93,7 @@ QtNodes::NodeDataType ConverterColorCombineNode::dataType(QtNodes::PortType port
         Q_UNREACHABLE();
         break;
     }
+    Q_UNREACHABLE();
 }
 
 // Get the output data (the VectorMapData)
@@ -226,8 +238,7 @@ void ConverterColorCombineNode::_generate()
     }
     else
     {
-        int width = 128;
-        int height = 128;
+        int size = SETTINGS->previewResolution();
         IntensityMap red(1, 1, this->_red_val);
         IntensityMap green(1, 1, this->_green_val);
         IntensityMap blue(1, 1, this->_blue_val);
@@ -237,47 +248,30 @@ void ConverterColorCombineNode::_generate()
         {
             Q_CHECK_PTR(this->_red);
             red = this->_red->intensityMap();
-            width = red.width;
-            height = red.height;
         }
 
         if (this->_green_set)
         {
             Q_CHECK_PTR(this->_green);
             green = this->_green->intensityMap();
-            if (width == 128)
-            {
-                width = green.width;
-                height = green.height;
-            }
         }
 
         if (this->_blue_set)
         {
             Q_CHECK_PTR(this->_blue);
             blue = this->_blue->intensityMap();
-            if (width == 128)
-            {
-                width = blue.width;
-                height = blue.height;
-            }
         }
 
         if (this->_alpha_set)
         {
             Q_CHECK_PTR(this->_alpha);
             alpha = this->_alpha->intensityMap();
-            if (width == 128)
-            {
-                width = alpha.width;
-                height = alpha.height;
-            }
         }
 
-        // TODO: use preview/render resolutions
-        this->_pixmap = VectorMap(width, height);
-        for (int y = 0; y < this->_pixmap.height; y++)
-            for (int x = 0; x < this->_pixmap.width; x++)
+        // TODO: use render resolutions
+        this->_pixmap = VectorMap(size, size);
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
                 this->_pixmap.append(glm::dvec4(
                     red.at(x, y),
                     green.at(x, y),

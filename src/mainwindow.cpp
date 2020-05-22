@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <math.h> // pow
+
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
 #include <quazip/quazipnewinfo.h>
@@ -26,6 +28,7 @@ using json = nlohmann::json;
 #include <QPushButton>
 #include <QRegExp>
 #include <QList>
+#include <QComboBox>
 
 #include "Globals/settings.h"
 #include "Globals/stencillist.h"
@@ -48,6 +51,10 @@ MainWindow::~MainWindow() {}
 void MainWindow::setup(Ui::MainWindow *ui)
 {
     //Ensure global singletons have loaded
+    Q_CHECK_PTR(SETTINGS);
+    Q_CHECK_PTR(TEXTURES);
+    Q_CHECK_PTR(DRAWING);
+    Q_CHECK_PTR(STENCILS);
     SETTINGS;
     TEXTURES;
     DRAWING;
@@ -63,6 +70,20 @@ void MainWindow::setup(Ui::MainWindow *ui)
     // Connect file actions to load and save files
     QObject::connect(this->_main_ui->actionSave_As, &QAction::triggered, this, &MainWindow::saveAs);
     QObject::connect(this->_main_ui->actionLoad, &QAction::triggered, this, &MainWindow::load);
+
+    // Settings actions
+    QObject::connect(this->_main_ui->combo_mesh, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        Q_CHECK_PTR(SETTINGS);
+        SETTINGS->setMeshResolution((int)pow(2, index + 4));
+    });
+    QObject::connect(this->_main_ui->combo_preview, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        Q_CHECK_PTR(SETTINGS);
+        SETTINGS->setPreviewResolution((int)pow(2, index + 7));
+    });
+    QObject::connect(this->_main_ui->combo_render, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        Q_CHECK_PTR(SETTINGS);
+        SETTINGS->setRenderResolution((int)pow(2, index + 7));
+    });
 
     // Fix Nodeeditor and OpenGL widget splitter size
     this->_main_ui->splitter_top_bottom->setSizes({300, 150});

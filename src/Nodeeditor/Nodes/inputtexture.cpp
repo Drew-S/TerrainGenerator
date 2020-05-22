@@ -10,6 +10,7 @@
 #include "../Datatypes/pixmap.h"
 
 #include "Globals/drawing.h"
+#include "Globals/settings.h"
 
 #include <glm/vec4.hpp>
 
@@ -45,6 +46,14 @@ InputTextureNode::InputTextureNode()
     });
     QObject::connect(this->_new_texture_ui.ok_button, &QPushButton::clicked, this, &InputTextureNode::_newFileAccept);
     QObject::connect(this->_new_texture_ui.cancel_button, &QPushButton::clicked, this->_dialogue, &QDialog::reject);
+
+    Q_CHECK_PTR(SETTINGS);
+    QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
+        emit this->dataUpdated(0);
+    });
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, [this]() {
+        emit this->dataUpdated(0);
+    });
 }
 
 InputTextureNode::~InputTextureNode() {}
@@ -100,10 +109,12 @@ void InputTextureNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, Q
 std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
+    Q_CHECK_PTR(SETTINGS);
+    int size = SETTINGS->previewResolution();
     if (this->_texture != nullptr)
-        return std::make_shared<VectorMapData>(this->_texture->vectorMap());
+        return std::make_shared<VectorMapData>(this->_texture->vectorMap(size));
 
-    return std::make_shared<VectorMapData>(VectorMap(1, 1, glm::dvec4(0.00, 0.00, 0.00, 1.00)));
+    return std::make_shared<VectorMapData>(VectorMap(size, size, glm::dvec4(0.00, 0.00, 0.00, 1.00)));
 }
 
 void InputTextureNode::_loadFile()

@@ -1,5 +1,7 @@
 #include "inputsimplexnoise.h"
 
+#include "Globals/settings.h"
+
 #include "../Datatypes/pixmap.h"
 
 #include <QImage>
@@ -31,6 +33,11 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     QObject::connect(this->_shared_ui.spin_x, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::xChanged);
     QObject::connect(this->_shared_ui.spin_y, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::yChanged);
     QObject::connect(this->_shared_ui.spin_z, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InputSimplexNoiseNode::zChanged);
+
+    Q_CHECK_PTR(SETTINGS);
+    // Settings listener
+    QObject::connect(SETTINGS, &Settings::previewResolutionChanged, this, &InputSimplexNoiseNode::_generate);
+    QObject::connect(SETTINGS, &Settings::renderResolutionChanged, this, &InputSimplexNoiseNode::_generate);
 
     // Generate values
     this->_generate();
@@ -92,18 +99,22 @@ void InputSimplexNoiseNode::_generate()
     this->_noise = SimplexNoise(this->_frequency / 1000.0f, 1.0f, 1.99f, this->_persistence);
 
     // Create a vector map to house information
-    // TODO: Add support for preview image size control
-    this->_intensity_map = IntensityMap(256, 256);
+    Q_CHECK_PTR(SETTINGS);
+    int size = SETTINGS->previewResolution();
+    int render_size = SETTINGS->renderResolution();
+    // Ratio compensates the preview resolution to better reflect the render output
+    double ratio = size / (double)render_size;
+    this->_intensity_map = IntensityMap(size, size);
     // Generate the "image" with the specified size
-    for (int x = 0; x < 256; x++)
+    for (int x = 0; x < size; x++)
     {
-        for (int y = 0; y < 256; y++)
+        for (int y = 0; y < size; y++)
         {
             // Get a noise value for a specific point
             float intensity = this->_noise.fractal(
                 this->_octives,
-                (float)x + this->_offset.x() * 25.0f,
-                (float)y + this->_offset.y() * 25.0f,
+                (float)x * ratio + this->_offset.x() * 25.0f,
+                (float)y * ratio + this->_offset.y() * 25.0f,
                 this->_offset.z() * 25.0f);
             // Normalize intensity from [-1, 1] -> [0, 1]
             intensity = (intensity + 1.0f) / 2.0f;

@@ -97,6 +97,7 @@ int Settings::meshResolution()
 void Settings::setRenderMode(bool mode)
 {
     this->_render_mode = mode;
+    qDebug("Render mode changed %s", mode ? "true" : "false");
     emit this->renderModeChanged(this->_render_mode);
 }
 
@@ -104,6 +105,7 @@ void Settings::setPreviewResolution(int resolution)
 {
     this->_preview_resolution = resolution < 1 ? 1 : (resolution > 8192 ? 8192 : resolution);
     Q_BETWEEN(1, this->_preview_resolution, 8192);
+    qDebug("Preview Resolution changed %d", this->_preview_resolution);
     emit this->previewResolutionChanged(this->_preview_resolution);
 }
 
@@ -111,6 +113,7 @@ void Settings::setRenderResolution(int resolution)
 {
     this->_render_resolution = resolution < 1 ? 1 : (resolution > 8192 ? 8192 : resolution);
     Q_BETWEEN(1, this->_render_resolution, 8192);
+    qDebug("Preview Resolution changed %d", this->_render_resolution);
     emit this->renderResolutionChanged(this->_render_resolution);
 }
 
@@ -118,5 +121,6 @@ void Settings::setMeshResolution(int resolution)
 {
     this->_mesh_resolution = resolution < 1 ? 1 : (resolution > 256 ? 265 : resolution);
     Q_BETWEEN(1, this->_mesh_resolution, 256);
+    qDebug("Preview Resolution changed %d", this->_mesh_resolution);
     emit this->meshResolutionChanged(this->_mesh_resolution);
 }

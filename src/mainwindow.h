@@ -9,6 +9,7 @@
 #include "OpenGL/opengl.h"
 
 #include <QDialog>
+#include <QDir>
 
 // Class that manages the main window, controls save/load from file
 class MainWindow : public QMainWindow

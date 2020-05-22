@@ -13,7 +13,6 @@
 #include "../Datatypes/vectormap.h"
 
 #include "Globals/texturelist.h"
-#include "Globals/settings.h"
 
 #include "ui_InputTextureNode.h"
 #include "ui_NewTextureDialogue.h"
@@ -63,7 +62,6 @@ private slots:
     void _loadFile();
     void _newFileAccept();
 
-    // TODO: Move drawing to its own UI
 private:
     void _setPixmaps();
     // The selected image

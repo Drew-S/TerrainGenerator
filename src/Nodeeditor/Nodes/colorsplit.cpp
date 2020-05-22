@@ -63,6 +63,7 @@ QtNodes::NodeDataType ConverterColorSplitNode::dataType(QtNodes::PortType port_t
         Q_UNREACHABLE();
         break;
     }
+    Q_UNREACHABLE();
 }
 
 // When the input is set mark as set and split the channels out

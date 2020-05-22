@@ -3,6 +3,8 @@
 #include <QDoubleSpinBox>
 #include <QDebug>
 
+#include "Globals/settings.h"
+
 // Create Vector Dot Product Node
 ConverterVectorDotNode::ConverterVectorDotNode()
 {
@@ -308,7 +310,9 @@ void ConverterVectorDotNode::_generateIn1(bool second)
 // Generates when neither input is set, use two constants to create a constant out
 void ConverterVectorDotNode::_generateIn()
 {
-    this->_pixmap = IntensityMap(128, 128, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
+    Q_CHECK_PTR(SETTINGS);
+    int size = SETTINGS->previewResolution();
+    this->_pixmap = IntensityMap(size, size, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
 }
 
 // Apply the dot algorithm to both vectors
