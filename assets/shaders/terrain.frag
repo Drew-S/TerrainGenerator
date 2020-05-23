@@ -10,6 +10,7 @@ uniform highp vec3 color;
 uniform highp vec3 light_color;
 uniform highp vec3 light_pos;
 uniform highp float light_intensity;
+uniform highp vec3 ambient_color;
 
 uniform highp vec3 camera_pos;
 
@@ -23,11 +24,7 @@ in highp mat4 frag_model;
 // in highp float height_value;
 
 // Lighting constants
-// TODO: Add UI controls to adjust these
 float ambient_strength = 0.25;
-
-// TODO: Bind ambient color to the sky color
-vec3 ambient_color = vec3(0.77, 0.84, 0.99);
 
 float diffuse_strength = 1.0;
 

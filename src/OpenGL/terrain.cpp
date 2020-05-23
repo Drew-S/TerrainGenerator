@@ -125,23 +125,23 @@ QColor Terrain::lineColor()
 }
 
 // Draw the terrain (technically, it can be drawn twice)
-void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity)
+void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D ambient)
 {
     Q_CHECK_PTR(f);
     // Draw the terrain
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_terrain_color);
+    this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_terrain_color, ambient);
 
     // Draw the lines that make up the terrain faces
     if (this->_draw_lines)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_line_color, true);
+        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_line_color, ambient, true);
     }
 }
 
 // Draws the terrain givent the provided information
-void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color, bool lines_mode)
+void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color, QVector3D ambient, bool lines_mode)
 {
     Q_CHECK_PTR(f);
     // Bind the buffers
@@ -170,6 +170,8 @@ void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D 
     this->_program.setUniformValue("light_color", light_color);
     // Attach sun light intensity
     this->_program.setUniformValue("light_intensity", light_intensity);
+    // Set the sky color (ambient)
+    this->_program.setUniformValue("ambient_color", ambient);
     // Set lines mode toggle
     this->_program.setUniformValue("lines", lines_mode);
 

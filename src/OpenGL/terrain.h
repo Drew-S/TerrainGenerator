@@ -32,7 +32,8 @@ public:
                  QVector3D camera_pos,
                  QVector3D light_color,
                  QVector3D light_pos,
-                 float light_intensity);
+                 float light_intensity,
+                 QVector3D ambient);
 
     // Update the existing height/normal map textures
     void setHeightMap(QImage height_map);
@@ -57,6 +58,7 @@ private:
                   QVector3D light_pos,
                   float light_intensity,
                   QVector3D color,
+                  QVector3D ambient,
                   bool lines_mode = false);
 
     bool _draw_lines = false;

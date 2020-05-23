@@ -112,6 +112,18 @@ void MainWindow::setup(Ui::MainWindow *ui)
         SETTINGS->setMeshResolution((int)pow(2, index + 4));
         this->_open_gl->setTerrainMeshResolution((int)pow(2, index + 4));
     });
+    QObject::connect(this->_main_ui->sky_color, &QPushButton::clicked, [this]() {
+        Q_CHECK_PTR(this->_open_gl);
+        QColor color = QColorDialog::getColor(this->_open_gl->skyColor());
+        if (color.isValid())
+            this->_open_gl->setSkyColor(color);
+    });
+    QObject::connect(this->_main_ui->light_color, &QPushButton::clicked, [this]() {
+        Q_CHECK_PTR(this->_open_gl);
+        QColor color = QColorDialog::getColor(this->_open_gl->lightColor());
+        if (color.isValid())
+            this->_open_gl->setLightColor(color);
+    });
 
     // Fix Nodeeditor and OpenGL widget splitter size
     this->_main_ui->splitter_top_bottom->setSizes({300, 150});

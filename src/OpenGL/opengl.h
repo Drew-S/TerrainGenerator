@@ -26,9 +26,14 @@ public:
     void setTerrainLineColor(QColor color);
     void setTerrainMeshResolution(int resolution);
 
+    void setSkyColor(QColor color);
+    void setLightColor(QColor color);
+
     bool terrainDrawLines();
     QColor terrainColor();
     QColor terrainLineColor();
+    QColor skyColor();
+    QColor lightColor();
 
 public slots:
     // Called when the sun widgets are adjusted
@@ -59,6 +64,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    QVector3D _ambient{0.77, 0.84, 0.99};
     // Terrain handler
     Terrain *_terrain;
     // Camera handler

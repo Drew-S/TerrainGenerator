@@ -12,9 +12,6 @@
 
 #include <GL/gl.h>
 
-// TODO: add ui support for selecting sky color
-#define SKY 0.77f, 0.84f, 0.99f, 1.0f
-
 // Creates an OpenGL widget (QOpenGLWidget)
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -32,7 +29,6 @@ OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
     this->setFormat(fmt);
 
     // Create a terrain object with a set resolution
-    // TODO: add support for changing terrain resolution
     // WARNING: Maxed out at around 256^2 vertices
     this->_terrain = new Terrain(256);
 
@@ -122,6 +118,17 @@ void OpenGL::setTerrainMeshResolution(int resolution)
     this->_terrain->setResolution(resolution);
     this->update();
 }
+void OpenGL::setSkyColor(QColor color)
+{
+    this->_ambient = QVector3D(color.redF(), color.greenF(), color.blueF());
+    this->update();
+}
+void OpenGL::setLightColor(QColor color)
+{
+    Q_CHECK_PTR(this->_light);
+    this->_light->setColor(QVector3D(color.redF(), color.greenF(), color.blueF()));
+    this->update();
+}
 
 bool OpenGL::terrainDrawLines()
 {
@@ -137,6 +144,16 @@ QColor OpenGL::terrainLineColor()
 {
     Q_CHECK_PTR(this->_terrain);
     return this->_terrain->lineColor();
+}
+QColor OpenGL::skyColor()
+{
+    return QColor::fromRgbF(this->_ambient.x(), this->_ambient.y(), this->_ambient.z());
+}
+QColor OpenGL::lightColor()
+{
+    Q_CHECK_PTR(this->_light);
+    QVector3D vec = this->_light->color();
+    return QColor::fromRgbF(vec.x(), vec.y(), vec.z());
 }
 
 // Initialize OpenGL functions and objects
@@ -155,7 +172,7 @@ void OpenGL::initializeGL()
     f->glDepthFunc(GL_LESS);
 
     // Set sky color
-    f->glClearColor(SKY);
+    f->glClearColor(this->_ambient.x(), this->_ambient.y(), this->_ambient.z(), 1.0f);
 
     Q_CHECK_PTR(this->_terrain);
     // Initialize terrain's OpenGL
@@ -180,7 +197,7 @@ void OpenGL::paintGL()
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set sky color
-    f->glClearColor(SKY);
+    f->glClearColor(this->_ambient.x(), this->_ambient.y(), this->_ambient.z(), 1.0f);
 
     Q_CHECK_PTR(this->_camera);
     Q_CHECK_PTR(this->_light);
@@ -201,7 +218,8 @@ void OpenGL::paintGL()
         camera_pos,
         light_color,
         light_pos,
-        light_intensity);
+        light_intensity,
+        this->_ambient);
 
     // Draw the sun graphic
     this->_light->paintGL(camera_matrix);

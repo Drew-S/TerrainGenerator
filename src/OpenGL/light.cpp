@@ -7,9 +7,6 @@
 
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
-// TODO: Add control to set light color
-#define LIGHT_COLOR 1.0f, 1.0f, 1.0f
-
 Light::Light() {}
 Light::~Light() {}
 
@@ -47,7 +44,7 @@ void Light::paintGL(QMatrix4x4 camera)
 
     // Draw the sun point
     glBegin(GL_POINTS);
-    glColor3f(LIGHT_COLOR);
+    glColor3f(this->_color.x(), this->_color.y(), this->_color.z());
     glVertex3f(pos.x(), pos.y(), pos.z());
     glEnd();
 
@@ -58,7 +55,7 @@ void Light::paintGL(QMatrix4x4 camera)
     glLineStipple(4, 0xAAAA);
     glEnable(GL_LINE_STIPPLE);
     glBegin(GL_LINES);
-    glColor3f(LIGHT_COLOR);
+    glColor3f(this->_color.x(), this->_color.y(), this->_color.z());
 
     // Draw from the sun position to the origin
     glVertex3f(pos.x(), pos.y(), pos.z());
