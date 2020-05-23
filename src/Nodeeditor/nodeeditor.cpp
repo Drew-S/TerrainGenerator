@@ -25,8 +25,11 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     qDebug("Registering Data Models and Data Converters");
 
     registry->registerModel<OutputNode>("Output");
+
     registry->registerModel<InputTextureNode>("Input");
     registry->registerModel<InputSimplexNoiseNode>("Input");
+    registry->registerModel<InputConstantValueNode>("Input");
+
     registry->registerModel<ConverterMathNode>("Converters");
     registry->registerModel<ConverterColorSplitNode>("Converters");
     registry->registerModel<ConverterColorCombineNode>("Converters");
@@ -137,6 +140,10 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     else if (name == ConverterVectorMathNode().name())
     {
         CAST_NODE(ConverterVectorMathNode)
+    }
+    else if (name == InputConstantValueNode().name())
+    {
+        CAST_NODE(InputConstantValueNode)
     }
     else if (swap)
     {

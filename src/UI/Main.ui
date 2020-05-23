@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>848</width>
+    <width>1260</width>
     <height>685</height>
    </rect>
   </property>
@@ -440,7 +440,7 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255,255,255);</string>
+             <string notr="true">b</string>
             </property>
             <property name="text">
              <string/>
@@ -480,7 +480,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>848</width>
+     <width>1260</width>
      <height>28</height>
     </rect>
    </property>

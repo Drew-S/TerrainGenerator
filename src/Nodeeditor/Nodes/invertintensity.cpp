@@ -1,6 +1,11 @@
 #include "invertintensity.h"
 
-ConverterInvertIntensityNode::ConverterInvertIntensityNode() {}
+#include <QDebug>
+
+ConverterInvertIntensityNode::ConverterInvertIntensityNode()
+{
+    qDebug("Created intensity inverting node");
+}
 
 ConverterInvertIntensityNode::~ConverterInvertIntensityNode() {}
 
@@ -83,6 +88,7 @@ void ConverterInvertIntensityNode::inputConnectionDeleted(QtNodes::Connection co
 // between 0-1
 void ConverterInvertIntensityNode::_generate()
 {
+    qDebug("Inverting intensity map");
     Q_CHECK_PTR(this->_input);
     IntensityMap map = this->_input->intensityMap();
     IntensityMap out(map.width, map.height);

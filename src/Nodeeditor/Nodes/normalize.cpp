@@ -2,7 +2,12 @@
 
 #include <math.h>
 
-ConverterNormalizeNode::ConverterNormalizeNode() {}
+#include <QDebug>
+
+ConverterNormalizeNode::ConverterNormalizeNode()
+{
+    qDebug("Created normalize node");
+}
 
 ConverterNormalizeNode::~ConverterNormalizeNode() {}
 
@@ -80,6 +85,7 @@ glm::dvec4 ConverterNormalizeNode::normalize(glm::dvec4 a, glm::dvec4 b)
 
 void ConverterNormalizeNode::_generate()
 {
+    qDebug("Normalizing vector map");
     Q_CHECK_PTR(this->_input);
     VectorMap map = this->_input->vectorMap();
     map.transform(&ConverterNormalizeNode::normalize, glm::dvec4());

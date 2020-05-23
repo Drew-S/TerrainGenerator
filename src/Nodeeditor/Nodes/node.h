@@ -12,4 +12,5 @@ public:
     // the node when added to the registry, to attach listeners only when they
     // should be, this is called by my nodeeditor when the node is created
     virtual void created(){};
+    virtual bool hasShared() { return false; };
 };

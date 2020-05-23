@@ -20,6 +20,7 @@
 #include "./Nodes/vectormath.h"
 #include "./Nodes/normalize.h"
 #include "./Nodes/invertintensity.h"
+#include "./Nodes/constantvalue.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
