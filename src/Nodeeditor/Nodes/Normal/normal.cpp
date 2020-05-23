@@ -106,7 +106,6 @@ double NormalMapGenerator::_getHeightIntensity(int x, int y)
 
     double height = this->_height_map->at(x, y);
 
-    // TODO: add strength control element
     double strength = 25.00;
     return height * strength;
 }

@@ -3,11 +3,15 @@
 #include "SimplexNoise.h"
 
 #include "../Datatypes/intensitymap.h"
+#include "../Datatypes/vectormap.h"
+
+#include "../Datatypes/pixmap.h"
 
 #include "ui_SimplexNoiseNode.h"
 #include "ui_SimplexNoiseNode_no_scroll.h"
 
 #include <nodes/NodeDataModel>
+#include <nodes/Connection>
 
 #include <QPixmap>
 #include <QWidget>
@@ -53,8 +57,11 @@ public:
     void restore(QJsonObject const &data) override;
 
     // Needed for all nodes, even if there are no inputs
-    // TODO: Add support for input control parameters
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+
+public slots:
+    // Reset to use constant values when input removed
+    void inputConnectionDeleted(QtNodes::Connection const &connection);
 
 private slots:
     // Watches for changes in the widget to update noise parameters
@@ -80,6 +87,16 @@ private:
     float _frequency = 5.0f;
     float _persistence = 0.5f;
     QVector3D _offset{0.0f, 0.0f, 0.0f};
+
+    std::shared_ptr<IntensityMapData> _in_octives;
+    std::shared_ptr<IntensityMapData> _in_frequency;
+    std::shared_ptr<IntensityMapData> _in_persistence;
+    std::shared_ptr<VectorMapData> _in_offset;
+
+    bool _in_octives_set = false;
+    bool _in_frequency_set = false;
+    bool _in_persistence_set = false;
+    bool _in_offset_set = false;
 
     // Housing widget and ui
     QWidget *_widget;

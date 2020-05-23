@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QDoubleSpinBox>
 
+#include <glm/vec4.hpp>
+
 // Create a node and attach listeners
 InputSimplexNoiseNode::InputSimplexNoiseNode()
 {
@@ -81,15 +83,37 @@ QWidget *InputSimplexNoiseNode::sharedWidget()
 // Get the number of in and out ports
 unsigned int InputSimplexNoiseNode::nPorts(QtNodes::PortType port_type) const
 {
-    return port_type == QtNodes::PortType::Out ? 1 : 0;
+    return port_type == QtNodes::PortType::Out ? 1 : 4;
 }
 
 // Get the data type for the port inputs and output
 QtNodes::NodeDataType InputSimplexNoiseNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
 {
-    Q_UNUSED(port_type);
-    Q_UNUSED(port_index);
-    return IntensityMapData().type();
+    if (port_type == QtNodes::PortType::Out)
+        return IntensityMapData().type();
+
+    QtNodes::NodeDataType i = IntensityMapData().type();
+    QtNodes::NodeDataType v = VectorMapData().type();
+
+    switch ((int)port_index)
+    {
+    case 0:
+        return {i.id, "octives"};
+        break;
+    case 1:
+        return {i.id, "frequency"};
+        break;
+    case 2:
+        return {i.id, "persistence"};
+        break;
+    case 3:
+        return {v.id, "offset"};
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+    Q_UNREACHABLE();
 }
 
 // Get the data attached to a port
@@ -103,8 +127,39 @@ std::shared_ptr<QtNodes::NodeData> InputSimplexNoiseNode::outData(QtNodes::PortI
 void InputSimplexNoiseNode::_generate()
 {
     qDebug("Generating Noise Map");
+
+    float octives = this->_octives;
+    float frequency = this->_frequency;
+    float persistence = this->_persistence;
+    QVector3D offset = this->_offset;
+
+    if (this->_in_octives_set)
+    {
+        Q_CHECK_PTR(this->_in_octives);
+        octives = this->_in_octives->intensityMap().at(0, 0);
+    }
+
+    if (this->_in_frequency_set)
+    {
+        Q_CHECK_PTR(this->_in_frequency);
+        frequency = this->_in_frequency->intensityMap().at(0, 0);
+    }
+
+    if (this->_in_persistence_set)
+    {
+        Q_CHECK_PTR(this->_in_persistence);
+        persistence = this->_in_persistence->intensityMap().at(0, 0);
+    }
+
+    if (this->_in_offset_set)
+    {
+        Q_CHECK_PTR(this->_in_offset);
+        glm::dvec4 val = this->_in_offset->vectorMap().at(0, 0);
+        offset = QVector3D(val.x, val.y, val.z);
+    }
+
     // Create a simplex noise generator with parameters
-    this->_noise = SimplexNoise(this->_frequency / 1000.0f, 1.0f, 1.99f, this->_persistence);
+    this->_noise = SimplexNoise(frequency / 1000.0f, 1.0f, 1.99f, persistence);
 
     // Create a vector map to house information
     Q_CHECK_PTR(SETTINGS);
@@ -129,10 +184,10 @@ void InputSimplexNoiseNode::_generate()
         {
             // Get a noise value for a specific point
             float intensity = this->_noise.fractal(
-                this->_octives,
-                (float)x * ratio + this->_offset.x() * 25.0f,
-                (float)y * ratio + this->_offset.y() * 25.0f,
-                this->_offset.z() * 25.0f);
+                octives,
+                (float)x * ratio + offset.x() * 25.0f,
+                (float)y * ratio + offset.y() * 25.0f,
+                offset.z() * 25.0f);
             // Normalize intensity from [-1, 1] -> [0, 1]
             intensity = (intensity + 1.0f) / 2.0f;
             // Save noise in vector map
@@ -199,8 +254,84 @@ void InputSimplexNoiseNode::restore(QJsonObject const &data)
 // Sets data from an input port, not yet implemented
 void InputSimplexNoiseNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
 {
-    Q_UNUSED(node_data);
-    Q_UNUSED(port);
+    if (node_data)
+    {
+        switch ((int)port)
+        {
+        case 0:
+            this->_in_octives = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+            this->_in_octives_set = true;
+            this->_ui.spin_octives->setReadOnly(true);
+            this->_shared_ui.spin_octives->setReadOnly(true);
+            break;
+        case 1:
+            this->_in_frequency = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+            this->_in_frequency_set = true;
+            this->_ui.spin_frequency->setReadOnly(true);
+            this->_shared_ui.spin_frequency->setReadOnly(true);
+            break;
+        case 2:
+            this->_in_persistence = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+            this->_in_persistence_set = true;
+            this->_ui.spin_persistence->setReadOnly(true);
+            this->_shared_ui.spin_persistence->setReadOnly(true);
+            break;
+        case 3:
+            this->_in_offset = std::dynamic_pointer_cast<VectorMapData>(node_data);
+            this->_in_offset_set = true;
+
+            this->_ui.spin_x->setReadOnly(true);
+            this->_ui.spin_y->setReadOnly(true);
+            this->_ui.spin_z->setReadOnly(true);
+
+            this->_shared_ui.spin_x->setReadOnly(true);
+            this->_shared_ui.spin_y->setReadOnly(true);
+            this->_shared_ui.spin_z->setReadOnly(true);
+            break;
+        default:
+            Q_UNREACHABLE();
+            break;
+        }
+        this->_generate();
+    }
+}
+
+void InputSimplexNoiseNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+{
+    int port = (int)connection.getPortIndex(QtNodes::PortType::In);
+    switch (port)
+    {
+    case 0:
+        this->_in_octives_set = false;
+        this->_ui.spin_octives->setReadOnly(false);
+        this->_shared_ui.spin_octives->setReadOnly(false);
+        break;
+    case 1:
+        this->_in_frequency_set = false;
+        this->_ui.spin_frequency->setReadOnly(false);
+        this->_shared_ui.spin_frequency->setReadOnly(false);
+        break;
+    case 2:
+        this->_in_persistence_set = false;
+        this->_ui.spin_persistence->setReadOnly(false);
+        this->_shared_ui.spin_persistence->setReadOnly(false);
+        break;
+    case 3:
+        this->_in_offset_set = false;
+
+        this->_ui.spin_x->setReadOnly(false);
+        this->_ui.spin_y->setReadOnly(false);
+        this->_ui.spin_z->setReadOnly(false);
+
+        this->_shared_ui.spin_x->setReadOnly(false);
+        this->_shared_ui.spin_y->setReadOnly(false);
+        this->_shared_ui.spin_z->setReadOnly(false);
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+    this->_generate();
 }
 
 // Listeners for updating generation parameters and re-running generation
