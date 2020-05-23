@@ -24,6 +24,7 @@ public:
     void setTerrainDrawLines(bool lines);
     void setTerrainColor(QColor color);
     void setTerrainLineColor(QColor color);
+    void setTerrainMeshResolution(int resolution);
 
     bool terrainDrawLines();
     QColor terrainColor();

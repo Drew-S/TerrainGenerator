@@ -60,10 +60,10 @@ void Terrain::initializeGL()
     QString frag = QDir::cleanPath(assets + QString("/terrain.frag"));
 
     if (!QFile::exists(vert))
-        qFatal("Vertex shader program missing '%s'", vert);
+        qFatal("Vertex shader program missing '%s'", qPrintable(vert));
 
     if (!QFile::exists(frag))
-        qFatal("Fragment shader program missing '%s'", frag);
+        qFatal("Fragment shader program missing '%s'", qPrintable(frag));
 
     this->_program.addShaderFromSourceFile(QOpenGLShader::Vertex, vert);
 
@@ -136,17 +136,18 @@ void Terrain::paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D c
     if (this->_draw_lines)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_line_color);
+        this->_paintGL(f, camera_matrix, camera_pos, light_color, light_pos, light_intensity, this->_line_color, true);
     }
 }
 
 // Draws the terrain givent the provided information
-void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color)
+void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D camera_pos, QVector3D light_color, QVector3D light_pos, float light_intensity, QVector3D color, bool lines_mode)
 {
     Q_CHECK_PTR(f);
     // Bind the buffers
     this->_vao.bind();
     this->_vertex_buffer.bind();
+    this->_vertex_buffer.allocate(this->_vertices.constData(), this->_vertices.size() * sizeof(GLfloat));
 
     // Bind the shader
     this->_program.bind();
@@ -169,6 +170,8 @@ void Terrain::_paintGL(QOpenGLFunctions *f, QMatrix4x4 camera_matrix, QVector3D 
     this->_program.setUniformValue("light_color", light_color);
     // Attach sun light intensity
     this->_program.setUniformValue("light_intensity", light_intensity);
+    // Set lines mode toggle
+    this->_program.setUniformValue("lines", lines_mode);
 
     // Set texture filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

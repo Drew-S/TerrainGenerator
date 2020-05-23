@@ -116,6 +116,12 @@ void OpenGL::setTerrainLineColor(QColor color)
     this->_terrain->setLineColor(color);
     this->update();
 }
+void OpenGL::setTerrainMeshResolution(int resolution)
+{
+    Q_CHECK_PTR(this->_terrain);
+    this->_terrain->setResolution(resolution);
+    this->update();
+}
 
 bool OpenGL::terrainDrawLines()
 {

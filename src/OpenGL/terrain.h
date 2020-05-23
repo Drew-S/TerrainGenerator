@@ -55,7 +55,9 @@ private:
                   QVector3D camera_pos,
                   QVector3D light_color,
                   QVector3D light_pos,
-                  float light_intensity, QVector3D color);
+                  float light_intensity,
+                  QVector3D color,
+                  bool lines_mode = false);
 
     bool _draw_lines = false;
     QVector3D _terrain_color{0.75f, 0.75f, 0.75f};

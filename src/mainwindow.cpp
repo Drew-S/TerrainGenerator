@@ -42,6 +42,8 @@ using json = nlohmann::json;
 #define EXT_REG "\\.tgdf$"
 #define RW_ALL QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ReadGroup | QFileDevice::WriteGroup | QFileDevice::ReadOther | QFileDevice::WriteOther
 
+#define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
+
 MainWindow::MainWindow()
 {
     qDebug("Using temp directory: %s", qPrintable(SETTINGS->tmpDir().path()));
@@ -74,16 +76,14 @@ void MainWindow::setup(Ui::MainWindow *ui)
     QObject::connect(this->_main_ui->actionLoad, &QAction::triggered, this, &MainWindow::load);
 
     // Settings actions
-    QObject::connect(this->_main_ui->combo_mesh, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
-        Q_CHECK_PTR(SETTINGS);
-        SETTINGS->setMeshResolution((int)pow(2, index + 4));
-    });
     QObject::connect(this->_main_ui->combo_preview, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         Q_CHECK_PTR(SETTINGS);
+        Q_BETWEEN(0, index, 6);
         SETTINGS->setPreviewResolution((int)pow(2, index + 7));
     });
     QObject::connect(this->_main_ui->combo_render, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         Q_CHECK_PTR(SETTINGS);
+        Q_BETWEEN(0, index, 6);
         SETTINGS->setRenderResolution((int)pow(2, index + 7));
     });
     QObject::connect(this->_main_ui->use_render, &QCheckBox::stateChanged, [=](int state) {
@@ -105,6 +105,12 @@ void MainWindow::setup(Ui::MainWindow *ui)
         QColor color = QColorDialog::getColor(this->_open_gl->terrainLineColor());
         if (color.isValid())
             this->_open_gl->setTerrainLineColor(color);
+    });
+    QObject::connect(this->_main_ui->combo_mesh, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        Q_CHECK_PTR(this->_open_gl);
+        Q_BETWEEN(0, index, 4);
+        SETTINGS->setMeshResolution((int)pow(2, index + 4));
+        this->_open_gl->setTerrainMeshResolution((int)pow(2, index + 4));
     });
 
     // Fix Nodeeditor and OpenGL widget splitter size
