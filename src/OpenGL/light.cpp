@@ -2,6 +2,7 @@
 
 #include <QOpenGLShader>
 #include <QOpenGLBuffer>
+#include <QMatrix>
 
 #include <GL/gl.h>
 
@@ -23,10 +24,12 @@ QVector3D Light::position()
 }
 
 // Used to draw the sun into the world
-// TODO: Improve the sun icon appearance
-void Light::paintGL(QMatrix4x4 camera)
+void Light::paintGL(QMatrix4x4 camera, float width, float height)
 {
     QVector3D pos = this->position();
+
+    QMatrix4x4 rotate;
+    rotate.rotate(45.0f, 0.0f, 0.0f, 1.0f);
 
     // Draw a point sun
     glPointSize(5.0f);
@@ -40,12 +43,35 @@ void Light::paintGL(QMatrix4x4 camera)
     // The position of the light relative to the camera transformation
     pos = camera * pos;
 
+    // Size in pixels
+    float i_size = 80.0f;
+
+    QVector3D min(0.3f, 0.0f, 0.0f);
+    QVector3D max(0.8f, 0.0f, 0.0f);
+
+    QMatrix transform;
+    transform = transform * QMatrix(i_size / 2.0f, 0.0f, 0.0f, i_size / 2.0f, 0.0f, 0.0f);
+    transform = transform * QMatrix(1.0f / width, 0.0f, 0.0f, 1.0f / height, 0.0f, 0.0f);
+
     // TODO: Include a toggle to disable this in the UI
 
     // Draw the sun point
     glBegin(GL_POINTS);
     glColor3f(this->_color.x(), this->_color.y(), this->_color.z());
     glVertex3f(pos.x(), pos.y(), pos.z());
+    glEnd();
+
+    glBegin(GL_LINES);
+    glColor3f(this->_color.x(), this->_color.y(), this->_color.z());
+    for (int i = 0; i < 8; i++)
+    {
+        min = rotate * min;
+        max = rotate * max;
+        QVector3D min_prime = pos + (transform * min);
+        QVector3D max_prime = pos + (transform * max);
+        glVertex3f(min_prime.x(), min_prime.y(), min_prime.z());
+        glVertex3f(max_prime.x(), max_prime.y(), max_prime.z());
+    }
     glEnd();
 
     // Draw lines to display the lights direction to the terrain

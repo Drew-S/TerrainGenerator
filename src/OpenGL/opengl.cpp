@@ -221,12 +221,12 @@ void OpenGL::paintGL()
         light_intensity,
         this->_ambient);
 
-    // Draw the sun graphic
-    this->_light->paintGL(camera_matrix);
-
     // Current widget width and height
     float width = (float)this->size().width();
     float height = (float)this->size().height();
+
+    // Draw the sun graphic
+    this->_light->paintGL(camera_matrix, width, height);
 
     // How large (pixels) should the axis indicator be (WxH)
     float i_size = 120.0f;

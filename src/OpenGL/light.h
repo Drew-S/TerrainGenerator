@@ -41,7 +41,7 @@ public:
     void setColor(QVector3D color);
 
     // Draw the sun onto the screen
-    void paintGL(QMatrix4x4 camera);
+    void paintGL(QMatrix4x4 camera, float width, float height);
 
 private:
     // Limits the rotation of the camera over the terrain
