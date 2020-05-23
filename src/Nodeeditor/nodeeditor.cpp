@@ -33,6 +33,8 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<ConverterVectorDotNode>("Converters");
     registry->registerModel<ConverterVectorIntensityNode>("Converters");
     registry->registerModel<ConverterVectorMathNode>("Converters");
+    registry->registerModel<ConverterInvertIntensityNode>("Converters");
+    registry->registerModel<ConverterNormalizeNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
