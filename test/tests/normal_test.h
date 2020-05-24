@@ -25,9 +25,9 @@ private slots:
 
         QImage image = normal.toImage();
         QColor color = image.pixelColor(0, 0);
-        QCOMPARE(color.red(), 0);
-        QCOMPARE(color.green(), 0);
-        QCOMPARE(color.blue(), 187);
+        QCOMPARE(color.red(), 128);
+        QCOMPARE(color.green(), 128);
+        QCOMPARE(color.blue(), 180);
         QCOMPARE(color.alpha(), 255);
 
         color = image.pixelColor(0, 1);
@@ -43,9 +43,9 @@ private slots:
         QCOMPARE(color.alpha(), 255);
 
         color = image.pixelColor(1, 1);
-        QCOMPARE(color.red(), 128);
-        QCOMPARE(color.green(), 128);
-        QCOMPARE(color.blue(), 179);
+        QCOMPARE(color.red(), 0);
+        QCOMPARE(color.green(), 0);
+        QCOMPARE(color.blue(), 183);
         QCOMPARE(color.alpha(), 255);
     };
 

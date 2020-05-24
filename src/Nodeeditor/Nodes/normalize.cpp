@@ -88,7 +88,6 @@ void ConverterNormalizeNode::_generate()
     qDebug("Normalizing vector map");
     Q_CHECK_PTR(this->_input);
     VectorMap map = this->_input->vectorMap();
-    map.transform(&ConverterNormalizeNode::normalize, glm::dvec4());
-    this->_output = map;
+    this->_output = map.transform(&ConverterNormalizeNode::normalize, glm::dvec4());
     emit this->dataUpdated(0);
 }

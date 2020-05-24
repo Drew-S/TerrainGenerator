@@ -1,0 +1,47 @@
+[ ] : Tests need to be made
+[-] : Tests partly done
+[x] : Tests done
+[o] : Tests omitted
+
+src/
++--- Globals/
+|    +--- drawing                [ ]
+|    +--- settings               [x]
+|    +--- stencillist            [ ]
+|    +--- texturelist            [ ]
+|
++--- Nodeeditor/
+|    +--- Datatypes
+|    |    +--- converters        [x]
+|    |    +--- intensitymap      [x]
+|    |    +--- pixmap            [x]
+|    |    +--- vectormap         [x]
+|    |
+|    +--- Nodes
+|    |    +--- Normal/
+|    |    |    +--- normal       [x]
+|    |    |
+|    |    +--- colorcombine      [x]
+|    |    +--- colorsplit        [x]
+|    |    +--- constantvalue     [x]
+|    |    +--- constantvector    [x]
+|    |    +--- inputsimplexnoise [x]
+|    |    +--- inputtexture      [x]
+|    |    +--- invertintensity   [x]
+|    |    +--- math              [x]
+|    |    +--- node              [o] just a header with empty virtual functions used by other nodes, nothing to test
+|    |    +--- normalize         [x]
+|    |    +--- output            [o] Output success is tested with the normal map generator, and visually when running, testing is redundant
+|    |    +--- vectordot         [x]
+|    |    +--- vectormath        [x]
+|    |
+|    +--- nodeeditor             [ ]
+|
++--- OpenGL/
+|    +--- camera                 [ ]
+|    +--- light                  [ ]
+|    +--- opengl                 [ ]
+|    +--- terrain                [ ]
+|
++--- mainwindow                  [ ]
++--- main                        [ ]

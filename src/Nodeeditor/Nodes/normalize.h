@@ -13,6 +13,8 @@
 class ConverterNormalizeNode : public Node
 {
     Q_OBJECT
+    friend class ConverterNormalizeNode_Test;
+
 public:
     ConverterNormalizeNode();
     ~ConverterNormalizeNode();

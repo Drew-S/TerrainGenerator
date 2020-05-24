@@ -19,6 +19,8 @@
 class ConverterVectorDotNode : public Node
 {
     Q_OBJECT
+    friend class ConverterVectorDotNode_Test;
+
 public:
     ConverterVectorDotNode();
     ~ConverterVectorDotNode();

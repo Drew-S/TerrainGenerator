@@ -13,6 +13,11 @@ class InputSimplexNoiseNode_Test : public QObject
 {
     Q_OBJECT
 private slots:
+    void initTestCase()
+    {
+        this->node.created();
+    };
+
     void octivesChanged()
     {
         QTest::keyClicks(this->node._ui.spin_octives, "a", Qt::ControlModifier);
@@ -113,37 +118,6 @@ private slots:
 
         QCOMPARE(this->node._ui.spin_z->value(), 5.00);
         QCOMPARE(this->node._shared_ui.spin_z->value(), 5.00);
-    };
-
-    void caption()
-    {
-        QCOMPARE(this->node.caption(), QString("Simplex Noise Texture"));
-    };
-
-    void name()
-    {
-        QCOMPARE(this->node.name(), QString("InputSimplexNoiseNode"));
-        this->node.name("SOMETHING ELSE");
-        QCOMPARE(this->node.name(), QString("InputSimplexNoiseNode"));
-    };
-
-    void modelName()
-    {
-        QCOMPARE(this->node.modelName(), QString("Input Simplex Noise Node"));
-    };
-
-    void nPorts()
-    {
-        QCOMPARE(this->node.nPorts(QtNodes::PortType::Out), 1);
-        QCOMPARE(this->node.nPorts(QtNodes::PortType::In), 0);
-    };
-
-    void dataType()
-    {
-        QtNodes::NodeDataType compare = {"IntensityMap", "sampler2D"};
-        QtNodes::NodeDataType data = this->node.dataType(QtNodes::PortType::Out, 0);
-        QCOMPARE(data.id, compare.id);
-        QCOMPARE(data.name, compare.name);
     };
 
     void save()

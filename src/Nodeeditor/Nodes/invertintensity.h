@@ -9,6 +9,8 @@
 class ConverterInvertIntensityNode : public Node
 {
     Q_OBJECT
+    friend class ConverterInvertIntensityNode_Test;
+
 public:
     ConverterInvertIntensityNode();
     ~ConverterInvertIntensityNode();

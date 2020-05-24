@@ -41,7 +41,7 @@ private slots:
         QImage image(2, 2, QImage::Format_RGB32);
         image.fill(QColor(255, 100, 0, 255));
 
-        double average = (255.00 + 100.00) / (3.00 * 255.00);
+        double average = (255.00 * 2.00 + 100.00) / (4.00 * 255.00);
         double green = 100.00 / 255.00;
 
         IntensityMap map(image, IntensityMap::RED);

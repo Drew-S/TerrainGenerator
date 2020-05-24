@@ -37,7 +37,7 @@ private slots:
     void type()
     {
         QtNodes::NodeDataType type = IntensityMapData().type();
-        QtNodes::NodeDataType compare = {"IntensityMap", "sampler2D"};
+        QtNodes::NodeDataType compare = {"IntensityMap", "mono"};
         QCOMPARE(type.id, compare.id);
         QCOMPARE(type.name, compare.name);
     };
@@ -61,7 +61,7 @@ private slots:
     void type()
     {
         QtNodes::NodeDataType type = VectorMapData().type();
-        QtNodes::NodeDataType compare = {"VectorMap", "sampler2D"};
+        QtNodes::NodeDataType compare = {"VectorMap", "rgba"};
         QCOMPARE(type.id, compare.id);
         QCOMPARE(type.name, compare.name);
     };

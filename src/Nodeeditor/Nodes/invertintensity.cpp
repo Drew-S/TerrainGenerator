@@ -91,10 +91,10 @@ void ConverterInvertIntensityNode::_generate()
     qDebug("Inverting intensity map");
     Q_CHECK_PTR(this->_input);
     IntensityMap map = this->_input->intensityMap();
-    IntensityMap out(map.width, map.height);
+    this->_output = IntensityMap(map.width, map.height);
     for (int y = 0; y < map.height; y++)
         for (int x = 0; x < map.width; x++)
-            out.append(1.00 - map.at(x, y));
+            this->_output.append(1.00 - map.at(x, y));
 
     emit this->dataUpdated(0);
 }

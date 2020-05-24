@@ -18,6 +18,8 @@
 class ConverterMathNode : public Node
 {
     Q_OBJECT
+    friend class ConverterMathNode_Test;
+
 public:
     // Which algorithm to use when combining maps/values
     enum Mode

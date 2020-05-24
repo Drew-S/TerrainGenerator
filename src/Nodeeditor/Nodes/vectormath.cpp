@@ -422,5 +422,5 @@ static inline double det(double a, double b, double c, double d)
 // Treats 4 value vectors as 3 value for cross
 glm::dvec4 ConverterVectorMathNode::cross(glm::dvec4 a, glm::dvec4 b)
 {
-    return glm::dvec4(det(a.y, a.z, b.y, b.z), det(a.x, a.z, b.x, b.z), det(a.x, a.y, b.x, b.y), 1.00);
+    return glm::dvec4(det(a.y, a.z, b.y, b.z), -det(a.x, a.z, b.x, b.z), det(a.x, a.y, b.x, b.y), 1.00);
 }

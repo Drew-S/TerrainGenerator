@@ -16,6 +16,8 @@
 class InputConstantValueNode : public Node
 {
     Q_OBJECT
+    friend class InputConstantValueNode_Test;
+
 public:
     InputConstantValueNode();
     ~InputConstantValueNode();
@@ -36,7 +38,7 @@ public:
     // Get the number of ports (1 output, 0 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
-    // Get the port datatype (only imports VectorMapData)
+    // Get the port datatype (only imports intensityMapData)
     QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
 
     // Save and load the node for project files
@@ -50,7 +52,7 @@ public:
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
 private:
-    // The output value
+    // The output values
     double _value = 0.00;
 
     // UI

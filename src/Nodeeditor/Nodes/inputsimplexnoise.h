@@ -88,11 +88,13 @@ private:
     float _persistence = 0.5f;
     QVector3D _offset{0.0f, 0.0f, 0.0f};
 
+    // Inputs
     std::shared_ptr<IntensityMapData> _in_octives;
     std::shared_ptr<IntensityMapData> _in_frequency;
     std::shared_ptr<IntensityMapData> _in_persistence;
     std::shared_ptr<VectorMapData> _in_offset;
 
+    // Whether inputs are set
     bool _in_octives_set = false;
     bool _in_frequency_set = false;
     bool _in_persistence_set = false;

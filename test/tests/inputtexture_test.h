@@ -14,6 +14,7 @@ private slots:
     void newTexture()
     {
         InputTextureNode node;
+        node.created();
         QTest::mouseClick(node._ui.new_texture, Qt::LeftButton);
         QTest::keyClicks(node._new_texture_ui.resolution, "a", Qt::ControlModifier);
         QTest::keyClicks(node._new_texture_ui.resolution, "32");
@@ -32,10 +33,8 @@ private slots:
         {
             for (int y = 0; y < 32; y++)
             {
-                QCOMPARE(image.pixelColor(x, y).red(), 255);
-                QCOMPARE(image.pixelColor(x, y).green(), 255);
-                QCOMPARE(image.pixelColor(x, y).blue(), 255);
-                QCOMPARE(image.pixelColor(x, y).alpha(), 255);
+                QColor color = image.pixelColor(x, y);
+                QCOMPARE(color, QColor(255, 255, 255, 255));
             }
         }
 
@@ -45,6 +44,7 @@ private slots:
     void loadTexture()
     {
         InputTextureNode node;
+        node.created();
         QTest::mouseClick(node._ui.load_texture, Qt::LeftButton);
 
         QImage image = node._texture->image();
@@ -52,35 +52,32 @@ private slots:
         QCOMPARE(image.width(), 2);
         QCOMPARE(image.height(), 2);
 
+        QColor color = image.pixelColor(0, 0);
+
         // Green
-        QCOMPARE(image.pixelColor(0, 0).red(), 0);
-        QCOMPARE(image.pixelColor(0, 0).green(), 255);
-        QCOMPARE(image.pixelColor(0, 0).blue(), 0);
-        QCOMPARE(image.pixelColor(0, 0).alpha(), 255);
+        QCOMPARE(color, QColor(0, 255, 0, 255));
+
+        color = image.pixelColor(0, 1);
 
         // White
-        QCOMPARE(image.pixelColor(0, 1).red(), 255);
-        QCOMPARE(image.pixelColor(0, 1).green(), 255);
-        QCOMPARE(image.pixelColor(0, 1).blue(), 255);
-        QCOMPARE(image.pixelColor(0, 1).alpha(), 255);
+        QCOMPARE(color, QColor(255, 255, 255, 255));
+
+        color = image.pixelColor(1, 0);
 
         // Red
-        QCOMPARE(image.pixelColor(1, 0).red(), 255);
-        QCOMPARE(image.pixelColor(1, 0).green(), 0);
-        QCOMPARE(image.pixelColor(1, 0).blue(), 0);
-        QCOMPARE(image.pixelColor(1, 0).alpha(), 255);
+        QCOMPARE(color, QColor(255, 0, 0, 255));
+
+        color = image.pixelColor(1, 1);
 
         // Blue
-        QCOMPARE(image.pixelColor(1, 1).red(), 0);
-        QCOMPARE(image.pixelColor(1, 1).green(), 0);
-        QCOMPARE(image.pixelColor(1, 1).blue(), 255);
-        QCOMPARE(image.pixelColor(1, 1).alpha(), 255);
+        QCOMPARE(color, QColor(0, 0, 255, 255));
     };
 
     void save()
     {
         {
             InputTextureNode node;
+            node.created();
             QTest::mouseClick(node._ui.load_texture, Qt::LeftButton);
 
             QJsonObject data = node.save();
@@ -90,6 +87,7 @@ private slots:
         };
         {
             InputTextureNode node;
+            node.created();
 
             QTest::mouseClick(node._ui.new_texture, Qt::LeftButton);
             QTest::keyClicks(node._new_texture_ui.resolution, "a", Qt::ControlModifier);

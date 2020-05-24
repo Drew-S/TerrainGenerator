@@ -16,6 +16,7 @@
 class ConverterColorSplitNode : public Node
 {
     Q_OBJECT
+    friend class ConverterColorSplitNode_Test;
 
 public:
     ConverterColorSplitNode();

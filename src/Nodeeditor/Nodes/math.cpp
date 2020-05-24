@@ -313,6 +313,7 @@ void ConverterMathNode::comboChanged(int index)
     this->_mode = (ConverterMathNode::Mode)index;
     this->_ui.mode->setCurrentIndex(this->_mode);
     this->_shared_ui.mode->setCurrentIndex(this->_mode);
+    this->_generate();
 }
 
 // Save the node to a object for saving to a file

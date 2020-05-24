@@ -20,6 +20,7 @@
 class ConverterColorCombineNode : public Node
 {
     Q_OBJECT
+    friend class ConverterColorCombineNode_Test;
 
 public:
     ConverterColorCombineNode();
