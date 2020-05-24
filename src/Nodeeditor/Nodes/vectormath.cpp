@@ -220,6 +220,13 @@ void ConverterVectorMathNode::z0Changed(double value)
     this->_shared_ui.spin_z_0->setValue(value);
     this->_generate();
 }
+void ConverterVectorMathNode::w0Changed(double value)
+{
+    this->_val_in_0.w = value;
+    this->_ui.spin_w_0->setValue(value);
+    this->_shared_ui.spin_w_0->setValue(value);
+    this->_generate();
+}
 
 void ConverterVectorMathNode::x1Changed(double value)
 {
@@ -240,6 +247,13 @@ void ConverterVectorMathNode::z1Changed(double value)
     this->_val_in_1.z = value;
     this->_ui.spin_z_1->setValue(value);
     this->_shared_ui.spin_z_1->setValue(value);
+    this->_generate();
+}
+void ConverterVectorMathNode::w1Changed(double value)
+{
+    this->_val_in_1.w = value;
+    this->_ui.spin_w_1->setValue(value);
+    this->_shared_ui.spin_w_1->setValue(value);
     this->_generate();
 }
 
@@ -275,6 +289,9 @@ void ConverterVectorMathNode::_generateInBoth()
     VectorMap map_1 = this->_in_1->vectorMap();
     switch (this->_mode)
     {
+    case ConverterVectorMathNode::MIX:
+        this->_output = map_0.transform(&ConverterVectorMathNode::mix, &map_1);
+        break;
     case ConverterVectorMathNode::ADD:
         this->_output = map_0.transform(&ConverterVectorMathNode::add, &map_1);
         break;
@@ -306,13 +323,16 @@ void ConverterVectorMathNode::_generateIn1(bool second)
     }
     else
     {
-        Q_CHECK_PTR(this->_in_1);
+        Q_CHECK_PTR(this->_in_0);
         map = this->_in_0->vectorMap();
         val = this->_val_in_1;
     }
 
     switch (this->_mode)
     {
+    case ConverterVectorMathNode::MIX:
+        this->_output = map.transform(&ConverterVectorMathNode::mix, val);
+        break;
     case ConverterVectorMathNode::ADD:
         this->_output = map.transform(&ConverterVectorMathNode::add, val);
         break;
@@ -342,6 +362,9 @@ void ConverterVectorMathNode::_generateIn()
         size = SETTINGS->previewResolution();
     switch (this->_mode)
     {
+    case ConverterVectorMathNode::MIX:
+        this->_output = VectorMap(size, size, ConverterVectorMathNode::mix(this->_val_in_0, this->_val_in_1));
+        break;
     case ConverterVectorMathNode::ADD:
         this->_output = VectorMap(size, size, ConverterVectorMathNode::add(this->_val_in_0, this->_val_in_1));
         break;
@@ -361,6 +384,10 @@ void ConverterVectorMathNode::_generateIn()
 }
 
 // Algorithms to use to manipulate the functions
+glm::dvec4 ConverterVectorMathNode::mix(glm::dvec4 a, glm::dvec4 b)
+{
+    return (a + b) / 2.00;
+}
 glm::dvec4 ConverterVectorMathNode::add(glm::dvec4 a, glm::dvec4 b)
 {
     return a + b;

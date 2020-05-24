@@ -26,7 +26,7 @@
       <widget class="QDoubleSpinBox" name="spin_x_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
        </property>
@@ -51,7 +51,7 @@
       <widget class="QDoubleSpinBox" name="spin_y_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>135</width>
          <height>26</height>
         </size>
        </property>
@@ -76,7 +76,7 @@
       <widget class="QDoubleSpinBox" name="spin_z_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
        </property>
@@ -85,6 +85,25 @@
        </property>
        <property name="prefix">
         <string>z </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_w_0">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>w </string>
        </property>
        <property name="minimum">
         <double>-99999.000000000000000</double>
@@ -117,6 +136,11 @@
    </item>
    <item>
     <widget class="QComboBox" name="mode">
+     <item>
+      <property name="text">
+       <string>Mix</string>
+      </property>
+     </item>
      <item>
       <property name="text">
        <string>Add</string>
@@ -166,7 +190,7 @@
       <widget class="QDoubleSpinBox" name="spin_x_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
        </property>
@@ -191,7 +215,7 @@
       <widget class="QDoubleSpinBox" name="spin_y_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>135</width>
          <height>26</height>
         </size>
        </property>
@@ -216,7 +240,7 @@
       <widget class="QDoubleSpinBox" name="spin_z_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
        </property>
@@ -225,6 +249,25 @@
        </property>
        <property name="prefix">
         <string>z </string>
+       </property>
+       <property name="minimum">
+        <double>-99999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>99999.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="spin_w_1">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="prefix">
+        <string>w </string>
        </property>
        <property name="minimum">
         <double>-99999.000000000000000</double>

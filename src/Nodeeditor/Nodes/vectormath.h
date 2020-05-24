@@ -18,9 +18,12 @@
 class ConverterVectorMathNode : public Node
 {
     Q_OBJECT
+    friend class ConverterVectorMathNode_Test;
+
 public:
     enum Mode
     {
+        MIX,
         ADD,
         SUBTRACT,
         MULTIPLY,
@@ -60,6 +63,7 @@ public:
     void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
 
     // Applying function algorithms
+    static glm::dvec4 mix(glm::dvec4 a, glm::dvec4 b);
     static glm::dvec4 add(glm::dvec4 a, glm::dvec4 b);
     static glm::dvec4 subtract(glm::dvec4 a, glm::dvec4 b);
     static glm::dvec4 multiply(glm::dvec4 a, glm::dvec4 b);
@@ -74,10 +78,12 @@ public slots:
     void x0Changed(double value);
     void y0Changed(double value);
     void z0Changed(double value);
+    void w0Changed(double value);
 
     void x1Changed(double value);
     void y1Changed(double value);
     void z1Changed(double value);
+    void w1Changed(double value);
 
     void modeChanged(int index);
 
@@ -90,7 +96,7 @@ private:
     void _generateIn();
 
     // Which mode to apply
-    ConverterVectorMathNode::Mode _mode = ConverterVectorMathNode::ADD;
+    ConverterVectorMathNode::Mode _mode = ConverterVectorMathNode::MIX;
 
     VectorMap _output{1, 1, glm::dvec4{1.00, 1.00, 1.00, 1.00}};
 
