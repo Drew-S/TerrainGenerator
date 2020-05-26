@@ -30,6 +30,7 @@ public:
 
     // The embedded control widget
     QWidget *embeddedWidget();
+    QWidget *sharedWidget();
 
     // Get the number of ports (1 output, 4 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;

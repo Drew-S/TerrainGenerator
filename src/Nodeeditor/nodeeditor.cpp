@@ -151,6 +151,10 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     {
         CAST_NODE(InputConstantVectorNode)
     }
+    else if (name == ConverterBezierCurveNode().name())
+    {
+        CAST_NODE(ConverterBezierCurveNode)
+    }
     else if (swap)
     {
         this->_properties->layout()->removeWidget(this->_properties_node);

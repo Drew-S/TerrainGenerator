@@ -33,6 +33,11 @@ QString ConverterBezierCurveNode::name() const
 // The embedded control widget
 QWidget *ConverterBezierCurveNode::embeddedWidget()
 {
+    return nullptr;
+}
+// The shared control widget
+QWidget *ConverterBezierCurveNode::sharedWidget()
+{
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
