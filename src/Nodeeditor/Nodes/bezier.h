@@ -61,5 +61,6 @@ private:
 
     bool _set = false;
 
-    BezierCurveEditWidget *_widget;
+    BezierEditWidget *_widget;
+    BezierEditWidget *_shared_widget;
 };
