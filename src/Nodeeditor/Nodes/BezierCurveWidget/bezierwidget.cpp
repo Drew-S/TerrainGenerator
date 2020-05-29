@@ -46,11 +46,6 @@ static bool clamp(QGraphicsItem *item, double min, double max)
         clamped = true;
     }
 
-    if (clamped)
-        qDebug("Clamped control to (%f, %f)", c_pos.x(), c_pos.y());
-    else
-        qDebug("Control not clamped");
-
     // Apply changes (if any of the above checks pass)
     item->setPos(c_pos);
     return clamped;
