@@ -115,30 +115,27 @@ void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, 
 void ConverterMathNode::_generate()
 {
     qDebug("Applying transformation, generating output");
-    if (this->_in_0_set && !this->_in_1_set)
-        this->_generateIn1(false);
-
-    else if (!this->_in_0_set && this->_in_1_set)
-        this->_generateIn1(true);
-
-    else if (this->_in_0_set && this->_in_1_set)
-        this->_generateInBoth();
-
+    IntensityMap map_0;
+    IntensityMap map_1;
+    if (this->_in_0_set)
+    {
+        Q_CHECK_PTR(this->_in_0);
+        map_0 = this->_in_0->intensityMap();
+    }
     else
-        this->_generateIn();
+    {
+        map_0 = IntensityMap(1, 1, this->_val_in_0);
+    }
+    if (this->_in_1_set)
+    {
+        Q_CHECK_PTR(this->_in_1);
+        map_1 = this->_in_1->intensityMap();
+    }
+    else
+    {
+        map_1 = IntensityMap(1, 1, this->_val_in_1);
+    }
 
-    emit this->dataUpdated(0);
-}
-
-// Generates intensity map by applying transform (pixel by pixel) from one map to the other
-// IntensityMap A, B, C
-// C = A (op) B
-void ConverterMathNode::_generateInBoth()
-{
-    Q_CHECK_PTR(this->_in_0);
-    Q_CHECK_PTR(this->_in_1);
-    IntensityMap map_0 = this->_in_0->intensityMap();
-    IntensityMap map_1 = this->_in_1->intensityMap();
     switch (this->_mode)
     {
     case ConverterMathNode::MIX:
@@ -169,103 +166,8 @@ void ConverterMathNode::_generateInBoth()
         Q_UNREACHABLE();
         break;
     }
-}
-// Generates intensity map by applying transform (pixel by pixel) from one map to a value
-// IntensityMap A, C
-// double B
-// C = A (op) B
-void ConverterMathNode::_generateIn1(bool second)
-{
-    IntensityMap map;
-    double val;
-    if (second)
-    {
-        Q_CHECK_PTR(this->_in_1);
-        map = this->_in_1->intensityMap();
-        val = this->_val_in_0;
-    }
-    else
-    {
-        Q_CHECK_PTR(this->_in_0);
-        map = this->_in_0->intensityMap();
-        val = this->_val_in_1;
-    }
 
-    switch (this->_mode)
-    {
-    case ConverterMathNode::MIX:
-        this->_output = map.transform(&ConverterMathNode::mix, val);
-        break;
-    case ConverterMathNode::ADD:
-        this->_output = map.transform(&ConverterMathNode::add, val);
-        break;
-    case ConverterMathNode::SUBTRACT:
-        this->_output = map.transform(&ConverterMathNode::subtract, val);
-        break;
-    case ConverterMathNode::MULTIPLY:
-        this->_output = map.transform(&ConverterMathNode::multiply, val);
-        break;
-    case ConverterMathNode::DIVIDE:
-        this->_output = map.transform(&ConverterMathNode::divide, val);
-        break;
-    case ConverterMathNode::MIN:
-        this->_output = map.transform(&ConverterMathNode::min, val);
-        break;
-    case ConverterMathNode::MAX:
-        this->_output = map.transform(&ConverterMathNode::max, val);
-        break;
-    case ConverterMathNode::POW:
-        this->_output = map.transform(&ConverterMathNode::pow, val);
-        break;
-    default:
-        Q_UNREACHABLE();
-        break;
-    }
-}
-
-// Generates intensity map by applying transform (pixel by pixel) from one value to a value
-// IntensityMap C
-// double A, B
-// C = A (op) B
-void ConverterMathNode::_generateIn()
-{
-    Q_CHECK_PTR(SETTINGS);
-    int size;
-    if (SETTINGS->renderMode())
-        size = SETTINGS->renderResolution();
-    else
-        size = SETTINGS->previewResolution();
-
-    switch (this->_mode)
-    {
-    case ConverterMathNode::MIX:
-        this->_output = IntensityMap(size, size, mix(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::ADD:
-        this->_output = IntensityMap(size, size, add(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::SUBTRACT:
-        this->_output = IntensityMap(size, size, subtract(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::MULTIPLY:
-        this->_output = IntensityMap(size, size, multiply(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::DIVIDE:
-        this->_output = IntensityMap(size, size, divide(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::MIN:
-        this->_output = IntensityMap(size, size, min(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::MAX:
-        this->_output = IntensityMap(size, size, max(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterMathNode::POW:
-        this->_output = IntensityMap(size, size, pow(this->_val_in_0, this->_val_in_1));
-        break;
-    default:
-        Q_UNREACHABLE();
-        break;
-    }
+    emit this->dataUpdated(0);
 }
 
 // When a connection is deleted default to use the double value instead

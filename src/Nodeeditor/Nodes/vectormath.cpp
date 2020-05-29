@@ -268,25 +268,27 @@ void ConverterVectorMathNode::modeChanged(int index)
 void ConverterVectorMathNode::_generate()
 {
     qDebug("Applying transformation, generating output");
-    if (this->_in_0_set && this->_in_1_set)
-        this->_generateInBoth();
-    else if (this->_in_0_set && !this->_in_1_set)
-        this->_generateIn1();
-    else if (!this->_in_0_set && this->_in_1_set)
-        this->_generateIn1(true);
-    else if (!this->_in_0_set && !this->_in_1_set)
-        this->_generateIn();
+    VectorMap map_0;
+    VectorMap map_1;
+    if (this->_in_0_set)
+    {
+        Q_CHECK_PTR(this->_in_0);
+        map_0 = this->_in_0->vectorMap();
+    }
+    else
+    {
+        map_0 = VectorMap(1, 1, this->_val_in_0);
+    }
+    if (this->_in_1_set)
+    {
+        Q_CHECK_PTR(this->_in_1);
+        map_1 = this->_in_1->vectorMap();
+    }
+    else
+    {
+        map_1 = VectorMap(1, 1, this->_val_in_1);
+    }
 
-    emit this->dataUpdated(0);
-}
-
-// Generates the output when both maps are set
-void ConverterVectorMathNode::_generateInBoth()
-{
-    Q_CHECK_PTR(this->_in_0);
-    Q_CHECK_PTR(this->_in_1);
-    VectorMap map_0 = this->_in_0->vectorMap();
-    VectorMap map_1 = this->_in_1->vectorMap();
     switch (this->_mode)
     {
     case ConverterVectorMathNode::MIX:
@@ -308,79 +310,8 @@ void ConverterVectorMathNode::_generateInBoth()
         this->_output = map_0.transform(&ConverterVectorMathNode::cross, &map_1);
         break;
     }
-}
 
-// Generates the output when one map is set
-void ConverterVectorMathNode::_generateIn1(bool second)
-{
-    VectorMap map;
-    glm::dvec4 val;
-    if (second)
-    {
-        Q_CHECK_PTR(this->_in_1);
-        map = this->_in_1->vectorMap();
-        val = this->_val_in_0;
-    }
-    else
-    {
-        Q_CHECK_PTR(this->_in_0);
-        map = this->_in_0->vectorMap();
-        val = this->_val_in_1;
-    }
-
-    switch (this->_mode)
-    {
-    case ConverterVectorMathNode::MIX:
-        this->_output = map.transform(&ConverterVectorMathNode::mix, val);
-        break;
-    case ConverterVectorMathNode::ADD:
-        this->_output = map.transform(&ConverterVectorMathNode::add, val);
-        break;
-    case ConverterVectorMathNode::SUBTRACT:
-        this->_output = map.transform(&ConverterVectorMathNode::subtract, val);
-        break;
-    case ConverterVectorMathNode::MULTIPLY:
-        this->_output = map.transform(&ConverterVectorMathNode::multiply, val);
-        break;
-    case ConverterVectorMathNode::DIVIDE:
-        this->_output = map.transform(&ConverterVectorMathNode::divide, val);
-        break;
-    case ConverterVectorMathNode::CROSS:
-        this->_output = map.transform(&ConverterVectorMathNode::cross, val);
-        break;
-    }
-}
-
-// Generates the output when neither map is set
-void ConverterVectorMathNode::_generateIn()
-{
-    Q_CHECK_PTR(SETTINGS);
-    int size;
-    if (SETTINGS->renderMode())
-        size = SETTINGS->renderResolution();
-    else
-        size = SETTINGS->previewResolution();
-    switch (this->_mode)
-    {
-    case ConverterVectorMathNode::MIX:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::mix(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterVectorMathNode::ADD:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::add(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterVectorMathNode::SUBTRACT:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::subtract(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterVectorMathNode::MULTIPLY:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::multiply(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterVectorMathNode::DIVIDE:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::divide(this->_val_in_0, this->_val_in_1));
-        break;
-    case ConverterVectorMathNode::CROSS:
-        this->_output = VectorMap(size, size, ConverterVectorMathNode::cross(this->_val_in_0, this->_val_in_1));
-        break;
-    }
+    emit this->dataUpdated(0);
 }
 
 // Algorithms to use to manipulate the functions

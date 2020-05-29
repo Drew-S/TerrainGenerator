@@ -90,10 +90,6 @@ public slots:
 private:
     // Generate the output value
     void _generate();
-    // Mixing methods of generation
-    void _generateInBoth();
-    void _generateIn1(bool second = false);
-    void _generateIn();
 
     // Which mode to apply
     ConverterVectorMathNode::Mode _mode = ConverterVectorMathNode::MIX;
