@@ -40,6 +40,7 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<ConverterInvertIntensityNode>("Converters");
     registry->registerModel<ConverterNormalizeNode>("Converters");
     registry->registerModel<ConverterBezierCurveNode>("Converters");
+    registry->registerModel<ConverterClampNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -154,6 +155,10 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     else if (name == ConverterBezierCurveNode().name())
     {
         CAST_NODE(ConverterBezierCurveNode)
+    }
+    else if (name == ConverterClampNode().name())
+    {
+        CAST_NODE(ConverterClampNode)
     }
     else if (swap)
     {

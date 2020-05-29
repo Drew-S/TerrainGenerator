@@ -23,6 +23,7 @@
 #include "./Nodes/constantvalue.h"
 #include "./Nodes/constantvector.h"
 #include "./Nodes/bezier.h"
+#include "./Nodes/clamp.h"
 
 // Wrapper to manage the FlowView and FlowScene and listen for events
 class Nodeeditor : public QObject
