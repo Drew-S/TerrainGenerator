@@ -264,7 +264,6 @@ void ConverterVectorMathNode::modeChanged(int index)
 }
 
 // Generate the output
-// TODO: Should be able to colllapse _generate*() into a single function nicely
 void ConverterVectorMathNode::_generate()
 {
     qDebug("Applying transformation, generating output");
