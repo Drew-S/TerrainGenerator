@@ -1,0 +1,35 @@
+@startuml
+MainWindow -> MainWindow : save()
+activate MainWindow
+loop over TextureList
+    alt SETTINGS.packed OR Texture.generated
+        MainWindow -> Texture : image()
+        activate Texture
+        Texture -> MainWindow : image
+        deactivate Texture
+
+        MainWindow -> MainWindow : pack image into zip
+        MainWindow -> Texture : setPackedFilename()
+    end
+end
+MainWindow -> Nodeeditor : save()
+activate Nodeeditor
+loop over Nodes
+    Nodeeditor -> Node : save()
+    activate Node
+    note right
+        **InputTextureNode**'s uses its
+        cooresponding texture saveAsFilename()
+        thus eliminating the need to manually
+        edit JSON within save.
+        //TODO//: Might be able to remove json
+        library
+    end note
+    Node -> Nodeeditor : data
+    deactivate Node
+end
+Nodeeditor -> MainWindow : data
+deactivate Nodeeditor
+MainWindow -> MainWindow : pack data into zip and save
+deactivate MainWindow
+@enduml
