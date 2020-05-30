@@ -16,6 +16,7 @@
 #include <QColorDialog>
 #include <QPen>
 #include <QBrush>
+#include <QRegExp>
 
 bool DrawingDialogue::_instance = false;
 DrawingDialogue *DrawingDialogue::_single = nullptr;
@@ -396,7 +397,7 @@ void DrawingDialogue::textureUpdated()
 // New texture update texture selection list
 void DrawingDialogue::newTexture(int index)
 {
-    this->_texture_list_model.appendRow(new QStandardItem(TEXTURES->at(index)->name()));
+    this->_texture_list_model.appendRow(new QStandardItem(TEXTURES->at(index)->name().replace(QRegExp("\\.[0-9a-zA-Z]+$"), "")));
     if (index == 0)
     {
         this->_selected_model = this->_ui.texture_list->indexAt(QPoint(0, 0));
