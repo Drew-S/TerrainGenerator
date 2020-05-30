@@ -94,6 +94,11 @@ int Settings::meshResolution()
     return this->_mesh_resolution;
 }
 
+bool Settings::packImages()
+{
+    return this->_pack_images;
+}
+
 void Settings::setRenderMode(bool mode)
 {
     this->_render_mode = mode;
@@ -134,5 +139,14 @@ void Settings::setMeshResolution(int resolution)
     qDebug("Preview Resolution changed %d", this->_mesh_resolution);
 #ifndef TEST_MODE
     emit this->meshResolutionChanged(this->_mesh_resolution);
+#endif
+}
+
+void Settings::setPackImages(bool mode)
+{
+    this->_pack_images = mode;
+    qDebug("Pack images (%s)?", this->_pack_images ? "true" : "false");
+#ifndef TEST_MODE
+    emit this->packImagesChanged(this->_pack_images);
 #endif
 }

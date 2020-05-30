@@ -8,6 +8,8 @@
 #include <QIcon>
 #include <QPainter>
 #include <QPointF>
+#include <QByteArray>
+#include <QJsonObject>
 
 #include "Globals/stencillist.h"
 #include "../Nodeeditor/Datatypes/vectormap.h"
@@ -24,6 +26,8 @@ public:
     Texture();
     // From file
     Texture(QString filename);
+    // Load from packed file
+    Texture(QByteArray data, QString filename);
     // With size and default colour (white)
     Texture(int w, int h);
     // With size and a filename
@@ -39,9 +43,16 @@ public:
     // Convert to icon
     QIcon icon();
 
+    // For saving internally in zip
+    bool bytes(QByteArray *bytes);
+
+    bool generated();
+    bool edited();
+
     // Texture name
     QString name();
     QString filename();
+    QString saveName();
 
     // Convert to vector map
     VectorMap vectorMap(int scale = -1);
@@ -58,6 +69,7 @@ public:
 
     // Save the texture with the existing filename
     bool save();
+    bool save(QIODevice *device);
 
     // Overright save location
     bool saveAs(QString filename);
@@ -71,6 +83,9 @@ private:
     QPixmap _pixmap;
     // Painter for drawing on the _pixmap
     QPainter *_painter;
+
+    bool _generated = false;
+    bool _edited = false;
 };
 
 // Global singleton that manages all the Texture's provided in the system
@@ -88,6 +103,7 @@ public:
 
     // Add a texture to the list (from file)
     int addTexture(QString filename);
+    int loadTexture(QByteArray data, QString filename);
 
     // Add a new texture to the list
     int addTexture(int w, int h);
@@ -98,6 +114,9 @@ public:
     // Get the reference to a specific texture,
     // returns nullptr if beyond bounds
     Texture *at(int index);
+
+    // Find a loaded texture using its filename
+    int find(QString filename);
 
 signals:
     // Called when a new texture is added

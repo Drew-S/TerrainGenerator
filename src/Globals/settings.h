@@ -28,6 +28,7 @@ public:
     // QColor sunColor();
     // QColor terrainColor();
     // QColor terranLinesColor();
+    bool packImages();
 
     // Setters (for settings that can be changed)
     void setRenderMode(bool mode);
@@ -38,6 +39,7 @@ public:
     // void sunColor(QColor color);
     // void terrainColor(QColor color);
     // void terranLinesColor(QColor color);
+    void setPackImages(bool mode);
 
     // QJsonObject save() const;
     // void restore(QJsonObject const &data);
@@ -47,6 +49,7 @@ signals:
     void previewResolutionChanged(int resolution);
     void renderResolutionChanged(int resolution);
     void meshResolutionChanged(int resolution);
+    void packImagesChanged(bool mode);
 
 private:
     Settings();
@@ -65,6 +68,7 @@ private:
     // QColor _sky{196, 214, 252};     // Sky/ambient light colour in OpenGL window
     // QColor _terrain{191, 191, 191}; // Terrain colour in OpenGL window
     // QColor _lines{255, 255, 255};   // Terrain line colour in OpenGL window
+    bool _pack_images = false;
 };
 
 #define SETTINGS Settings::getInstance()

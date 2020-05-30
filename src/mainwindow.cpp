@@ -22,6 +22,7 @@ using json = nlohmann::json;
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QBuffer>
+#include <QByteArray>
 #include <QDir>
 #include <QFileDialog>
 #include <QDialogButtonBox>
@@ -169,8 +170,9 @@ void MainWindow::_saveAsFile()
 // Toggle whether or not to pack images with save file
 void MainWindow::_saveAsTogglePack(bool checked)
 {
+    Q_CHECK_PTR(SETTINGS);
     qDebug("Packing resources in save file: %s", checked ? "true" : "false");
-    this->_save_as_pack = checked;
+    SETTINGS->setPackImages(checked);
 }
 
 // Update the filename when the line edit is updated
@@ -179,7 +181,6 @@ void MainWindow::_saveAsLineEdit(QString const &text)
     this->_save_as_filename = text;
     QString file = text;
     file.replace(QRegExp(EXT_REG), "");
-    qDebug("Save file set to: %s%s", qPrintable(file), EXT);
 }
 
 // Saves the project data to the provided output file
@@ -205,68 +206,37 @@ void MainWindow::_saveAsAccept()
             return;
         }
         Q_CHECK_PTR(this->_editor);
+        Q_CHECK_PTR(TEXTURES);
+        Q_CHECK_PTR(SETTINGS);
 
-        // // Get project data
-        QJsonObject global;
-        global["packed_externals"] = this->_save_as_pack;
-        global["save_version"] = "v1.0";
-        json nodeeditor = json::parse(QJsonDocument(this->_editor->save()).toJson().constData());
-
-        // If enable pack external resources (images) within the save file
-        if (this->_save_as_pack)
+        QuaZipFile image_file(&zip);
+        for (int i = 0; i < TEXTURES->count(); i++)
         {
-            qInfo("Packing external resources");
-            // Loop over all the nodes, if they have a 'image' key, save image to file
-            // Update image key to a simple filename
-            // TODO: Implement protections for same name
-            QuaZipFile image_file(&zip);
-            for (int i = 0; i < (int)nodeeditor["nodes"].size(); i++)
+            Texture *texture = TEXTURES->at(i);
+            if (SETTINGS->packImages() || texture->generated())
             {
-                if (nodeeditor["nodes"][i]["model"].contains("image"))
+                QuaZipNewInfo info(texture->saveName());
+                info.setPermissions(RW_ALL);
+                if (!image_file.open(QIODevice::WriteOnly, info))
                 {
-                    // Get the image: /path/to/file.png
-                    QString image_path = nodeeditor["nodes"][i]["model"].value("image", "").c_str();
-
-                    // Get filename: file.png
-                    QFileInfo file_info(image_path);
-                    QString image = file_info.fileName();
-
-                    // Create a new file entry in the zip
-                    QuaZipNewInfo image_info(image, image_path);
-                    image_info.setPermissions(RW_ALL);
-                    if (!image_file.open(QIODevice::WriteOnly, image_info))
-                    {
-                        qWarning("Unable to open zip file for writing");
-                        continue;
-                    }
-
-                    // Read the image into byte array
-                    QFile file(image_path);
-                    if (!file.open(QIODevice::ReadOnly))
-                    {
-                        qWarning("Unable to open up file for reading");
-                        image_file.close();
-                        continue;
-                    }
-                    QByteArray data = file.readAll();
-
-                    // Write data to zip file
-                    image_file.write(data);
-                    image_file.close();
-                    file.close();
-
-                    qDebug("Image compressed and updated: %s", qPrintable(image));
-
-                    // Update the filename reference in the nodes
-                    nodeeditor["nodes"][i]["model"]["image"] = image.toStdString();
+                    qWarning("Unable to open zip file for writing");
+                    continue;
                 }
+
+                if (!texture->save(&image_file))
+                    qWarning("Unable to save image");
+
+                image_file.close();
             }
         }
-        Q_CHECK_PTR(this->_save_as_dialogue);
 
-        // Update save file
-        global["nodes"] = QJsonDocument::fromJson(QByteArray(nodeeditor.dump().c_str())).object();
-        QJsonDocument document(global);
+        // Get project data
+        QJsonObject global;
+        global["packed_externals"] = SETTINGS->packImages();
+        global["save_version"] = "v1.1";
+        global["nodes"] = this->_editor->save();
+
+        Q_CHECK_PTR(this->_save_as_dialogue);
 
         // Write json data file
         QuaZipFile file(&zip);
@@ -280,8 +250,7 @@ void MainWindow::_saveAsAccept()
             return;
         }
 
-        // file.write(document.toBinaryData());
-        file.write(document.toJson());
+        file.write(QJsonDocument(global).toJson());
         file.close();
         zip.close();
 
@@ -312,6 +281,7 @@ void MainWindow::saveAs()
 // TODO: Add indication for successfully/failing to load
 void MainWindow::load()
 {
+    Q_CHECK_PTR(TEXTURES);
     QString filename = QFileDialog::getOpenFileName(
         nullptr,
         tr("Open Project"),
@@ -344,72 +314,28 @@ void MainWindow::load()
     QByteArray data = file.readAll();
     file.close();
 
+    zip.goToFirstFile();
+    do
+    {
+        QuaZipFile image_file(&zip);
+        if (zip.getCurrentFileName() != SAVE_DATA_FILE_NAME)
+        {
+            if (image_file.open(QIODevice::ReadOnly))
+            {
+                TEXTURES->loadTexture(image_file.readAll(), zip.getCurrentFileName());
+                image_file.close();
+            }
+        }
+
+    } while (zip.goToNextFile());
+
     // Create json from data file
     QJsonDocument document = QJsonDocument::fromJson(data);
-    json settings = json::parse(document.toJson().constData());
 
     qInfo("Save file version: %s", qPrintable(document["save_version"].toString()));
 
-    // Set some data
-    this->_save_as_pack = settings.value("packed_externals", false);
-
     Q_CHECK_PTR(SETTINGS);
-
-    // Extract images if using a packed save file
-    if (this->_save_as_pack)
-    {
-        qInfo("Extracting packed resources");
-        // Extract each image to a temporary directory
-        for (bool more = zip.goToFirstFile(); more; more = zip.goToNextFile())
-        {
-            // Skip over data file
-            if (zip.getCurrentFileName() == SAVE_DATA_FILE_NAME)
-                continue;
-
-            // Read image file
-            if (!file.open(QIODevice::ReadOnly))
-            {
-                qWarning("Unable to read file: %s", qPrintable(zip.getCurrentFileName()));
-                continue;
-            }
-            QByteArray image_file_data = file.readAll();
-
-            // Filename with temp path /tmp/TerrainGenerator_XXXXXX/file.png
-            std::string temp_image_file = SETTINGS->tmpDir().path().toStdString() + "/" + zip.getCurrentFileName().toStdString();
-            file.close();
-
-            // Write image to temp file
-            QFile temp_file(temp_image_file.c_str());
-            if (!temp_file.open(QIODevice::WriteOnly))
-            {
-                qWarning("Unable to write file: %s", temp_image_file.c_str());
-                file.close();
-                continue;
-            }
-            qInfo("Extracted file: %s", qPrintable(zip.getCurrentFileName()));
-
-            temp_file.write(image_file_data);
-            temp_file.close();
-        }
-
-        qInfo("Updating resource references");
-        // Update image file references to read temp file location
-        for (int i = 0; i < (int)settings["nodes"]["nodes"].size(); i++)
-        {
-            if (settings["nodes"]["nodes"][i]["model"].contains("image"))
-            {
-                QString image = settings["nodes"]["nodes"][i]["model"].value("image", "").c_str();
-
-                settings["nodes"]["nodes"][i]["model"]["image"] = SETTINGS->tmpDir().path().toStdString() + "/" + image.toStdString();
-            }
-        }
-    }
     zip.close();
-
-    // Recreate QJson form of json
-    document = QJsonDocument::fromJson(QByteArray(settings.dump().c_str()));
-
-    Q_CHECK_PTR(this->_editor);
 
     // Load nodeeditor
     this->_editor->load(document["nodes"].toObject());

@@ -197,20 +197,54 @@ void InputTextureNode::_setPixmaps()
 // Save the node to for a file
 QJsonObject InputTextureNode::save() const
 {
+    Q_CHECK_PTR(SETTINGS);
     qDebug("Saving Input Texture Node");
     QJsonObject data;
     data["name"] = this->name();
-    data["image_generated"] = this->_new_file;
-    data["image"] = this->_texture->filename();
+    if (this->_texture)
+    {
+        if (SETTINGS->packImages() || this->_texture->generated())
+        {
+            data["image"] = this->_texture->saveName();
+            data["stored"] = true;
+        }
+        else
+        {
+            data["image"] = this->_texture->filename();
+            data["stored"] = false;
+        }
+    }
+    else
+    {
+        data["image"] = "";
+        data["stored"] = false;
+    }
+
     return data;
 }
 
 // Restore the node from a save
 void InputTextureNode::restore(QJsonObject const &data)
 {
-    // TODO: Reimplement loading with new data.
+    Q_CHECK_PTR(TEXTURES);
     qDebug("Restoring Input Texture Node");
-    // this->_filename = data["image"].toString();
+    if (data["image"].toString() != QString(""))
+    {
+        int index;
+        if (data["stored"].toBool())
+            index = TEXTURES->find(data["image"].toString());
+        else
+            index = TEXTURES->addTexture(data["image"].toString());
+
+        if (index != -1)
+        {
+            this->_texture_index = index;
+            this->_texture = TEXTURES->at(index);
+            QObject::connect(this->_texture, &Texture::updated, this, &InputTextureNode::textureUpdated);
+            this->_setPixmaps();
+            emit this->dataUpdated(0);
+        }
+    }
 }
 
 void InputTextureNode::textureUpdated()

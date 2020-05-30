@@ -34,7 +34,6 @@ private:
     // Information for saving/loading a project file
     QString _save_as_filename = "";
     QString _save_as_directory = QDir::homePath();
-    bool _save_as_pack = false;
 
     // Containers for main componenets of application
     Nodeeditor *_editor;
