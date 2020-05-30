@@ -17,7 +17,7 @@ Stencil::Stencil(QString filename, int index)
 {
     QPixmap pixmap(filename);
     this->_filename = filename;
-    this->_stencil = IntensityMap(pixmap, IntensityMap::AVERAGE);
+    this->_stencil = IntensityMap(pixmap, IntensityMap::RED);
 
     // Generate icon of the stencil
     this->_icon = QIcon(VectorMap::fromIntensityMap(this->_stencil,
@@ -32,7 +32,7 @@ Stencil::Stencil(QString filename, double brush, int index)
 {
     QPixmap pixmap(filename);
     this->_filename = filename;
-    this->_stencil = IntensityMap(pixmap, IntensityMap::AVERAGE);
+    this->_stencil = IntensityMap(pixmap, IntensityMap::RED);
     this->_brush = brush;
     this->_icon = QIcon(VectorMap::fromIntensityMap(this->_stencil,
                                                     glm::dvec4(1.00, 1.00, 1.00, 1.00),
@@ -45,7 +45,7 @@ Stencil::Stencil(QString filename, double brush, QColor color, int index)
 {
     QPixmap pixmap(filename);
     this->_filename = filename;
-    this->_stencil = IntensityMap(pixmap, IntensityMap::AVERAGE);
+    this->_stencil = IntensityMap(pixmap, IntensityMap::RED);
     this->_brush = brush;
     this->_color = color;
     this->_icon = QIcon(VectorMap::fromIntensityMap(this->_stencil,
