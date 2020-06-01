@@ -1,5 +1,7 @@
 # Terrain Generator
 
+**Name is subject to change**
+
 ## Requirements
 
 - [QT5](https://www.qt.io/download)
