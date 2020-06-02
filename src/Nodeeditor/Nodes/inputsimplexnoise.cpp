@@ -8,8 +8,69 @@
 #include <QColor>
 #include <QDebug>
 #include <QDoubleSpinBox>
+#include <QProgressBar>
 
 #include <glm/vec4.hpp>
+
+#include <math.h>
+
+// Set the simplex worker data for generation
+void SimplexNoiseWorker::set(float octives, float frequency, float persistence, QVector3D offset, IntensityMap *height_map)
+{
+    this->_octives = octives;
+    this->_frequency = frequency;
+    this->_persistence = persistence;
+    this->_offset = offset;
+    this->_height_map = height_map;
+}
+
+// Generate the simplex noise map
+void SimplexNoiseWorker::generate()
+{
+    emit this->started();
+    SimplexNoise noise(this->_frequency / 1000.0f, 1.0f, 1.99f, this->_persistence);
+    // Create a vector map to house information
+    Q_CHECK_PTR(SETTINGS);
+    
+    int size;
+
+    // Ratio lets us generate a simplex map for preview that accurately represents
+    // the final render version
+    float ratio = 1.0f;
+    if (SETTINGS->renderMode())
+    {
+        size = SETTINGS->renderResolution();
+    }
+    else
+    {
+        size = SETTINGS->previewResolution();
+        int render_size = SETTINGS->renderResolution();
+        ratio = render_size / (float)size;
+    }
+
+    int i = 0;
+    int total = size * size;
+
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            // Get a noise value for a specific point
+            float intensity = noise.fractal(
+                this->_octives,
+                (float)x * ratio + this->_offset.x() * 25.0f,
+                (float)y * ratio + this->_offset.y() * 25.0f,
+                this->_offset.z() * 25.0f);
+            // Normalize intensity from [-1, 1] -> [0, 1]
+            intensity = (intensity + 1.0f) / 2.0f;
+            // Save noise in vector map
+            this->_height_map->append(intensity);
+            emit this->progress((int)round(100.0f * (float)i / (float)total));
+            i++;
+        }
+    }
+    emit this->done();
+}
 
 // Create a node and attach listeners
 InputSimplexNoiseNode::InputSimplexNoiseNode()
@@ -158,44 +219,49 @@ void InputSimplexNoiseNode::_generate()
         offset = QVector3D(val.x, val.y, val.z);
     }
 
-    // Create a simplex noise generator with parameters
-    this->_noise = SimplexNoise(frequency / 1000.0f, 1.0f, 1.99f, persistence);
-
-    // Create a vector map to house information
     Q_CHECK_PTR(SETTINGS);
     int size;
-    float ratio = 1.0f;
+    // float ratio = 1.0f;
     if (SETTINGS->renderMode())
-    {
         size = SETTINGS->renderResolution();
-    }
     else
-    {
         size = SETTINGS->previewResolution();
-        int render_size = SETTINGS->renderResolution();
-        ratio = render_size / (float)size;
-    }
     // Ratio compensates the preview resolution to better reflect the render output
     this->_intensity_map = IntensityMap(size, size);
-    // Generate the "image" with the specified size
-    for (int x = 0; x < size; x++)
-    {
-        for (int y = 0; y < size; y++)
-        {
-            // Get a noise value for a specific point
-            float intensity = this->_noise.fractal(
-                octives,
-                (float)x * ratio + offset.x() * 25.0f,
-                (float)y * ratio + offset.y() * 25.0f,
-                offset.z() * 25.0f);
-            // Normalize intensity from [-1, 1] -> [0, 1]
-            intensity = (intensity + 1.0f) / 2.0f;
-            // Save noise in vector map
-            this->_intensity_map.append(intensity);
-        }
-    }
 
-    // Set preview and emit completion of generation
+    SimplexNoiseWorker *worker = new SimplexNoiseWorker();
+    worker->moveToThread(&this->_thread);
+    QObject::connect(&this->_thread, &QThread::finished, worker, &QObject::deleteLater);
+    QObject::connect(worker, &SimplexNoiseWorker::done, this, &InputSimplexNoiseNode::simplexDone);
+    QObject::connect(worker, &SimplexNoiseWorker::started, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        
+        this->_ui.progress->show();
+        this->_shared_ui.progress->show();
+
+        if (SETTINGS->percentProgressText() && !this->_ui.progress->isTextVisible())
+            this->_ui.progress->setTextVisible(true);
+        else if (!SETTINGS->percentProgressText() && this->_ui.progress->isTextVisible())
+            this->_ui.progress->setTextVisible(false);
+
+        if (SETTINGS->percentProgressText() && !this->_shared_ui.progress->isTextVisible())
+            this->_shared_ui.progress->setTextVisible(true);
+        else if (!SETTINGS->percentProgressText() && this->_shared_ui.progress->isTextVisible())
+            this->_shared_ui.progress->setTextVisible(false);
+    });
+    QObject::connect(worker, &SimplexNoiseWorker::progress, this->_ui.progress, &QProgressBar::setValue);
+    QObject::connect(worker, &SimplexNoiseWorker::progress, this->_shared_ui.progress, &QProgressBar::setValue);
+    this->_thread.start();
+    worker->set(octives, frequency, persistence, offset, &this->_intensity_map);
+    QMetaObject::invokeMethod(worker, "generate", Qt::QueuedConnection);
+}
+
+void InputSimplexNoiseNode::simplexDone()
+{
+    qDebug() << "Done";
+    this->_ui.progress->hide();
+    this->_shared_ui.progress->hide();
+
     this->_output = this->_intensity_map.toPixmap();
     this->_ui.label_pixmap->setPixmap(this->_output.scaled(this->_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));
     this->_shared_ui.label_pixmap->setPixmap(this->_output.scaled(this->_shared_ui.label_pixmap->width(), 100, Qt::KeepAspectRatioByExpanding));

@@ -18,8 +18,35 @@
 #include <QObject>
 #include <QVector3D>
 #include <QJsonObject>
+#include <QThread>
 
 #include "node.h"
+
+// Simplex Worker generates the simplex noise map in its own thread
+class SimplexNoiseWorker : public QObject
+{
+    Q_OBJECT
+public:
+    // Set any data that is needed, (must be in other thread first)
+    void set(float octives, float frequency, float persistence, QVector3D offset, IntensityMap *height_map);
+
+public slots:
+    // Run generation
+    void generate();
+
+signals:
+    // Updating signals
+    void started();
+    void progress(int perc);
+    void done();
+
+private:
+    float _octives = 8.0f;
+    float _frequency = 5.0f;
+    float _persistence = 0.5f;
+    QVector3D _offset{0.0f, 0.0f, 0.0f};
+    IntensityMap *_height_map;
+};
 
 // Input Node for generating simplex noise maps
 class InputSimplexNoiseNode : public Node
@@ -62,6 +89,7 @@ public:
 public slots:
     // Reset to use constant values when input removed
     void inputConnectionDeleted(QtNodes::Connection const &connection);
+    void simplexDone();
 
 private slots:
     // Watches for changes in the widget to update noise parameters
@@ -87,6 +115,8 @@ private:
     float _frequency = 5.0f;
     float _persistence = 0.5f;
     QVector3D _offset{0.0f, 0.0f, 0.0f};
+
+    QThread _thread;
 
     // Inputs
     std::shared_ptr<IntensityMapData> _in_octives;
