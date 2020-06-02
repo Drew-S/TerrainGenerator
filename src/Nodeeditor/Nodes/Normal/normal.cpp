@@ -14,11 +14,13 @@ static double KERNEL_Y[3][3] = {
     {0.00, 0.00, 0.00},
     {1.00, 2.00, 1.00}};
 
+// Set worker values
 void NormalWorker::set(IntensityMap *height_map)
 {
     this->_height_map = height_map;
 }
 
+// Generate the normal map
 void NormalWorker::generate()
 {
     Q_CHECK_PTR(this->_height_map);
@@ -71,6 +73,7 @@ void NormalWorker::generate()
     emit this->done(normal);
 }
 
+// Obtains the height value from a specific point in the map, handles edge cases
 double NormalWorker::_getHeightIntensity(int x, int y, IntensityMap *map)
 {
     if (x < 0)

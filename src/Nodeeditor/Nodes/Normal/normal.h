@@ -12,26 +12,31 @@
 
 #include "../../Datatypes/intensitymap.h"
 
-// Class to set parameters and generate a normal map from a supplied height map
+// Generates the normal map in a separate thread
 class NormalWorker : public QObject
 {
     Q_OBJECT
 public:
+    // Set variables that are needed, must be called after the worker is in a different thread
     void set(IntensityMap *height_map);
 
 public slots:
+    // Generate the normal map
     void generate();
 
 signals:
+    // Progress updates
     void started();
     void progress(int perc);
     void done(QImage const &normal_map);
 
 private:
+    // Helper function
     double _getHeightIntensity(int x, int y, IntensityMap *map);
     IntensityMap *_height_map = nullptr;
 };
 
+// Class to set parameters and generate a normal map from a supplied height map
 class NormalMapGenerator : public QObject
 {
     Q_OBJECT
