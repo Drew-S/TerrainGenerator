@@ -99,6 +99,11 @@ bool Settings::packImages()
     return this->_pack_images;
 }
 
+bool Settings::percentProgressText()
+{
+    return this->_percent_progress_text;
+}
+
 void Settings::setRenderMode(bool mode)
 {
     this->_render_mode = mode;
@@ -148,5 +153,14 @@ void Settings::setPackImages(bool mode)
     qDebug("Pack images (%s)?", this->_pack_images ? "true" : "false");
 #ifndef TEST_MODE
     emit this->packImagesChanged(this->_pack_images);
+#endif
+}
+
+void Settings::setPercentProgressText(bool mode)
+{
+    this->_percent_progress_text = mode;
+    qDebug("Show progress bar percents (%s)?", this->_percent_progress_text ? "true" : "false");
+#ifndef TEST_MODE
+    emit this->percentProgressTextChanged(this->_percent_progress_text);
 #endif
 }

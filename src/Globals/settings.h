@@ -29,6 +29,7 @@ public:
     // QColor terrainColor();
     // QColor terranLinesColor();
     bool packImages();
+    bool percentProgressText();
 
     // Setters (for settings that can be changed)
     void setRenderMode(bool mode);
@@ -40,6 +41,7 @@ public:
     // void terrainColor(QColor color);
     // void terranLinesColor(QColor color);
     void setPackImages(bool mode);
+    void setPercentProgressText(bool mode);
 
     // QJsonObject save() const;
     // void restore(QJsonObject const &data);
@@ -50,6 +52,7 @@ signals:
     void renderResolutionChanged(int resolution);
     void meshResolutionChanged(int resolution);
     void packImagesChanged(bool mode);
+    void percentProgressTextChanged(bool mode);
 
 private:
     Settings();
@@ -69,6 +72,7 @@ private:
     // QColor _terrain{191, 191, 191}; // Terrain colour in OpenGL window
     // QColor _lines{255, 255, 255};   // Terrain line colour in OpenGL window
     bool _pack_images = false;
+    bool _percent_progress_text = false;
 };
 
 #define SETTINGS Settings::getInstance()
