@@ -7,6 +7,8 @@
 #include <nodes/NodeDataModel>
 #include <nodes/Connection>
 
+#include "ui_Output.h"
+
 // Normal map generator
 #include "./Normal/normal.h"
 
@@ -73,9 +75,6 @@ private:
     QImage _normal_map;
 
     // The embedded widget
+    Ui::Output _ui;
     QWidget *_widget;
-
-    // Image previews
-    QLabel *_height_label;
-    QLabel *_normal_label;
 };

@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QDebug>
 #include <QWidget>
+#include <QProgressBar>
 #include <QVBoxLayout>
 
 #include <glm/mat3x3.hpp>
@@ -13,27 +14,16 @@
 
 #include "../Datatypes/vectormap.h"
 
+#include "Globals/settings.h"
+
 // Setup the node
 OutputNode::OutputNode()
 {
     qDebug("Creating Output Node");
-    this->_height_label = new QLabel("Height map");
-    this->_height_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_height_label->setFixedSize(100, 100);
-
-    this->_normal_label = new QLabel("Normal map");
-    this->_normal_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    this->_normal_label->setFixedSize(100, 100);
-
-    QVBoxLayout *layout = new QVBoxLayout();
-
-    layout->addWidget(this->_height_label);
-    layout->addWidget(this->_normal_label);
-    layout->setSizeConstraint(QLayout::SetMaximumSize);
-
     this->_widget = new QWidget();
-    this->_widget->setLayout(layout);
-    this->_widget->setStyleSheet("QWidget { background-color: rgba(0,0,0,0); } QLabel { background-color: rgba(117, 117, 117, 255); border: 1px solid black; }");
+    this->_ui.setupUi(this->_widget);
+
+    this->_ui.progress->hide();
 
     QImage normal(1, 1, QImage::Format_Indexed8);
     normal.setColorCount(1);
@@ -41,6 +31,31 @@ OutputNode::OutputNode()
     normal.fill(0);
 
     this->_normal_map = normal;
+
+    QObject::connect(&this->_normal_generator, &NormalMapGenerator::done, [this]() {
+        this->_normal_map = this->_normal_generator.toImage();
+        emit this->computingFinished();
+
+        QPixmap normal_pixmap;
+        normal_pixmap.convertFromImage(this->getNormalMap(), Qt::ColorOnly);
+
+        this->_ui.normal_label->setPixmap(normal_pixmap.scaled(this->_ui.height_label->width(), this->_ui.height_label->height(), Qt::KeepAspectRatio));
+        this->_ui.progress->hide();
+    });
+
+    QObject::connect(&this->_normal_generator, &NormalMapGenerator::started, [this]() {
+        Q_CHECK_PTR(SETTINGS);
+        
+        this->_ui.progress->show();
+
+        if (SETTINGS->percentProgressText() && !this->_ui.progress->isTextVisible())
+            this->_ui.progress->setTextVisible(true);
+        else if (!SETTINGS->percentProgressText() && this->_ui.progress->isTextVisible())
+            this->_ui.progress->setTextVisible(false);
+
+        this->_ui.progress->setValue(0);
+    });
+    QObject::connect(&this->_normal_generator, &NormalMapGenerator::progress, this->_ui.progress, &QProgressBar::setValue);
 }
 
 OutputNode::~OutputNode() {}
@@ -94,33 +109,22 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
         // Cast pointer into VectorMapData pointer
         this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data);
 
-        // Get width and height
-        int w = this->_height_label->width();
-        int h = this->_height_label->height();
-
         IntensityMap height_map = this->_input->intensityMap();
 
         this->_height_map = height_map.toImage();
 
         // Display preview image
-        this->_height_label->setPixmap(height_map.toPixmap().scaled(w, h, Qt::KeepAspectRatio));
+        this->_ui.height_label->setPixmap(height_map.toPixmap().scaled(this->_ui.height_label->width(), this->_ui.height_label->height(), Qt::KeepAspectRatio));
 
         // Emit that calculations are being made
-        emit this->computingStarted();
         this->_generateNormalMap(height_map);
-        emit this->computingFinished();
-
-        QPixmap normal_pixmap;
-        normal_pixmap.convertFromImage(this->getNormalMap(), Qt::ColorOnly);
-
-        this->_normal_label->setPixmap(normal_pixmap.scaled(w, h, Qt::KeepAspectRatio));
     }
     // No pixmap, set null image
     else
     {
 
-        this->_height_label->setText("Height map");
-        this->_normal_label->setText("Normal map");
+        this->_ui.height_label->setText("Height map");
+        this->_ui.normal_label->setText("Normal map");
     }
 }
 
@@ -139,16 +143,12 @@ QImage OutputNode::getHeightMap()
 // Generates a normal map using the normal map generator
 void OutputNode::_generateNormalMap(IntensityMap height_map)
 {
+    emit this->computingStarted();
     // Set the input height map for the generator
-    this->_normal_generator.setImage(&height_map);
+    this->_normal_generator.setImage(height_map);
 
     // Generate
-    // TODO: make multithreaded
     this->_normal_generator.generate();
-
-    // Apply the normal map
-    QImage normal_map = this->_normal_generator.toImage();
-    this->_normal_map = normal_map;
 }
 
 // Input is removed so we reset the height and normal maps
