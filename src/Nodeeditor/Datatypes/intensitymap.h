@@ -5,8 +5,12 @@
 #include <QImage>
 #include <QPixmap>
 
-// Data type for a two dimensional "image" for double values
-// Data is a "greyscale"
+/**
+ * IntensityMap
+ *
+ * Houses a 2 dimensional array (internally stored in 1 dimension) a list of 
+ * doubles that create a mono-coloured image or height map.
+ */
 class IntensityMap
 {
 public:
@@ -23,15 +27,23 @@ public:
         MAX
     };
 
-    // Create map from a variety of sources or to generate
+    // Create empty map
     IntensityMap();
+    
+    // Create a map with a size (defaults to 1.00 fill)
     IntensityMap(int width, int height);
-    IntensityMap(int width, int height, double fill);
-    IntensityMap(int width, int height, std::vector<double> values);
-    IntensityMap(QImage image, IntensityMap::Channel channel);
-    IntensityMap(QPixmap image, IntensityMap::Channel channel);
 
-    ~IntensityMap();
+    // Create a map with a size and a fill value
+    IntensityMap(int width, int height, double fill);
+
+    // Createa a map with a size and mapped array of values (pixels)
+    IntensityMap(int width, int height, std::vector<double> values);
+
+    // Create a map from an image
+    IntensityMap(QImage image, IntensityMap::Channel channel);
+
+    // Create a map from a pixmap
+    IntensityMap(QPixmap image, IntensityMap::Channel channel);
 
     // Return an image of the intensity map
     QImage toImage(bool print_qimage = true);

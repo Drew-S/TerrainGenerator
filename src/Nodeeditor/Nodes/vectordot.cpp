@@ -1,11 +1,15 @@
 #include "vectordot.h"
 
-#include <QDoubleSpinBox>
 #include <QDebug>
+#include <QDoubleSpinBox>
 
 #include "Globals/settings.h"
 
-// Create Vector Dot Product Node
+/**
+ * ConverterVectorDotNode
+ * 
+ * Creates the node and the UI.
+ */
 ConverterVectorDotNode::ConverterVectorDotNode()
 {
     qDebug("Creating Vector Dot Product Node, attaching listeners and UI widget");
@@ -16,33 +20,97 @@ ConverterVectorDotNode::ConverterVectorDotNode()
     this->_ui.setupUi(this->_widget);
     this->_shared_ui.setupUi(this->_shared_widget);
 }
-ConverterVectorDotNode::~ConverterVectorDotNode() {}
 
+/**
+ * created
+ * 
+ * Function is called when the node is created so it can connect to listeners.
+ */
 void ConverterVectorDotNode::created()
 {
     // Attach vector 1 in embedded ui listeners
-    QObject::connect(this->_ui.spin_x_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::x0Changed);
-    QObject::connect(this->_ui.spin_y_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y0Changed);
-    QObject::connect(this->_ui.spin_z_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::z0Changed);
-    QObject::connect(this->_ui.spin_w_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::w0Changed);
+    QObject::connect(this->_ui.spin_x_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::x0Changed);
+
+    QObject::connect(this->_ui.spin_y_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::y0Changed);
+
+    QObject::connect(this->_ui.spin_z_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::z0Changed);
+
+    QObject::connect(this->_ui.spin_w_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::w0Changed);
 
     // Attach vector 2 in embedded ui listeners
-    QObject::connect(this->_ui.spin_x_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::x1Changed);
-    QObject::connect(this->_ui.spin_y_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y1Changed);
-    QObject::connect(this->_ui.spin_z_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::z1Changed);
-    QObject::connect(this->_ui.spin_w_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::w1Changed);
+    QObject::connect(this->_ui.spin_x_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::x1Changed);
+
+    QObject::connect(this->_ui.spin_y_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::y1Changed);
+
+    QObject::connect(this->_ui.spin_z_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::z1Changed);
+
+    QObject::connect(this->_ui.spin_w_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::w1Changed);
 
     // Attach vector 1 in shared ui listeners
-    QObject::connect(this->_shared_ui.spin_x_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::x0Changed);
-    QObject::connect(this->_shared_ui.spin_y_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y0Changed);
-    QObject::connect(this->_shared_ui.spin_z_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::z0Changed);
-    QObject::connect(this->_shared_ui.spin_w_0, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::w0Changed);
+    QObject::connect(this->_shared_ui.spin_x_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::x0Changed);
+
+    QObject::connect(this->_shared_ui.spin_y_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::y0Changed);
+
+    QObject::connect(this->_shared_ui.spin_z_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::z0Changed);
+
+    QObject::connect(this->_shared_ui.spin_w_0,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::w0Changed);
 
     // Attach vector 2 in shared ui listeners
-    QObject::connect(this->_shared_ui.spin_x_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::x1Changed);
-    QObject::connect(this->_shared_ui.spin_y_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::y1Changed);
-    QObject::connect(this->_shared_ui.spin_z_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::z1Changed);
-    QObject::connect(this->_shared_ui.spin_w_1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &ConverterVectorDotNode::w1Changed);
+    QObject::connect(this->_shared_ui.spin_x_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::x1Changed);
+
+    QObject::connect(this->_shared_ui.spin_y_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::y1Changed);
+
+    QObject::connect(this->_shared_ui.spin_z_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::z1Changed);
+
+    QObject::connect(this->_shared_ui.spin_w_1,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     this,
+                     &ConverterVectorDotNode::w1Changed);
 
     QObject::connect(SETTINGS, &Settings::renderModeChanged, [this]() {
         if (!this->_in_set_0 && !this->_in_set_1)
@@ -50,52 +118,116 @@ void ConverterVectorDotNode::created()
     });
 }
 
-// Caption of the node in the embedded node widget
-QString
-ConverterVectorDotNode::caption() const
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
+QString ConverterVectorDotNode::caption() const
 {
     return QString("Vector Dot Product");
 }
 
-// Name of the widget shown in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString ConverterVectorDotNode::name() const
 {
     return QString("Vector Dot Product");
 }
 
-// The embedded and shared interaction widget
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *ConverterVectorDotNode::embeddedWidget()
 {
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
+
+/**
+ * sharedWidget
+ * 
+ * Returns a pointer to the widget that gets displayed in the properties panel.
+ * 
+ * @returns QWidget* : The shared widget.
+ */
 QWidget *ConverterVectorDotNode::sharedWidget()
 {
     Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
-// The number of ports (2 input and 1 output)
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
 unsigned int ConverterVectorDotNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 2 : 1;
 }
 
-// Get the ports data type, VectorMap in and IntensityMap out
-QtNodes::NodeDataType ConverterVectorDotNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+ConverterVectorDotNode::dataType(QtNodes::PortType port_type,
+                                 QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_index);
-    return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
+    return port_type == QtNodes::PortType::In ? VectorMapData().type()
+                                              : IntensityMapData().type();
 }
 
-// Get the resulting data from the output port
-std::shared_ptr<QtNodes::NodeData> ConverterVectorDotNode::outData(QtNodes::PortIndex port)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
+std::shared_ptr<QtNodes::NodeData>
+ConverterVectorDotNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_output);
 }
 
-// Save the internal settings for file saving
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject ConverterVectorDotNode::save() const
 {
     qDebug("Saving vector dot product node");
@@ -120,7 +252,13 @@ QJsonObject ConverterVectorDotNode::save() const
     return data;
 }
 
-// Restores the node from the given save data
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object.
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ */
 void ConverterVectorDotNode::restore(QJsonObject const &data)
 {
     qDebug("Restoring vector dot product node");
@@ -139,8 +277,18 @@ void ConverterVectorDotNode::restore(QJsonObject const &data)
     this->_generate();
 }
 
-// Set the input pointer data
-void ConverterVectorDotNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void ConverterVectorDotNode::setInData(
+    std::shared_ptr<QtNodes::NodeData> node_data,
+    QtNodes::PortIndex port_index)
 {
     if (node_data)
     {
@@ -170,8 +318,16 @@ void ConverterVectorDotNode::setInData(std::shared_ptr<QtNodes::NodeData> node_d
     }
 }
 
-// When an input is deleted allow for using the input values again
-void ConverterVectorDotNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+/**
+ * inputConnectionDeleted @slot
+ * 
+ * Called when an input connection is deleted, this usually resets some data and
+ * regenerates the output data.
+ * 
+ * @param QtNodes::Connection const& connection : The connection being deleted.
+ */
+void ConverterVectorDotNode::inputConnectionDeleted(
+    QtNodes::Connection const &connection)
 {
     switch ((int)connection.getPortIndex(QtNodes::PortType::In))
     {
@@ -196,8 +352,13 @@ void ConverterVectorDotNode::inputConnectionDeleted(QtNodes::Connection const &c
     this->_generate();
 }
 
-// When a vector value is changed, update values and generate output
-// First vector
+/**
+ * x0Changed
+ * 
+ * Called to updated the first vector when the x value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::x0Changed(double value)
 {
     this->_in_val_0.x = value;
@@ -205,6 +366,14 @@ void ConverterVectorDotNode::x0Changed(double value)
     this->_shared_ui.spin_x_0->setValue(this->_in_val_0.x);
     this->_generate();
 }
+
+/**
+ * y0Changed
+ * 
+ * Called to updated the first vector when the y value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::y0Changed(double value)
 {
     this->_in_val_0.y = value;
@@ -212,6 +381,14 @@ void ConverterVectorDotNode::y0Changed(double value)
     this->_shared_ui.spin_y_0->setValue(this->_in_val_0.y);
     this->_generate();
 }
+
+/**
+ * z0Changed
+ * 
+ * Called to updated the first vector when the z value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::z0Changed(double value)
 {
     this->_in_val_0.z = value;
@@ -219,6 +396,14 @@ void ConverterVectorDotNode::z0Changed(double value)
     this->_shared_ui.spin_z_0->setValue(this->_in_val_0.z);
     this->_generate();
 }
+
+/**
+ * w0Changed
+ * 
+ * Called to updated the first vector when the w value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::w0Changed(double value)
 {
     this->_in_val_0.w = value;
@@ -227,7 +412,13 @@ void ConverterVectorDotNode::w0Changed(double value)
     this->_generate();
 }
 
-// Second vector
+/**
+ * x1Changed
+ * 
+ * Called to updated the second vector when the x value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::x1Changed(double value)
 {
     this->_in_val_1.x = value;
@@ -235,6 +426,14 @@ void ConverterVectorDotNode::x1Changed(double value)
     this->_shared_ui.spin_x_1->setValue(this->_in_val_1.x);
     this->_generate();
 }
+
+/**
+ * y1Changed
+ * 
+ * Called to updated the second vector when the y value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::y1Changed(double value)
 {
     this->_in_val_1.y = value;
@@ -242,6 +441,14 @@ void ConverterVectorDotNode::y1Changed(double value)
     this->_shared_ui.spin_y_1->setValue(this->_in_val_1.y);
     this->_generate();
 }
+
+/**
+ * z1Changed
+ * 
+ * Called to updated the second vector when the z value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::z1Changed(double value)
 {
     this->_in_val_1.z = value;
@@ -249,6 +456,14 @@ void ConverterVectorDotNode::z1Changed(double value)
     this->_shared_ui.spin_z_1->setValue(this->_in_val_1.z);
     this->_generate();
 }
+
+/**
+ * w1Changed
+ * 
+ * Called to updated the second vector when the w value changed.
+ * 
+ * @param double value : The new value.
+ */
 void ConverterVectorDotNode::w1Changed(double value)
 {
     this->_in_val_1.w = value;
@@ -257,78 +472,71 @@ void ConverterVectorDotNode::w1Changed(double value)
     this->_generate();
 }
 
-// Generate the output value
+/**
+ * _generate
+ * 
+ * Generates the output data from the supplied and available data.
+ * 
+ * @signals dataUpdated
+ */
 void ConverterVectorDotNode::_generate()
 {
     qDebug("Applying tranformation, generating output");
-    if (this->_in_set_0 && this->_in_set_1)
-        this->_generateInBoth();
-
-    else if (this->_in_set_0 && !this->_in_set_1)
-        this->_generateIn1();
-
-    else if (!this->_in_set_0 && this->_in_set_1)
-        this->_generateIn1(true);
-
+    VectorMap map_0;
+    VectorMap map_1;
+    if (this->_in_set_0)
+    {
+        Q_CHECK_PTR(this->_in_0);
+        map_0 = this->_in_0->vectorMap();
+    }
     else
-        this->_generateIn();
+    {
+        map_0 = VectorMap(1, 1, this->_in_val_0);
+    }
+
+    if (this->_in_set_1)
+    {
+        Q_CHECK_PTR(this->_in_1);
+        map_1 = this->_in_1->vectorMap();
+    }
+    else
+    {
+        map_1 = VectorMap(1, 1, this->_in_val_1);
+    }
+
+    if (map_0.usingFill() && map_1.usingFill())
+    {
+        this->_output = IntensityMap(
+                    map_0.width,
+                    map_0.height,
+                    ConverterVectorDotNode::dot(
+                        map_0.at(0, 0),
+                        map_1.at(0, 0)));
+    }
+    else
+    {
+        this->_output = IntensityMap(map_0.width, map_0.height);
+
+        for (int y = 0; y < map_0.height; y++)
+            for (int x = 0; x < map_0.width; x++)
+                this->_output.append(ConverterVectorDotNode::dot(
+                    map_0.at(x, y),
+                    map_1.at(x, y)));
+    }
 
     emit this->dataUpdated(0);
 }
 
-// Generate when both inputs have maps
-void ConverterVectorDotNode::_generateInBoth()
-{
-    Q_CHECK_PTR(this->_in_0);
-    Q_CHECK_PTR(this->_in_1);
-    VectorMap map0 = this->_in_0->vectorMap();
-    VectorMap map1 = this->_in_1->vectorMap();
-
-    this->_output = IntensityMap(map0.width, map0.height);
-
-    for (int y = 0; y < map0.height; y++)
-        for (int x = 0; x < map0.width; x++)
-            this->_output.append(ConverterVectorDotNode::dot(map0.at(x, y), map1.at(x, y)));
-}
-
-// Generates when only one input is set (use a constant vector for other)
-void ConverterVectorDotNode::_generateIn1(bool second)
-{
-    VectorMap map;
-    glm::dvec4 val;
-    if (second)
-    {
-        Q_CHECK_PTR(this->_in_1);
-        map = this->_in_1->vectorMap();
-        val = this->_in_val_0;
-    }
-    else
-    {
-        Q_CHECK_PTR(this->_in_0);
-        map = this->_in_0->vectorMap();
-        val = this->_in_val_1;
-    }
-
-    this->_output = IntensityMap(map.width, map.height);
-
-    for (int y = 0; y < map.height; y++)
-        for (int x = 0; x < map.width; x++)
-            this->_output.append(ConverterVectorDotNode::dot(map.at(x, y), val));
-}
-
-// Generates when neither input is set, use two constants to create a constant out
-void ConverterVectorDotNode::_generateIn()
-{
-    Q_CHECK_PTR(SETTINGS);
-    int size;
-    if (SETTINGS->renderMode())
-        size = SETTINGS->renderResolution();
-    else
-        size = SETTINGS->previewResolution();
-    this->_output = IntensityMap(size, size, ConverterVectorDotNode::dot(this->_in_val_0, this->_in_val_1));
-}
-
-// Apply the dot algorithm to both vectors
+/**
+ * dot
+ * 
+ * Algorithm for applying the vector dot product to the two vectors.
+ * 
+ * @param glm::dvec4 a : The first vector.
+ * @param glm::dvec4 b : The second vector.
+ * 
+ * @returns double : The resulting value.
+ */
 double ConverterVectorDotNode::dot(glm::dvec4 a, glm::dvec4 b)
 {
     return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);

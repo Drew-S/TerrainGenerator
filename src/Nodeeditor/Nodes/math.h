@@ -1,20 +1,23 @@
 #pragma once
 
-#include <QWidget>
 #include <QObject>
+#include <QWidget>
 
-#include <nodes/NodeDataModel>
 #include <nodes/Connection>
-
-#include "../Datatypes/pixmap.h"
+#include <nodes/NodeDataModel>
 
 #include "../Datatypes/intensitymap.h"
+#include "../Datatypes/pixmap.h"
+#include "node.h"
 
 #include "ui_MathNode.h"
 
-#include "node.h"
-
-// Apply a mathematical function per pixel to an intensity map (map/map) (map/value) (value/value)
+/**
+ * ConverterMathNode
+ * 
+ * Node that takes in two intensity maps and applies a mathematical function to
+ * them. If either input is not set a default value is used instead.
+ */
 class ConverterMathNode : public Node
 {
     Q_OBJECT
@@ -33,8 +36,9 @@ public:
         MAX,
         POW
     };
+    
+    // Create the node
     ConverterMathNode();
-    ~ConverterMathNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -45,15 +49,19 @@ public:
     // Title shown in the selection list
     QString name() const override;
 
-    // The image label that is embedded in the node
+    // The embedded widget shown in the node
     QWidget *embeddedWidget();
+
+    // The shared widget shown in the properties panel
     QWidget *sharedWidget();
 
     // Get the number of ports (1 output, 2 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only imports VectorMapData)
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Save and load the node for project files
     QJsonObject save() const override;
@@ -63,7 +71,8 @@ public:
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Set the input intensity maps or constant
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port);
 
     // Transformation algorithms
     static double mix(double a, double b);
@@ -79,8 +88,11 @@ public slots:
     // Reset to use constant values when input removed
     void inputConnectionDeleted(QtNodes::Connection const &connection);
 
+    // Default values changed
     void val0Changed(double value);
     void val1Changed(double value);
+
+    // Algorithm method changed
     void comboChanged(int index);
 
 private:

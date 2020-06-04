@@ -1,12 +1,28 @@
 #include "bezierwidget.h"
 
-#include <math.h> // pow
+#include <math.h>
 
-#include <QTransform>
 #include <QDebug>
+#include <QTransform>
 
-// Clamps an items position (control or end point) between 0 and 100 in the x coordinates
-// between min and max in the x coordinates, and betwen -25 and 125 in the y coordinates
+/******************************************************************************
+ *                                HELPERS                                     *
+ ******************************************************************************/
+
+/**
+ * clamp
+ * 
+ * Given an item (control or end point) we apply a clamping function on the
+ * x-axis ensuring that the object stays within certain bounds. There is also a
+ * y-axis bounds to ensure the control points stay within the view of the
+ * viewport.
+ * 
+ * @param QGraphicsItem* item : The item to clamp.
+ * @param double min : The minimum x value.
+ * @param double max : The maximum x value.
+ * 
+ * @return bool : Wether or not the clamp was applied.
+ */
 static bool clamp(QGraphicsItem *item, double min, double max)
 {
     QPointF c_pos = item->pos();
@@ -51,14 +67,42 @@ static bool clamp(QGraphicsItem *item, double min, double max)
     return clamped;
 }
 
-// https://en.wikipedia.org/wiki/B%C3%A9zier_curve
-// Bezier function for a single value
+/**
+ * bezier
+ * 
+ * The raw bezier function for a single dimension
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * 
+ * @param double t : The percentage of the bezier to get.
+ * @param double a : The first end point.
+ * @param double b : The first control point.
+ * @param double c : The second control point.
+ * @param double d : The second end point.
+ * 
+ * @returns double : The resulting value.
+ */
 double bezier(double t, double a, double b, double c, double d)
 {
-    return pow(1 - t, 3) * a + 3 * pow(1 - t, 2) * t * b + 3 * (1 - t) * pow(t, 2) * c + pow(t, 3) * d;
+    return pow(1 - t, 3) * a
+           + 3 * pow(1 - t, 2) * t * b
+           + 3 * (1 - t) * pow(t, 2) * c
+           + pow(t, 3) * d;
 }
 
-// Bezier function for a point
+/**
+ * bezier
+ * 
+ * The raw bezier function for a single dimension
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * 
+ * @param double t : The percentage of the bezier to get.
+ * @param QPointF a : The first end point.
+ * @param QPointF b : The first control point.
+ * @param QPointF c : The second control point.
+ * @param QPointF d : The second end point.
+ * 
+ * @returns QPointF : The resulting value.
+ */
 QPointF bezier(double t, QPointF a, QPointF b, QPointF c, QPointF d)
 {
     return QPointF(
@@ -66,12 +110,39 @@ QPointF bezier(double t, QPointF a, QPointF b, QPointF c, QPointF d)
         bezier(t, a.y(), b.y(), c.y(), d.y()));
 }
 
-// =================================================================
-// =================================================================
-// =================================================================
+/******************************************************************************
+ *                                BEZIER                                      *
+ ******************************************************************************/
 
-// Bezier class for drawing a bezier curve
+/**
+ * Bezier
+ * 
+ * Creates a new bezier curve with all the default values used.
+ */
 Bezier::Bezier() {}
+
+/**
+ * Bezier
+ * 
+ * Creates a new bezier with the overriden values.
+ * 
+ * @param QPen l_pen : The line pen (between control and end point).
+ * @param QPen c_pen : The control pen (outline on a control circle).
+ * @param QBrush c_brush : The control brush (fill).
+ * @param QPen e_pen : The end point pen (outline).
+ * @param QBrush e_brush : The end point brush (fill).
+ * @param QPen cu_pen : The curve pen (the bezier curve itself)
+ * @param float r : The radius of the control and end point circles.
+ * @param float c_thick : The control and end point outline thickness.
+ * @param float l_width : The width of the lines between control and end point.
+ * @param float c_width : The width of the lines that make up the curve.
+ * @param QPointF c_0 : The first control point location.
+ * @param QPointF c_1 : The second control point location.
+ * @param QGraphicsEllipseItem* e_0 : The pointer to the firstend point (end
+ *                                    points are shared between beziers)
+ * @param QGraphicsEllipseItem* e_1 : The pointer to the second end point.
+ * @param QGraphicsScene* s : The scene that draws the elements
+ */
 Bezier::Bezier(QPen l_pen,
                QPen c_pen,
                QBrush c_brush,
@@ -112,7 +183,12 @@ Bezier::Bezier(QPen l_pen,
         0,
         this->radius, this->radius, this->control_pen, this->control_brush);
     this->control_0->setPos(c_0);
-    this->control_0->setTransform(QTransform(1.00, 0.00, 0.00, 1.00, -this->radius / 2.0f, -this->radius / 2.0f));
+    this->control_0->setTransform(QTransform(1.00,
+                                             0.00,
+                                             0.00,
+                                             1.00,
+                                             -this->radius / 2.0f,
+                                             -this->radius / 2.0f));
     this->control_0->setZValue(0.0);
 
     this->control_1 = this->scene->addEllipse(
@@ -120,7 +196,12 @@ Bezier::Bezier(QPen l_pen,
         0,
         this->radius, this->radius, this->control_pen, this->control_brush);
     this->control_1->setPos(c_1);
-    this->control_1->setTransform(QTransform(1.00, 0.00, 0.00, 1.00, -this->radius / 2.0f, -this->radius / 2.0f));
+    this->control_1->setTransform(QTransform(1.00,
+                                             0.00,
+                                             0.00,
+                                             1.00,
+                                             -this->radius / 2.0f,
+                                             -this->radius / 2.0f));
     this->control_1->setZValue(0.0);
 
     // Create control lines
@@ -141,7 +222,8 @@ Bezier::Bezier(QPen l_pen,
     this->line_0->hide();
     this->line_1->hide();
 
-    qDebug("Created bezier, (%0.2f, %0.2f), (%0.2f, %0.2f), (%0.2f, %0.2f), (%0.2f, %0.2f)",
+    qDebug("Created bezier"
+           ", (%0.2f, %0.2f), (%0.2f, %0.2f), (%0.2f, %0.2f), (%0.2f, %0.2f)",
            this->end_0->pos().x(), this->end_0->pos().y(),
            this->control_0->pos().x(), this->control_0->pos().y(),
            this->control_1->pos().x(), this->control_1->pos().y(),
@@ -151,8 +233,17 @@ Bezier::Bezier(QPen l_pen,
     this->draw();
 }
 
-// Get the intersection of the line with the bezier curve
-// Iterates over the line segments for intersections
+/**
+ * intersect
+ * 
+ * Get the intersection point of a line through the bezier curve. If the line
+ * does not intersect with the curve false is return and pos is unchanged.
+ * 
+ * @param QLineF line : The line to try to intersect with.
+ * @param QPointF* pos : The position where the intersection could happen.
+ * 
+ * @returns bool : Whether the line intersects or not.
+ */
 bool Bezier::intersect(QLineF line, QPointF *pos)
 {
     Q_CHECK_PTR(this->end_0);
@@ -169,7 +260,8 @@ bool Bezier::intersect(QLineF line, QPointF *pos)
     // Find an intersetion point by iterating over each line segment
     for (int i = 0; i < (int)this->curve.size(); i++)
     {
-        if (line.intersects(this->curve[i]->line(), pos) == QLineF::BoundedIntersection)
+        if (line.intersects(this->curve[i]->line(), pos)
+            == QLineF::BoundedIntersection)
         {
             return true;
         }
@@ -177,7 +269,12 @@ bool Bezier::intersect(QLineF line, QPointF *pos)
     return false;
 }
 
-// Draw the bezier curve and update the control lines
+/**
+ * draw
+ * 
+ * Draws the curve using the bezier function to draw segments of line to the
+ * scene.
+ */
 void Bezier::draw()
 {
     Q_CHECK_PTR(this->end_0);
@@ -195,8 +292,10 @@ void Bezier::draw()
     QPointF c = this->control_1->pos();
     QPointF d = this->end_1->pos();
 
-    // The number of samples (the entire widget line segment gets 2048 samples, each bezier gets a percentage of that)
-    int samples = (int)((this->end_1->pos().x() - this->end_0->pos().x()) * 2048 / 100);
+    // The number of samples (the entire widget line segment gets 2048 samples,
+    // each bezier gets a percentage of that)
+    int samples = (int)((this->end_1->pos().x()
+                         - this->end_0->pos().x()) * 2048 / 100);
 
     // Update control lines
     this->line_0->setLine(QLineF(a, b));
@@ -212,12 +311,19 @@ void Bezier::draw()
     {
         double perc = i / (double)samples;
         QPointF cur = bezier(perc, a, b, c, d);
-        this->curve.push_back(this->scene->addLine(QLineF(prev, cur), curve_pen));
+        this->curve.push_back(
+            this->scene->addLine(QLineF(prev, cur), curve_pen));
+
         prev = cur;
     }
 }
 
-// Clears the current curve
+/**
+ * clear
+ * 
+ * Clears the drawn lines from the scene, usually used for redrawing the updated
+ * curve.
+ */
 void Bezier::clear()
 {
     Q_CHECK_PTR(this->scene);
@@ -230,7 +336,15 @@ void Bezier::clear()
     this->curve.clear();
 }
 
-// Remove the elements of the bezier (curve, control points, and lines)
+/**
+ * remove
+ * 
+ * Removes the control elements from the scene (end points and ellipses). If the
+ * inputted flag is set to true the end points are not removed (used for 
+ * splitting a curve).
+ * 
+ * @param bool keep_ellipses : Whether or not to keep the end points.
+ */
 void Bezier::remove(bool keep_ellipses)
 {
     Q_CHECK_PTR(this->scene);
@@ -241,7 +355,8 @@ void Bezier::remove(bool keep_ellipses)
     Q_CHECK_PTR(this->line_0);
     Q_CHECK_PTR(this->line_1);
 
-    qDebug("Removing bezier, ellipse are kept ? (%s)", keep_ellipses ? "true" : "false");
+    qDebug("Removing bezier, ellipse are kept ? (%s)", keep_ellipses ? "true" 
+                                                                     : "false");
 
     this->clear();
 
@@ -256,7 +371,11 @@ void Bezier::remove(bool keep_ellipses)
     this->scene->removeItem(this->line_1);
 }
 
-// Hide the editing elements
+/**
+ * hide
+ * 
+ * Hides the control elements from the scene.
+ */
 void Bezier::hide()
 {
     Q_CHECK_PTR(this->end_0);
@@ -278,7 +397,11 @@ void Bezier::hide()
     this->line_1->hide();
 }
 
-// Show the editing elements
+/**
+ * show
+ * 
+ * Shows the control elements in the scene.
+ */
 void Bezier::show()
 {
     Q_CHECK_PTR(this->end_0);
@@ -300,7 +423,17 @@ void Bezier::show()
     this->line_1->show();
 }
 
-// Split the bezier curve in half
+/**
+ * split
+ * 
+ * Splits a bezier curve into two smaller connected bezier curves. It does not
+ * accurately match the original.
+ * 
+ * @returns Bezier* : A list of two bezier curves [Bezier, Bezier].
+ * 
+ * TODO: Make the split two bezier curves accurately represent the original
+ * curve.
+ */
 Bezier *Bezier::split()
 {
     qDebug("Splitting bezier");
@@ -315,7 +448,8 @@ Bezier *Bezier::split()
 
     Q_CHECK_PTR(this->scene);
 
-    // Get the mid point values of the control lines, used for generating new bezier values
+    // Get the mid point values of the control lines, used for generating new
+    // bezier values
     QLineF a(this->end_0->pos(), this->control_0->pos());
     QLineF b(this->end_1->pos(), this->control_1->pos());
     QLineF c(this->control_0->pos(), this->control_1->pos());
@@ -331,11 +465,27 @@ Bezier *Bezier::split()
     QPointF right = b.pointAt(0.5);
 
     // The new end point location
-    QPointF mid = bezier(0.5, this->end_0->pos(), this->control_0->pos(), this->control_1->pos(), this->end_1->pos());
+    QPointF mid = bezier(0.5,
+                         this->end_0->pos(),
+                         this->control_0->pos(),
+                         this->control_1->pos(),
+                         this->end_1->pos());
 
     // Create new end point and lines
-    QGraphicsEllipseItem *left_end_1 = this->scene->addEllipse(0, 0, this->radius, this->radius, this->end_pen, this->end_brush);
-    left_end_1->setTransform(QTransform(1.00, 0.00, 0.00, 1.00, -this->radius / 2.0f, -this->radius / 2.0f));
+    QGraphicsEllipseItem *left_end_1 = this->scene->addEllipse(0,
+                                                               0,
+                                                               this->radius,
+                                                               this->radius,
+                                                               this->end_pen,
+                                                               this->end_brush);
+
+    left_end_1->setTransform(QTransform(1.00,
+                                        0.00,
+                                        0.00,
+                                        1.00,
+                                        -this->radius / 2.0f,
+                                        -this->radius / 2.0f));
+
     left_end_1->setPos(mid - QPointF(this->radius / 2.0f, this->radius / 2.0f));
 
     // Create new beziers
@@ -390,12 +540,17 @@ Bezier *Bezier::split()
     return ret;
 }
 
-// =================================================================
-// =================================================================
-// =================================================================
+/******************************************************************************
+ *                             BEZIER FACTORY                                 *
+ ******************************************************************************/
 
-// Creates bezier classes with the same stylings
-// Default stylings
+/**
+ * BezierFactory
+ * 
+ * Creates the default factory with the default values.
+ * 
+ * @param QGraphicsScene* s : The reference scene for curves to draw on.
+ */
 BezierFactory::BezierFactory(QGraphicsScene *s) : scene(s)
 {
     this->line_pen.setColor(QColor(104, 160, 255, 100));
@@ -417,7 +572,24 @@ BezierFactory::BezierFactory(QGraphicsScene *s) : scene(s)
     this->end_brush.setColor(QColor(199, 155, 87, 150));
     this->end_brush.setStyle(Qt::SolidPattern);
 }
-// Overwritten stylings
+
+/**
+ * BezierFactory
+ * 
+ * Creates a new bezier factory with the overriden values.
+ * 
+ * @param QPen l_pen : The line pen (between control and end point).
+ * @param QPen c_pen : The control pen (outline on a control circle).
+ * @param QBrush c_brush : The control brush (fill).
+ * @param QPen e_pen : The end point pen (outline).
+ * @param QBrush e_brush : The end point brush (fill).
+ * @param QPen cu_pen : The curve pen (the bezier curve itself)
+ * @param float r : The radius of the control and end point circles.
+ * @param float c_thick : The control and end point outline thickness.
+ * @param float l_width : The width of the lines between control and end point.
+ * @param float c_width : The width of the lines that make up the curve.
+ * @param QGraphicsScene* s : The scene that draws the elements
+ */
 BezierFactory::BezierFactory(QPen l_pen,
                              QPen c_pen,
                              QBrush c_brush,
@@ -441,7 +613,18 @@ BezierFactory::BezierFactory(QPen l_pen,
       curve_width(c_width),
       scene(s) {}
 
-// Create a new bezier with the local stylings
+/**
+ * newBezier
+ * 
+ * Creates a new bezier with the internal stylings of the factory.
+ * 
+ * @param QPointF c_0 : The first control point.
+ * @param QPointF c_1 : The second control point.
+ * @param QGraphicsEllipseItem* e_0 : The pointer to the first end point.
+ * @param QGraphicsEllipseItem* e_1 : The pointer to the second end point.
+ * 
+ * @returns Bezier : The newly created bezier.
+ */
 Bezier BezierFactory::newBezier(QPointF c_0,
                                 QPointF c_1,
                                 QGraphicsEllipseItem *e_0,
@@ -462,27 +645,52 @@ Bezier BezierFactory::newBezier(QPointF c_0,
         c_0, c_1, e_0, e_1, this->scene);
 }
 
-// Create a new ellipse value (for end points shared between beziers)
+/**
+ * newEllipse
+ * 
+ * From a point the new ellipse is created using internal values.
+ * 
+ * @param QPointF pos : The position of the new ellipse.
+ * 
+ * @returns QGraphicsEllipseItem* : The pointer to the new ellipse item.
+ */
 QGraphicsEllipseItem *BezierFactory::newEllipse(QPointF pos)
 {
     Q_CHECK_PTR(this->scene);
     QGraphicsEllipseItem *item = this->scene->addEllipse(0,
                                                          0,
-                                                         this->radius, this->radius,
-                                                         this->end_pen, this->end_brush);
+                                                         this->radius,
+                                                         this->radius,
+                                                         this->end_pen,
+                                                         this->end_brush);
     item->setPos(pos);
-    item->setTransform(QTransform(1.00, 0.00, 0.00, 1.00, -this->radius / 2.0f, -this->radius / 2.0f));
+    item->setTransform(QTransform(1.00,
+                                  0.00,
+                                  0.00,
+                                  1.00,
+                                  -this->radius / 2.0f,
+                                  -this->radius / 2.0f));
     item->setZValue(1.0);
 
     return item;
 }
 
-// =================================================================
-// =================================================================
-// =================================================================
+/******************************************************************************
+ *                          BEZIER EDIT WIDGET                                *
+ ******************************************************************************/
 
-// Bezier editting widget
-BezierEditWidget::BezierEditWidget(int divs, QWidget *parent) : QGraphicsView(parent)
+/**
+ * BezierEditWidget
+ * 
+ * Creates the new bezier editing widget. Sets up the scene and view and creates
+ * a basic curve.
+ * 
+ * @param int divs : The number of section to display for the backround grid.
+ *                   Default is 4 (a 4x4 16 squares grid)
+ * @param QWidget* parent : The parent housing widget.
+ */
+BezierEditWidget::BezierEditWidget(int divs, QWidget *parent)
+    : QGraphicsView(parent)
 {
     qDebug("Creating new Bezier widget");
     // Create the scene and viewport
@@ -526,25 +734,40 @@ BezierEditWidget::BezierEditWidget(int divs, QWidget *parent) : QGraphicsView(pa
     // Text values
     QGraphicsTextItem *text = scene->addText("0"); // x = y = 0
     text->setPos(-14.00, 2.00);
-    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00)); // flip along y to counter entire scene flip
+    // flip along y to counter entire scene flip
+    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00));
 
     text = scene->addText("1"); // x = 1
     text->setPos(-14.00, 112.00);
-    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00)); // flip along y to counter entire scene flip
+    // flip along y to counter entire scene flip
+    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00));
 
     text = scene->addText("1"); // y = 1
     text->setPos(95.00, 2.00);
-    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00)); // flip along y to counter entire scene flip
+    // flip along y to counter entire scene flip
+    text->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00));
 
     // Default first curve
     QGraphicsEllipseItem *e_0 = this->_factory->newEllipse(QPointF(0.0f, 0.0f));
-    QGraphicsEllipseItem *e_1 = this->_factory->newEllipse(QPointF(100.0f, 100.0f));
+    QGraphicsEllipseItem *e_1 =
+        this->_factory->newEllipse(QPointF(100.0f, 100.0f));
 
-    this->_beziers.push_back(this->_factory->newBezier(QPointF(50.0f, 0.0f), QPointF(50.0f, 100.0f), e_0, e_1));
+    this->_beziers.push_back(
+        this->_factory->newBezier(
+            QPointF(50.0f, 0.0f), QPointF(50.0f, 100.0f), e_0, e_1));
 
     // Overdraw lines for 0 to min of first bezier, and max of last bezier to 100
-    this->_line_start = scene->addLine(0.00, 0.00, 0.00, 0.00, this->_factory->curve_pen);
-    this->_line_end = scene->addLine(100.00, 100.00, 100.00, 100.00, this->_factory->curve_pen);
+    this->_line_start = scene->addLine(0.00,
+                                       0.00,
+                                       0.00,
+                                       0.00,
+                                       this->_factory->curve_pen);
+
+    this->_line_end = scene->addLine(100.00,
+                                     100.00,
+                                     100.00,
+                                     100.00,
+                                     this->_factory->curve_pen);
 
     pen.setColor(QColor(0, 0, 0, 100));
     pen.setStyle(Qt::DashLine);
@@ -557,12 +780,22 @@ BezierEditWidget::BezierEditWidget(int divs, QWidget *parent) : QGraphicsView(pa
     this->_text_x = scene->addText("0.00");
     this->_text_x->setScale(0.75);
     this->_text_x->setPos(0.00, 117.00);
-    this->_text_x->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00));
+    this->_text_x->setTransform(QTransform(1.00,
+                                           0.00,
+                                           0.00,
+                                           -1.00,
+                                           0.00,
+                                           0.00));
 
     this->_text_y = scene->addText("0.00");
     this->_text_y->setScale(0.75);
     this->_text_y->setPos(100.00, 10.00);
-    this->_text_y->setTransform(QTransform(1.00, 0.00, 0.00, -1.00, 0.00, 0.00));
+    this->_text_y->setTransform(QTransform(1.00,
+                                           0.00,
+                                           0.00,
+                                           -1.00,
+                                           0.00,
+                                           0.00));
 
     // Hide editing elements
     this->_line_x->hide();
@@ -574,7 +807,18 @@ BezierEditWidget::BezierEditWidget(int divs, QWidget *parent) : QGraphicsView(pa
         this->_beziers[i].hide();
 }
 
-// Get the intersection value for a line
+/**
+ * intersect
+ * 
+ * Get the intersection of a line with the entire combined bezier curve. Returns
+ * true if the intersection was successful. pos is unchanged if the intersect
+ * fails.
+ * 
+ * @param QLineF line : The line to try and intersect with.
+ * @param QPointF* pos : The position of the intersection.
+ * 
+ * @returns bool : Whether or not the intersection was successful.
+ */
 bool BezierEditWidget::intersect(QLineF line, QPointF *pos)
 {
     Q_CHECK_PTR(this->_line_start);
@@ -585,7 +829,8 @@ bool BezierEditWidget::intersect(QLineF line, QPointF *pos)
     // Values for checks
     double x = line.p1().x();
     double b_min = this->_beziers[0].end_0->pos().x();
-    double b_max = this->_beziers[(int)this->_beziers.size() - 1].end_1->pos().x();
+    double b_max =
+        this->_beziers[(int)this->_beziers.size() - 1].end_1->pos().x();
 
     // If below the first bezier, use the left overdraw line
     if (this->_line_start->line().intersects(line, pos) && x < b_min)
@@ -603,7 +848,19 @@ bool BezierEditWidget::intersect(QLineF line, QPointF *pos)
     return false;
 }
 
-// Get the f(x) value, value is [0, 1] and returns [0, 1], hard clamps to [0, 1]
+/**
+ * valueAt
+ * 
+ * Get the resutling value as a function of y = f(x). X is clamped between 0 and
+ * 1. The value returned is (soft) expected to be between 0 and 1. Since the
+ * control points can go above and below y bounds of 0 and 1 the resulting curve
+ * can go beyond those bounds thus an f(x) can produce y values less than 0 or
+ * greater than 1 as well as between.
+ * 
+ * @param double value : The value to transform.
+ * 
+ * @returns double : The transformed value.
+ */
 double BezierEditWidget::valueAt(double value)
 {
     if (value < 0.00)
@@ -621,7 +878,14 @@ double BezierEditWidget::valueAt(double value)
     return 0.00;
 }
 
-// Save the bezier curves as a series of points
+/**
+ * save
+ * 
+ * Saves the points of the bezier curve in a std::vector for storage or for use
+ * in syncing multilple curves.
+ * 
+ * @returns std::vector<QPointF> : A list of points that make up the curve.
+ */
 std::vector<QPointF> BezierEditWidget::save()
 {
     qDebug("Saving curve data");
@@ -641,7 +905,14 @@ std::vector<QPointF> BezierEditWidget::save()
     return values;
 }
 
-// Restore the bezier curve from a series of points
+/**
+ * restore
+ * 
+ * Restores the state of the widget with a list of given values that make up
+ * the points of the curves.
+ * 
+ * @param std::vector<QPointF> values : The values of the curve.
+ */
 void BezierEditWidget::restore(std::vector<QPointF> values)
 {
     qDebug("Restoring curve data");
@@ -666,10 +937,14 @@ void BezierEditWidget::restore(std::vector<QPointF> values)
     QGraphicsEllipseItem *end_1 = this->_factory->newEllipse(values.front());
     values.erase(values.begin());
 
-    this->_beziers.push_back(this->_factory->newBezier(control_0, control_1, end_0, end_1));
+    this->_beziers.push_back(this->_factory->newBezier(control_0,
+                                                       control_1,
+                                                       end_0,
+                                                       end_1));
     end_0 = end_1;
 
-    // Create rest of the curves from the tuples of 3 points (and previous curve end point)
+    // Create rest of the curves from the tuples of 3 points (and previous curve
+    // end point)
     while (values.size() > 2)
     {
         control_0 = values.front();
@@ -681,7 +956,10 @@ void BezierEditWidget::restore(std::vector<QPointF> values)
         end_1 = this->_factory->newEllipse(values.front());
         values.erase(values.begin());
 
-        this->_beziers.push_back(this->_factory->newBezier(control_0, control_1, end_0, end_1));
+        this->_beziers.push_back(this->_factory->newBezier(control_0,
+                                                           control_1,
+                                                           end_0,
+                                                           end_1));
 
         end_0 = end_1;
     }
@@ -698,7 +976,11 @@ void BezierEditWidget::restore(std::vector<QPointF> values)
     this->_line_end->setLine(QLineF(x, y, 100.00, y));
 }
 
-// Removes the curves (used for restoring)
+/**
+ * _clear
+ * 
+ * Clears all the bezier curves (for restore).
+ */
 void BezierEditWidget::_clear()
 {
     for (int i = 0; i < (int)this->_beziers.size(); i++)
@@ -707,14 +989,29 @@ void BezierEditWidget::_clear()
     this->_beziers.clear();
 }
 
-// On resize update viewport
+/**
+ * resizeEvent
+ * 
+ * Resizes the view to fit the widget in the view keeping aspect ratio.
+ * 
+ * @param QResizeEvent* event : Unused parameter.
+ */
 void BezierEditWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
     this->fitInView(-50.00, -50.00, 150.00, 150.00, Qt::KeepAspectRatio);
 }
 
-// On move, update preview values, move control points (if clicked)
+/**
+ * mouseMoveEvent
+ * 
+ * When the mouse is moved, so long as a control element is selected it will be
+ * dragged and updating the widget. If the user is not manipulating a control
+ * element the widget draws a preview x and y axis showing what the y = f(x)
+ * would be along the curve.
+ * 
+ * @param QMouseEvent *event : The mouse move event.
+ */
 void BezierEditWidget::mouseMoveEvent(QMouseEvent *event)
 {
     Q_CHECK_PTR(this->_line_x);
@@ -750,10 +1047,13 @@ void BezierEditWidget::mouseMoveEvent(QMouseEvent *event)
     if (this->intersect(line, &pos))
     {
         this->_text_x->show();
-        this->_text_x->setPlainText(QString::asprintf("%0.2f", pos.x() / 100.0));
+        this->_text_x->setPlainText(
+            QString::asprintf("%0.2f", pos.x() / 100.0));
 
         this->_text_y->show();
-        this->_text_y->setPlainText(QString::asprintf("%0.2f", pos.y() / 100.0));
+        this->_text_y->setPlainText(
+            QString::asprintf("%0.2f", pos.y() / 100.0));
+
         this->_text_y->setPos(100.00, pos.y() + 13.00);
 
         this->_line_y->setLine(QLineF(0.00, pos.y(), 100.00, pos.y()));
@@ -765,7 +1065,8 @@ void BezierEditWidget::mouseMoveEvent(QMouseEvent *event)
         this->_text_y->hide();
     }
 
-    // If we are clicking (i.e. assumed editing control points, hide preview values)
+    // If we are clicking (i.e. assumed editing control points, hide preview
+    // values)
     if (event->buttons() == Qt::LeftButton)
     {
         this->_text_x->hide();
@@ -797,8 +1098,8 @@ void BezierEditWidget::mouseMoveEvent(QMouseEvent *event)
         min = 0.00;
         max = 100.00;
         // Clamping checks (if only one bezier, we are clamping a control point
-        // between a specific bezier curve, if two beziers, we are claming an end point
-        // and its matching control points)
+        // between a specific bezier curve, if two beziers, we are claming an
+        // end point and its matching control points)
         if (this->_bezier_0 && !this->_bezier_1)
         {
             min = this->_bezier_0->end_0->x();
@@ -863,8 +1164,17 @@ void BezierEditWidget::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-// On mouse press, select control points for moving, or collapse a control point to
-// its end point, or shift to move a control point out of an end point
+/**
+ * mousePressEvent
+ * 
+ * When the mouse is pressed it the user selects a control point its reference
+ * is saved as a pointer (along with any other needed objects) for manipulating
+ * the curve.
+ * 
+ * @param QMouseEvent* event : The mouse press event.
+ * 
+ * @signals curveChanged
+ */
 void BezierEditWidget::mousePressEvent(QMouseEvent *event)
 {
     Q_CHECK_PTR(this->_line_x);
@@ -892,17 +1202,19 @@ void BezierEditWidget::mousePressEvent(QMouseEvent *event)
             QGraphicsEllipseItem *e;
             if ((e = dynamic_cast<QGraphicsEllipseItem *>(items.at(i))))
             {
-                // If pressing shift, we keep looping to find a control, not end point,
-                // thus need to confirm we found a point, rather than break, breaking loops
+                // If pressing shift, we keep looping to find a control, not end
+                // point, thus need to confirm we found a point, rather than
+                // break, breaking loops
                 bool found = false;
                 // Find the containing beziers
                 for (int j = 0; j < (int)this->_beziers.size(); j++)
                 {
                     Bezier *b = &this->_beziers[j];
 
-                    // If we are control clicking and its a control point, collapse the control point to its
-                    // coresponding end point
-                    if (event->modifiers() == Qt::ControlModifier && (b->control_0 == e || b->control_1 == e))
+                    // If we are control clicking and its a control point,
+                    // collapse the control point to its coresponding end point
+                    if (event->modifiers() == Qt::ControlModifier
+                        && (b->control_0 == e || b->control_1 == e))
                     {
                         if (b->control_0 == e)
                             e->setPos(b->end_0->pos());
@@ -915,9 +1227,10 @@ void BezierEditWidget::mousePressEvent(QMouseEvent *event)
                         return;
                     }
 
-                    // If its an end point, and we are not shift clicking (ignore endpoints)
-                    // Setup controls to be affected
-                    if (b->end_0 == e && !event->modifiers().testFlag(Qt::ShiftModifier))
+                    // If its an end point, and we are not shift clicking
+                    // (ignore endpoints) Setup controls to be affected
+                    if (b->end_0 == e
+                        && !event->modifiers().testFlag(Qt::ShiftModifier))
                     {
                         this->_control = e;
                         this->_extra_1 = b->control_0;
@@ -925,7 +1238,8 @@ void BezierEditWidget::mousePressEvent(QMouseEvent *event)
                         found = true;
                         break;
                     }
-                    else if (b->end_1 == e && !event->modifiers().testFlag(Qt::ShiftModifier))
+                    else if (b->end_1 == e
+                             && !event->modifiers().testFlag(Qt::ShiftModifier))
                     {
                         this->_control = e;
                         this->_extra_0 = b->control_1;
@@ -948,7 +1262,17 @@ void BezierEditWidget::mousePressEvent(QMouseEvent *event)
     }
 }
 
-// On release, remove control pointers
+/**
+ * mouseReleaseEvent
+ * 
+ * When the mouse button is released the pointers to the control elements being
+ * manipulated are set to null, and the curve changed event is emitted to allow
+ * for calculations with the curve to begin again.
+ * 
+ * @param QMouseEvent* event : The mouse release event. (unused)
+ * 
+ * @signals curveChanged
+ */
 void BezierEditWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
@@ -969,7 +1293,13 @@ void BezierEditWidget::mouseReleaseEvent(QMouseEvent *event)
     emit this->curveChanged();
 }
 
-// On enter, show control and preview elements
+/**
+ * enterEvent
+ * 
+ * When the mouse enters the widget the editing controls are shown.
+ * 
+ * @param QEvent* event : Unused event.
+ */
 void BezierEditWidget::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
@@ -987,7 +1317,13 @@ void BezierEditWidget::enterEvent(QEvent *event)
         this->_beziers[i].show();
 }
 
-// On leave, hide control and preview elements
+/**
+ * leaveEvent
+ * 
+ * When the mouse leaves the widget the control elements are hidden.
+ * 
+ * @param QEvent* event : Unused event.
+ */
 void BezierEditWidget::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
@@ -1005,7 +1341,15 @@ void BezierEditWidget::leaveEvent(QEvent *event)
         this->_beziers[i].hide();
 }
 
-// On delete, remove extra beziers (1 min)
+/**
+ * keyPressEvent
+ * 
+ * When the user pressed the X key while hovering over a control point that
+ * control point is placed at the exact same spot as its corresponding end
+ * point.
+ * 
+ * @param QKeyEvent* event : The key press event.
+ */
 void BezierEditWidget::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() != Qt::Key_X)
@@ -1049,15 +1393,29 @@ void BezierEditWidget::keyPressEvent(QKeyEvent *event)
             }
             // Update the overdraw lines
             QPointF start = this->_beziers[0].end_0->pos();
-            QPointF end = this->_beziers[(int)this->_beziers.size() - 1].end_1->pos();
+            QPointF end =
+                this->_beziers[(int)this->_beziers.size() - 1].end_1->pos();
 
-            this->_line_start->setLine(QLineF(0.00, start.y(), start.x(), start.y()));
+            this->_line_start->setLine(QLineF(0.00,
+                                              start.y(),
+                                              start.x(),
+                                              start.y()));
+
             this->_line_end->setLine(QLineF(end.x(), end.y(), 100.00, end.y()));
         }
     }
 }
 
-// On double click find bezier double clicked and split
+/**
+ * mouseDoubleClickEvent
+ * 
+ * When the user double clicks on the widget the bezier curve within the x pos
+ * of the click is split calling its split function.
+ * 
+ * @param QMouseEvent* event : The mouse double click event.
+ * 
+ * @signals curveChanged
+ */
 void BezierEditWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QPointF pos = this->mapToScene(event->pos());
@@ -1065,7 +1423,8 @@ void BezierEditWidget::mouseDoubleClickEvent(QMouseEvent *event)
     for (int i = 0; i < (int)this->_beziers.size(); i++)
     {
         // Split the bezier into two
-        if (this->_beziers[i].end_0->pos().x() <= pos.x() && pos.x() < this->_beziers[i].end_1->pos().x())
+        if (this->_beziers[i].end_0->pos().x() <= pos.x()
+            && pos.x() < this->_beziers[i].end_1->pos().x())
         {
             Bezier *beziers = this->_beziers[i].split();
             this->_beziers[i] = beziers[0];

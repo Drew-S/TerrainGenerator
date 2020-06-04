@@ -1,34 +1,46 @@
 #pragma once
 
-#include <QWidget>
-#include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-#include <QWheelEvent>
-#include <QMouseEvent>
-#include <QPoint>
-#include <QImage>
-#include <QSlider>
 #include <QDial>
+#include <QImage>
+#include <QMouseEvent>
+#include <QOpenGLFunctions>
+#include <QOpenGLWidget>
+#include <QPoint>
+#include <QSlider>
+#include <QWheelEvent>
+#include <QWidget>
 
-#include "./terrain.h"
 #include "./camera.h"
 #include "./light.h"
+#include "./terrain.h"
 
-// Custom OpenGL widget that manages and renders the OpenGL context to the widget
+/**
+ * OpenGL
+ * 
+ * Custom OpenGL management widget over the QOpenGLWidget. Manages the terrain
+ * light and cameras. Displays the resulting widget
+ */
 class OpenGL : public QOpenGLWidget
 {
 public:
+    // Create the widget
     explicit OpenGL(QWidget *parent = 0);
+
+    // Delete the widget
     ~OpenGL();
 
+    // Set terrain values
+    // TODO: Use SETTINGS instead
     void setTerrainDrawLines(bool lines);
     void setTerrainColor(QColor color);
     void setTerrainLineColor(QColor color);
     void setTerrainMeshResolution(int resolution);
 
+    // Set light values
     void setSkyColor(QColor color);
     void setLightColor(QColor color);
 
+    // Get values
     bool terrainDrawLines();
     QColor terrainColor();
     QColor terrainLineColor();
@@ -72,7 +84,8 @@ private:
     // Light handler
     Light *_light;
 
-    // Previous position for createing relative mouse movement data in mouseMoveEvent
+    // Previous position for createing relative mouse movement data in
+    // mouseMoveEvent
     QPoint _prev;
 
     // Pointer for the overlay controls

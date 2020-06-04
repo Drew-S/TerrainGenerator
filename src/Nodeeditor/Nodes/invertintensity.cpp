@@ -2,47 +2,98 @@
 
 #include <QDebug>
 
+/**
+ * ConverterInvertIntensityNode
+ * 
+ * Create the node.
+ */
 ConverterInvertIntensityNode::ConverterInvertIntensityNode()
 {
     qDebug("Created intensity inverting node");
 }
 
-ConverterInvertIntensityNode::~ConverterInvertIntensityNode() {}
-
-// The name of the node in the widget
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
 QString ConverterInvertIntensityNode::caption() const
 {
     return QString("Invert");
 }
 
-// The name of the node in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString ConverterInvertIntensityNode::name() const
 {
     return QString("Invert");
 }
 
-// No control widget, simple inverse function
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *ConverterInvertIntensityNode::embeddedWidget()
 {
     return nullptr;
 }
 
-// 1 in and out port
-unsigned int ConverterInvertIntensityNode::nPorts(QtNodes::PortType port_type) const
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
+unsigned int
+ConverterInvertIntensityNode::nPorts(QtNodes::PortType port_type) const
 {
     Q_UNUSED(port_type);
     return 1;
 }
 
-// The port types are intensity maps
-QtNodes::NodeDataType ConverterInvertIntensityNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+ConverterInvertIntensityNode::dataType(QtNodes::PortType port_type,
+                                       QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_type);
     Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
-// Save the node
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject ConverterInvertIntensityNode::save() const
 {
     QJsonObject data;
@@ -50,21 +101,46 @@ QJsonObject ConverterInvertIntensityNode::save() const
     return data;
 }
 
-// Restore the node
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object. (unused data)
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ */
 void ConverterInvertIntensityNode::restore(QJsonObject const &data)
 {
     Q_UNUSED(data);
 }
 
-// Return the generated output
-std::shared_ptr<QtNodes::NodeData> ConverterInvertIntensityNode::outData(QtNodes::PortIndex port)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
+std::shared_ptr<QtNodes::NodeData>
+ConverterInvertIntensityNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_output);
 }
 
-// Set the input intensity map
-void ConverterInvertIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void ConverterInvertIntensityNode::setInData(
+    std::shared_ptr<QtNodes::NodeData> node_data,
+    QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     if (node_data)
@@ -75,8 +151,18 @@ void ConverterInvertIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> 
     }
 }
 
-// On delete set to use the default output
-void ConverterInvertIntensityNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+/**
+ * inputConnectionDeleted @slot
+ * 
+ * Called when an input connection is deleted, this usually resets some data and
+ * regenerates the output data.
+ * 
+ * @param QtNodes::Connection const& connection : The connection being deleted.
+ * 
+ * @signals dataUpdated
+ */
+void ConverterInvertIntensityNode::inputConnectionDeleted(
+    QtNodes::Connection const &connection)
 {
     Q_UNUSED(connection);
     this->_set = false;
@@ -84,8 +170,13 @@ void ConverterInvertIntensityNode::inputConnectionDeleted(QtNodes::Connection co
     emit this->dataUpdated(0);
 }
 
-// Inverts an intensity map v' = (1 - v) since the application should be working with values
-// between 0-1
+/**
+ * _generate
+ * 
+ * Generates the output data from the supplied and available data.
+ * 
+ * @signals dataUpdated
+ */
 void ConverterInvertIntensityNode::_generate()
 {
     qDebug("Inverting intensity map");

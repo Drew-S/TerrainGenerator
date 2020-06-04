@@ -4,22 +4,22 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-// Converts intensity map bay taking in a height value (x) and applying a curve
-// function f(x) to get a new height value y = f(x).
-// Bezier curve control points are limited to be within in the end points x values
-// thus ensuring they do not violate the vertical line test, the y = f(x) is solved
-// using line intersection against the line segments of the bezier curve
-// the widget has 2048 samples within in the range of 0 to 1 when drawing the lines
-// (each line is from between these samples), this helps to keep high accuracy when
-// doing the vertical line intersection. No real way to get a perfect f(x) function.
+/**
+ * ConverterBezierCurveNode
+ * 
+ * Creates a bezier curve node and creates the control widgets.
+ */
 ConverterBezierCurveNode::ConverterBezierCurveNode()
 {
     this->_widget = new BezierEditWidget();
     this->_shared_widget = new BezierEditWidget();
 }
-ConverterBezierCurveNode::~ConverterBezierCurveNode() {}
 
-// Node is created, attach listeners
+/**
+ * created
+ * 
+ * Function is called when the node is created so it can connect to listeners.
+ */
 void ConverterBezierCurveNode::created()
 {
     Q_CHECK_PTR(this->_widget);
@@ -34,7 +34,10 @@ void ConverterBezierCurveNode::created()
             return;
         }
     });
-    QObject::connect(this->_shared_widget, &BezierEditWidget::curveChanged, [this]() {
+    QObject::connect(this->_shared_widget,
+                     &BezierEditWidget::curveChanged,
+                     [this]()
+    {
         Q_CHECK_PTR(this->_widget);
         Q_CHECK_PTR(this->_shared_widget);
         this->_widget->restore(this->_shared_widget->save());
@@ -46,54 +49,117 @@ void ConverterBezierCurveNode::created()
     });
 }
 
-// Title shown at the top of the node
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
 QString ConverterBezierCurveNode::caption() const
 {
     return QString("Slope and Curve");
 }
 
-// Title shown in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString ConverterBezierCurveNode::name() const
 {
     return QString("Slope and Curve transform");
 }
 
-// The embedded control widget
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *ConverterBezierCurveNode::embeddedWidget()
 {
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
-// The shared control widget
+
+/**
+ * sharedWidget
+ * 
+ * Returns a pointer to the widget that gets displayed in the properties panel.
+ * 
+ * @returns QWidget* : The shared widget.
+ */
 QWidget *ConverterBezierCurveNode::sharedWidget()
 {
     Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
-// Get the number of ports (1 output, 4 input)
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
 unsigned int ConverterBezierCurveNode::nPorts(QtNodes::PortType port_type) const
 {
     Q_UNUSED(port_type);
     return 1;
 }
 
-// Get the port datatype
-QtNodes::NodeDataType ConverterBezierCurveNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+ConverterBezierCurveNode::dataType(QtNodes::PortType port_type,
+                                   QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_type);
     Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
-// Get the output data (the VectorMapData)
-std::shared_ptr<QtNodes::NodeData> ConverterBezierCurveNode::outData(QtNodes::PortIndex port)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
+std::shared_ptr<QtNodes::NodeData>
+ConverterBezierCurveNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_output);
 }
 
-// Save and load the node
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject ConverterBezierCurveNode::save() const
 {
     Q_CHECK_PTR(this->_widget);
@@ -114,6 +180,14 @@ QJsonObject ConverterBezierCurveNode::save() const
     data["values"] = values;
     return data;
 }
+
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object.
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ */
 void ConverterBezierCurveNode::restore(QJsonObject const &data)
 {
     Q_CHECK_PTR(this->_widget);
@@ -134,8 +208,18 @@ void ConverterBezierCurveNode::restore(QJsonObject const &data)
     this->_shared_widget->restore(save_data);
 }
 
-// When the input is deleted, use default output
-void ConverterBezierCurveNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+/**
+ * inputConnectionDeleted @slot
+ * 
+ * Called when an input connection is deleted, this usually resets some data and
+ * regenerates the output data.
+ * 
+ * @param QtNodes::Connection const& connection : The connection being deleted.
+ * 
+ * @signals dataUpdated
+ */
+void ConverterBezierCurveNode::inputConnectionDeleted(
+    QtNodes::Connection const &connection)
 {
     Q_UNUSED(connection);
     this->_output = IntensityMap(1, 1, 1.00);
@@ -143,8 +227,18 @@ void ConverterBezierCurveNode::inputConnectionDeleted(QtNodes::Connection const 
     emit this->dataUpdated(0);
 }
 
-// Set the input node
-void ConverterBezierCurveNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void ConverterBezierCurveNode::setInData(
+    std::shared_ptr<QtNodes::NodeData> node_data,
+    QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
 
@@ -156,7 +250,13 @@ void ConverterBezierCurveNode::setInData(std::shared_ptr<QtNodes::NodeData> node
     }
 }
 
-// Generate output
+/**
+ * _generate
+ * 
+ * Generates the output data from the supplied and available data.
+ * 
+ * @signals dataUpdated
+ */
 void ConverterBezierCurveNode::_generate()
 {
     Q_CHECK_PTR(this->_input);

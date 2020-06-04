@@ -2,9 +2,23 @@
 
 #include <QDebug>
 
-IntensityMap::IntensityMap(){};
+/**
+ * IntensityMap
+ * 
+ * Creates a new empty map.
+ */
+IntensityMap::IntensityMap() {}
 
-// Set initial size without data
+/**
+ * IntensityMap
+ *
+ * Create a new intensity map with a fixed size. The fill value inherits the
+ * default value. Fill is used instead of an array of values if the entire map
+ * is the same "colour."
+ *
+ * @param int width : The width of the map;
+ * @param int height : The height of the map;
+ */
 IntensityMap::IntensityMap(int width, int height)
 {
     Q_ASSERT(width > 0);
@@ -14,7 +28,15 @@ IntensityMap::IntensityMap(int width, int height)
     this->height = height;
 }
 
-// Set initial size with a fill value
+/**
+ * IntensityMap
+ *
+ * Create a new intensity map with a fixed size and a specific fill value.
+ *
+ * @param int width : The width of the map.
+ * @param int height : The height of the map.
+ * @param double fill : The fill value of the entire map.
+ */
 IntensityMap::IntensityMap(int width, int height, double fill)
 {
     Q_ASSERT(width > 0);
@@ -26,34 +48,73 @@ IntensityMap::IntensityMap(int width, int height, double fill)
     this->_use_fill = true;
 }
 
-// Set size and values from a 1D vector array
+/**
+ * IntensityMap
+ *
+ * Create a new intensity map with a set size and with the mapped fill values
+ * for each pixel being set.
+ *
+ * @param int width : The width of the map.
+ * @param int height : The height of the map.
+ * @param std::vector<double> values : Each individual pixel value.
+ */
 IntensityMap::IntensityMap(int width, int height, std::vector<double> values)
 {
     Q_ASSERT(width > 0);
     Q_ASSERT(height > 0);
-    qDebug("Creating Intensity Map with data: (%dx%d), %d pixels set", width, height, width * height);
+    qDebug("Creating Intensity Map with data: (%dx%d), %d pixels set",
+           width,
+           height,
+           width * height);
+
     this->width = width;
     this->height = height;
     this->values = values;
 }
 
-// Create intensity map from image, using provided channel
+/**
+ * IntensityMap
+ *
+ * Create the intensity map from a supplied image. The channel selected
+ * determines how to select the value for the intensity for each pixel.
+ *
+ * @param QImage image : The input image to create map from.
+ * @param IntensityMap::Channel channel : The channel to select value.
+ *                                        RED, GREEN, BLUE, ALPHA,
+ *                                        AVERAGE ((r + b + g + a) / 4),
+ *                                        MIN (smallest channel), MAX (largest)
+ */
 IntensityMap::IntensityMap(QImage image, IntensityMap::Channel channel)
 {
     qDebug("Creating Intensity Map from QImage");
     this->_saveImage(image, channel);
 }
 
-// Create intensity map from pixmap, using provided channel
+/**
+ * IntensityMap
+ *
+ * Create the intensity map from a supplied pixmap. See IntensityMap above for
+ * image to see how this works the same.
+ *
+ * @param QPixmap pixmap : The input puxmap to create map from.
+ * @param IntensityMap::Channel channel : The channel to select pixel value.
+ */
 IntensityMap::IntensityMap(QPixmap image, IntensityMap::Channel channel)
 {
     qDebug("Creating Intensity Map from QPixmap");
     this->_saveImage(image.toImage(), channel);
 }
 
-IntensityMap::~IntensityMap() {}
-
-// Convert the intensity map to an image
+/**
+ * toImage
+ *
+ * Returns the intensity map as an image with the value copied across all
+ * channels.
+ *
+ * @param bool print_qimage : Debugging option, the user should not use this.
+ *
+ * @returns QImage : The image.
+ */
 QImage IntensityMap::toImage(bool print_qimage)
 {
     // Small debugging fix, since pixmap uses qimage to get data,
@@ -63,7 +124,10 @@ QImage IntensityMap::toImage(bool print_qimage)
     QImage image(this->width, this->height, QImage::Format_RGBA64);
     if (this->usingFill())
     {
-        image.fill(QColor::fromRgbF(this->_fill, this->_fill, this->_fill, this->_fill));
+        image.fill(QColor::fromRgbF(this->_fill,
+                                    this->_fill,
+                                    this->_fill,
+                                    this->_fill));
     }
     else
     {
@@ -80,22 +144,48 @@ QImage IntensityMap::toImage(bool print_qimage)
     return image;
 }
 
-// Convert the intensity map to a pixmap
+/**
+ * toPixmap
+ *
+ * Returns the intensity as a pixmap for display.
+ *
+ * @returns QPixmap : The pixmap.
+ */
 QPixmap IntensityMap::toPixmap()
 {
     qDebug("Converting Intensity map to QPixmap");
     return QPixmap::fromImage(this->toImage(false));
 }
 
-// Get a value at a specific index, returns the fill color if beyond bounds
-// or empty pixels
+/**
+ * scaled
+ *
+ * Scales the intensity map into a new value. This uses a QImage under the hood
+ * to take advantage of Qt image scaling with linear interpolation.
+ *
+ * @param int width : The new width to scale to.
+ * @param int height : The new height to scale to.
+ *
+ * @returns IntensityMap : The new updated intensity map.
+ */
 IntensityMap IntensityMap::scaled(int width, int height)
 {
     QImage image = this->toImage().scaled(width, height);
     return IntensityMap(image, IntensityMap::AVERAGE);
 }
 
-// Apply a transformation function on a per pixel basis
+/**
+ * transform
+ *
+ * Returns a new intensity map using a tranformation function with a fixed value
+ * by applying the function with the value to each pixel.
+ *
+ * @param [](double, double){} -> double : The function that applies the
+ *                                         transformation.
+ * @param double value : The fixed value used in the function.
+ *
+ * @returns IntensityMap : The new transformed intensity map.
+ */
 IntensityMap IntensityMap::transform(double func(double, double), double value)
 {
     IntensityMap map;
@@ -114,14 +204,26 @@ IntensityMap IntensityMap::transform(double func(double, double), double value)
     return map;
 }
 
-// Apply a transformation function on a per pixel basis
-IntensityMap IntensityMap::transform(double func(double, double), IntensityMap *map)
+/**
+ * transform
+ *
+ * Tranform the intensity map pixel by pixel by appling the provided function
+ * with another intensity map.
+ *
+ * @param [](double, double){} -> double : The transformation function.
+ * @param IntensityMap* map : The other map to apply the transformation with.
+ *
+ * @returns IntensityMap : The newly transformed function.
+ */
+IntensityMap IntensityMap::transform(double func(double, double),
+                                     IntensityMap *map)
 {
     Q_CHECK_PTR(map);
     IntensityMap out;
     if (this->usingFill() && map->usingFill())
     {
-        out = IntensityMap(this->width, this->height, func(this->_fill, map->at(0, 0)));
+        out = IntensityMap(this->width, this->height,
+                           func(this->_fill, map->at(0, 0)));
     }
     else
     {
@@ -134,7 +236,17 @@ IntensityMap IntensityMap::transform(double func(double, double), IntensityMap *
     return out;
 }
 
-// Get a value a specific index (clamps to 0.00)
+/**
+ * at
+ *
+ * Get the value at a specific index of the map. If the requested index is
+ * beyond the bounds of the map the fill value is returned instead.
+ *
+ * @param int x : The column.
+ * @param int y : The row.
+ *
+ * @returns double : The intensity at the specified index.
+ */
 double IntensityMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
@@ -147,12 +259,28 @@ double IntensityMap::at(int x, int y)
     return this->values[index];
 }
 
+/**
+ * usingFill
+ *
+ * Returns true if the intensity map is using the fill value. i.e. no pixel
+ * manipulation has occured, it is a solid value map.
+ *
+ * @returns bool : Whether or not the map is only using fill.
+ */
 bool IntensityMap::usingFill()
 {
     return this->_use_fill;
 }
 
-// Append a value to the end of the array
+/**
+ * append
+ *
+ * Appends a value to the end of the values list of intensities.
+ *
+ * @param double value : The value to be appended.
+ *
+ * @returns bool : Whether the value was appended or not.
+ */
 bool IntensityMap::append(double value)
 {
     if ((int)this->values.size() >= this->width * this->height)
@@ -163,7 +291,17 @@ bool IntensityMap::append(double value)
     return true;
 }
 
-// Set a specific value for an index
+/**
+ * set
+ *
+ * Overrides a specific intensity value at a the specififed index.
+ *
+ * @param int x : The column.
+ * @param int y : The row.
+ * @param double value : The value to be overriding with.
+ *
+ * @returns bool : Wether the value was overridden or not.
+ */
 bool IntensityMap::set(int x, int y, double value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
@@ -175,7 +313,15 @@ bool IntensityMap::set(int x, int y, double value)
     return true;
 }
 
-// Used for convert image to intensity map
+/**
+ * _saveImage
+ *
+ * Helper function used to convert a supplied QImage (or QPixmap that is casted
+ * into a QImage) into an intensity map.
+ *
+ * @param QImage image : The image used to pull information from.
+ * @param IntensityMap::Channel channel : The channel to create the map from.
+ */
 void IntensityMap::_saveImage(QImage image, IntensityMap::Channel channel)
 {
     this->width = image.width();

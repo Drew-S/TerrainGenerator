@@ -7,24 +7,25 @@
 #include <nodes/NodeDataModel>
 #include <nodes/Connection>
 
-#include "ui_Output.h"
-
-// Normal map generator
-#include "./Normal/normal.h"
-
-#include "../Datatypes/pixmap.h"
-
 #include "../Datatypes/intensitymap.h"
-
+#include "../Datatypes/pixmap.h"
+#include "./Normal/normal.h"
 #include "node.h"
 
-// Node for managing the final output of the pipeline
-// Node that will generated normal map
+#include "ui_Output.h"
+
+/**
+ * OutputNode
+ * 
+ * The final node that takes the generated height map, generates a normal map,
+ * and informs to display the changes.
+ */
 class OutputNode : public Node
 {
+    Q_OBJECT
 public:
+    // Create the node
     OutputNode();
-    ~OutputNode();
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -32,7 +33,7 @@ public:
     // Title shown in the selection list
     QString name() const override;
 
-    // The image label that is embedded in the node
+    // The embedded widget in the node
     QWidget *embeddedWidget();
 
     // Get the number of ports (0 output, 1 input)

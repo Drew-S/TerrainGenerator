@@ -4,11 +4,24 @@
 
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
+#define MAX_IMAGE 8192
+#define MAX_MESH 256
+
 // Setup data for singleton
 bool Settings::_instance = false;
 Settings *Settings::_single = nullptr;
 
-// Create settings and setup default data
+/**
+ * Settings
+ * 
+ * Create a settings singleton instance. Create a temp directory used for the
+ * entire application. Gets the asset directory locations (if the
+ * DEVELOPMENT_MODE or TEST_MODE compile option is set, we use the development
+ * directory of assets). Depending on the platform (windows/linux/macos) the
+ * asset directories are set accordingly. First, there is the system directory
+ * which houses built in stencils and other assets, then the user directory
+ * where the user can supply their own stencils and other assets.
+ */
 Settings::Settings()
 {
     this->_tmp_dir = new QTemporaryDir(QDir::cleanPath(QDir::tempPath() + QString("/TerrainGenerator_XXXXXX")));
@@ -35,12 +48,24 @@ Settings::Settings()
 #endif
 }
 
+/**
+ * ~Settings
+ * 
+ * Sets that no settings singleton is used. Deletes the singleton.
+ */
 Settings::~Settings()
 {
     _instance = false;
 }
 
-// Get/create a reference to the settings instance
+/**
+ * getInstance
+ * 
+ * Get the singleton settings instance. If the singleton does not exist yet, it
+ * is created.
+ * 
+ * @returns Settings * :  The setttings singleton.
+ */
 Settings *Settings::getInstance()
 {
     if (!_instance)
@@ -52,13 +77,33 @@ Settings *Settings::getInstance()
     return _single;
 }
 
-// Get the temp directory
+/******************************************************************************
+ *                                 GETTERS                                    *
+ ******************************************************************************/
+
+/**
+ * tmpDir
+ * 
+ * Get the temporary directory of the running application, this uses the system
+ * temp directory (/tmp on linux).
+ * 
+ * @returns QDir : The directory object of the temp directory.
+ */
 QDir Settings::tmpDir()
 {
     Q_CHECK_PTR(this->_tmp_dir);
     return QDir(this->_tmp_dir->path());
 }
 
+/**
+ * getAssetDirectories
+ * 
+ * Get the list of directories that houses the asset information (1 test/default
+ * directory if in development/test mode, 2 in normal use case - system and user
+ * directories).
+ * 
+ * @returns std::vector<QDir> : A list of asset directories.
+ */
 std::vector<QDir> Settings::getAssetDirectories()
 {
     std::vector<QDir> assets;
@@ -71,39 +116,97 @@ std::vector<QDir> Settings::getAssetDirectories()
     return assets;
 }
 
+/**
+ * renderMode
+ * 
+ * Get the current render mode (flag).
+ * 
+ * @returns bool : Wether or not we are using render mode.
+ */
 bool Settings::renderMode()
 {
     return this->_render_mode;
 }
 
+/**
+ * previewResolution
+ * 
+ * Returns the preview resolution (single edge as we are using square textures).
+ * 
+ * @returns int : The resolution to be used in images.
+ */
 int Settings::previewResolution()
 {
     Q_BETWEEN(1, this->_preview_resolution, 8192);
     return this->_preview_resolution;
 }
 
+/**
+ * renderResolution
+ * 
+ * Returns the render resolution (single edge as we are using square textures).
+ * 
+ * @returns int : The resolution to be used in images.
+ */
 int Settings::renderResolution()
 {
     Q_BETWEEN(1, this->_render_resolution, 8192);
     return this->_render_resolution;
 }
 
+/**
+ * meshResolution
+ * 
+ * Returns the mesh resolution (single edge) that is used for the terrain
+ * geometry (number of vertices along one side).
+ * 
+ * @returns int : The resolution to be used in vertex generation.
+ */
 int Settings::meshResolution()
 {
     Q_BETWEEN(1, this->_mesh_resolution, 256);
     return this->_mesh_resolution;
 }
 
+/**
+ * packImages
+ * 
+ * Returns flag as to wether or not we are to pack external textures within the
+ * project save file
+ * 
+ * @returns bool : Wether or not to pack images in with the project folder.
+ */
 bool Settings::packImages()
 {
     return this->_pack_images;
 }
 
+/**
+ * percentProgressText
+ * 
+ * Flag as for the UI as to wether or not progress bars should show the
+ * percentage text (off by default).
+ * 
+ * @returns bool : Wether or not to display percentage text.
+ */
 bool Settings::percentProgressText()
 {
     return this->_percent_progress_text;
 }
 
+/******************************************************************************
+ *                                 SETTERS                                    *
+ ******************************************************************************/
+
+/**
+ * setRenderMode
+ * 
+ * Sets the render mode flag.
+ * 
+ * @param bool mode : The render mode flag to use.
+ * 
+ * @signals renderModeChanged
+ */
 void Settings::setRenderMode(bool mode)
 {
     this->_render_mode = mode;
@@ -111,42 +214,85 @@ void Settings::setRenderMode(bool mode)
 
 // Signals from settings are causing fatal errors during testing,
 // signals in other files work fine, signals in settings work fine during normal
-// operation
+// operation, as such signals here are disabled.
 #ifndef TEST_MODE
     emit this->renderModeChanged(mode);
 #endif
 }
 
+/**
+ * setPreviewResolution
+ * 
+ * Set the preview resolution. Limited between 1 and MAX_IMAGE (8192).
+ * 
+ * @param int resolution : The new preview image resolution.
+ * 
+ * @signals previewResolutionChanged
+ */
 void Settings::setPreviewResolution(int resolution)
 {
-    this->_preview_resolution = resolution < 1 ? 1 : (resolution > 8192 ? 8192 : resolution);
-    Q_BETWEEN(1, this->_preview_resolution, 8192);
+    this->_preview_resolution =
+        resolution < 1 ? 1 : (resolution > MAX_IMAGE ? MAX_IMAGE : resolution);
+
+    Q_BETWEEN(1, this->_preview_resolution, MAX_IMAGE);
     qDebug("Preview Resolution changed %d", this->_preview_resolution);
 #ifndef TEST_MODE
     emit this->previewResolutionChanged(this->_preview_resolution);
 #endif
 }
 
+/**
+ * setRenderResolution
+ * 
+ * Set the render resolution. Limited between 1 and MAX_IMAGE (8192).
+ * 
+ * @param int resolution : The new render image resolution.
+ * 
+ * @signals renderResolutionChanged
+ */
 void Settings::setRenderResolution(int resolution)
 {
-    this->_render_resolution = resolution < 1 ? 1 : (resolution > 8192 ? 8192 : resolution);
-    Q_BETWEEN(1, this->_render_resolution, 8192);
+    this->_render_resolution =
+        resolution < 1 ? 1 : (resolution > MAX_IMAGE ? MAX_IMAGE : resolution);
+
+    Q_BETWEEN(1, this->_render_resolution, MAX_IMAGE);
     qDebug("Preview Resolution changed %d", this->_render_resolution);
 #ifndef TEST_MODE
     emit this->renderResolutionChanged(this->_render_resolution);
 #endif
 }
 
+/**
+ * setMeshResolution
+ * 
+ * Set the mesh resolution. Limited between 1 and MAX_MESH (256).
+ * 
+ * @param int resolution : The new mesh terrain resolution.
+ * 
+ * @signals meshResolutionChanged
+ */
 void Settings::setMeshResolution(int resolution)
 {
-    this->_mesh_resolution = resolution < 1 ? 1 : (resolution > 256 ? 265 : resolution);
-    Q_BETWEEN(1, this->_mesh_resolution, 256);
+    this->_mesh_resolution =
+        resolution < 1 ? 1 : (resolution > MAX_MESH ? MAX_MESH : resolution);
+
+    Q_BETWEEN(1, this->_mesh_resolution, MAX_MESH);
     qDebug("Preview Resolution changed %d", this->_mesh_resolution);
 #ifndef TEST_MODE
     emit this->meshResolutionChanged(this->_mesh_resolution);
 #endif
 }
 
+/**
+ * setPackImages
+ * 
+ * Set the flag for whether or not to pack external texture files in with the
+ * save file.
+ * 
+ * @param bool mode : The flag as to whether or not to pack images.
+ * 
+ * @signals packImagesChanged
+ */
 void Settings::setPackImages(bool mode)
 {
     this->_pack_images = mode;
@@ -156,10 +302,20 @@ void Settings::setPackImages(bool mode)
 #endif
 }
 
+/**
+ * setPercentProgressText
+ * 
+ * Set whether or not to show the percentage progress value with progress bars.
+ * 
+ * @param bool mode : The flag as to whether or not to use percentage with
+ *                    progress bars.
+ */
 void Settings::setPercentProgressText(bool mode)
 {
     this->_percent_progress_text = mode;
-    qDebug("Show progress bar percents (%s)?", this->_percent_progress_text ? "true" : "false");
+    qDebug("Show progress bar percents (%s)?",
+        this->_percent_progress_text ? "true" : "false");
+        
 #ifndef TEST_MODE
     emit this->percentProgressTextChanged(this->_percent_progress_text);
 #endif

@@ -1,17 +1,20 @@
 #include "light.h"
 
-#include <QOpenGLShader>
-#include <QOpenGLBuffer>
 #include <QMatrix>
+#include <QOpenGLBuffer>
+#include <QOpenGLShader>
 
 #include <GL/gl.h>
 
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
-Light::Light() {}
-Light::~Light() {}
-
-// Get the position of the light in world coordinates
+/**
+ * position
+ * 
+ * Return the position of the sun in the world space.
+ * 
+ * @returns QVector3D : The position of the sun.
+ */
 QVector3D Light::position()
 {
     // Apply rotational transformations
@@ -23,7 +26,15 @@ QVector3D Light::position()
     return matrix * QVector3D(0.0f, 0.0f, 2.0f);
 }
 
-// Used to draw the sun into the world
+/**
+ * paintGL
+ * 
+ * Draws the sun icon and and direction lines onto the opengl widget.
+ * 
+ * @param QMatrix4x4 camera : The projection and view matrix of the camera.
+ * @param float width : The width of the viewport.
+ * @param float height : The height of the viewport.
+ */
 void Light::paintGL(QMatrix4x4 camera, float width, float height)
 {
     QVector3D pos = this->position();
@@ -99,26 +110,55 @@ void Light::paintGL(QMatrix4x4 camera, float width, float height)
     glPopAttrib();
 }
 
-// Returns the intensity of the light
+/**
+ * intensity
+ * 
+ * Return the intensity of the sun.
+ * 
+ * @returns float : The intensity of the light.
+ */
 float Light::intensity()
 {
     return this->_intensity;
 }
 
-// Returns the color of the light as QVector3D for easy use in OpenGL shaders
+/**
+ * color
+ * 
+ * Returns the colour of the light in vector form.
+ * 
+ * @returns QVector3D : The light colour.
+ */
 QVector3D Light::color()
 {
     return this->_color;
 }
 
-// Rotates the light around the terrain (turntable)
+/**
+ * rotateY
+ * 
+ * Rotates the light around the terrain (turntable).
+ * 
+ * @param float value : The value to rotate the light by.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Light::rotateY(float value)
 {
     this->_rotation_y += value;
     return this->_rotation_y;
 }
 
-// Rotates the light over the terrain
+/**
+ * rotateX
+ * 
+ * Rotates the light above the terrain. Rotation is clamped between 0 and 90
+ * degrees.
+ * 
+ * @param float value : The value to rotate the light by.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Light::rotateX(float value)
 {
     this->_rotation_x += value;
@@ -127,14 +167,33 @@ float Light::rotateX(float value)
     return this->_rotation_x;
 }
 
-// Sets the rotation around the terrain (turntable)
+/**
+ * setRotationY
+ * 
+ * Sets the rotation around the terrain. This overrides the previous value.
+ * Returns the updated rotation value.
+ * 
+ * @param float value : The new value to override with.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Light::setRotationY(float value)
 {
     this->_rotation_y = value;
     return this->_rotation_y;
 }
 
-// Sets the rotation over the terrain
+/**
+ * setRotationX
+ * 
+ * Sets the rotation over the terrain. This overrides the previous value.
+ * Returns the updated rotation value. Rotation is clamped between 0 and 90
+ * degrees.
+ * 
+ * @param float value : The new value to override with.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Light::setRotationX(float value)
 {
     this->_rotation_x = value;
@@ -142,19 +201,35 @@ float Light::setRotationX(float value)
     return this->_rotation_x;
 }
 
-// Set the intensity of the light
+/**
+ * setIntensity
+ * 
+ * Sets the light intensity.
+ * 
+ * @param float value : The value to set the sun intensity.
+ */
 void Light::setIntensity(float value)
 {
     this->_intensity = value;
 }
 
-// Set the color of the light
+/**
+ * setColor
+ * 
+ * Sets the lights colour.
+ * 
+ * @param QVector3D color : The color to set the light to.
+ */
 void Light::setColor(QVector3D color)
 {
     this->_color = color;
 }
 
-// Limits the rotation of the camera over the terrain
+/**
+ * _clampRotationX
+ * 
+ * Clamps the rotation over the terrain between 0 and 90 degrees.
+ */
 void Light::_clampRotationX()
 {
     if (this->_rotation_x < 0.0)

@@ -1,29 +1,33 @@
 #pragma once
 
-#include "../Datatypes/intensitymap.h"
-#include "../Datatypes/vectormap.h"
-#include "../Datatypes/pixmap.h"
-
-#include <nodes/NodeDataModel>
-#include <nodes/Connection>
-
-#include <QObject>
 #include <QJsonObject>
+#include <QObject>
 
 #include <glm/vec4.hpp>
+#include <nodes/Connection>
+#include <nodes/NodeDataModel>
+
+#include "../Datatypes/intensitymap.h"
+#include "../Datatypes/pixmap.h"
+#include "../Datatypes/vectormap.h"
+#include "node.h"
 
 #include "ui_VectorDotProduct.h"
 
-#include "node.h"
-
+/**
+ * ConverterVectorDotNode
+ * 
+ * Node that converts two vector map inputs into an intensity map using dot
+ * product.
+ */
 class ConverterVectorDotNode : public Node
 {
     Q_OBJECT
     friend class ConverterVectorDotNode_Test;
 
 public:
+    // Create the node
     ConverterVectorDotNode();
-    ~ConverterVectorDotNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -34,15 +38,19 @@ public:
     // Title shown in the selection list
     QString name() const override;
 
-    // The image label that is embedded in the node
+    // The embedded widget in the node
     QWidget *embeddedWidget();
+
+    // The shared widget in the properties panel
     QWidget *sharedWidget();
 
     // Get the number of ports (1 output, 2 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Get the output data (the IntensityMapData)
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
@@ -52,7 +60,8 @@ public:
     void restore(QJsonObject const &data) override;
 
     // Needed for all nodes, even if there are no inputs
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port_index);
 
 public slots:
     // Reset to use constant values when input removed
@@ -73,9 +82,6 @@ public slots:
 private:
     // Generate results
     void _generate();
-    void _generateInBoth();                 // Both set
-    void _generateIn1(bool second = false); // 1 set
-    void _generateIn();                     // None set
 
     // Get the dot product of two vectors
     static double dot(glm::dvec4 a, glm::dvec4 b);

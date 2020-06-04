@@ -1,26 +1,29 @@
 #pragma once
 
-#include <QWidget>
 #include <QObject>
+#include <QWidget>
 
 #include <nodes/NodeDataModel>
 
 #include "../Datatypes/pixmap.h"
-
 #include "../Datatypes/vectormap.h"
+#include "node.h"
 
 #include "ui_ConstantVector.h"
 
-#include "node.h"
-
+/**
+ * InputConstantVectorNode
+ * 
+ * Node for creating a single constant vector for use in the dataflow diagram.
+ */
 class InputConstantVectorNode : public Node
 {
     Q_OBJECT
     friend class InputConstantVectorNode_Test;
 
 public:
+    // Create the node
     InputConstantVectorNode();
-    ~InputConstantVectorNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -39,7 +42,9 @@ public:
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only imports VectorMapData)
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Save and load the node for project files
     QJsonObject save() const override;
@@ -49,7 +54,8 @@ public:
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Set the input intensity maps or constant
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port);
 
 private:
     // The output value

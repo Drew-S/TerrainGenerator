@@ -2,11 +2,13 @@
 
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
-Camera::Camera() {}
-Camera::~Camera() {}
-
-// Return the calculated View matrix, used for getting the position of the camera
-// and for getting the combined projection and view matrix
+/**
+ * _matrix
+ * 
+ * Returns the calculated view matrix only.
+ * 
+ * @returns QMatrix4x4 : The view matrix.
+ */
 QMatrix4x4 Camera::_matrix()
 {
     QMatrix4x4 view;
@@ -21,14 +23,28 @@ QMatrix4x4 Camera::_matrix()
     return view;
 }
 
-// Return the calculated camera matrix, the combined projection and view matrix
+/**
+ * matrix
+ * 
+ * Returns the combined view and projection matrix.
+ * 
+ * @returns QMatrix4x4 : The combined view and projection matrices.
+ */
 QMatrix4x4 Camera::matrix()
 {
     // Return camera matrix (combined view and projection)
     return this->projectionMatrix() * this->_matrix();
 }
 
-// Get the cameras rotation matrix (rotation effects only, used for axis indication)
+/**
+ * rotationMatrix
+ * 
+ * Returns the rotation matrix, the rotations along the x- and y-axis and not
+ * the projections or the view. This is used for the decals that should only be
+ * rotated on screen as a flat image and not in 3D space.
+ * 
+ * @returns QMatrix4x4 : The rotation matrix.
+ */
 QMatrix4x4 Camera::rotationMatrix()
 {
     QMatrix4x4 view;
@@ -40,7 +56,13 @@ QMatrix4x4 Camera::rotationMatrix()
     return view;
 }
 
-// Get the projection matrix
+/**
+ * projectionMatrix
+ * 
+ * Returns the projection matrix only.
+ * 
+ * @return QMatrix4x4 : The projection matrix.
+ */
 QMatrix4x4 Camera::projectionMatrix()
 {
     QMatrix4x4 projection;
@@ -50,7 +72,13 @@ QMatrix4x4 Camera::projectionMatrix()
     return projection;
 }
 
-// Returns the position of the camera in the world space
+/**
+ * position
+ * 
+ * Returns the position of the camera in 3D world space.
+ * 
+ * @returns QVector3D : The position of the camera.
+ */
 QVector3D Camera::position()
 {
     // Get the inversed view matrix
@@ -61,19 +89,46 @@ QVector3D Camera::position()
 }
 
 // Update the projection ratio used in the projection matrix for the camera matrix
+/**
+ * resize
+ * 
+ * Resize the camera and recalculates the projection ration used for the
+ * projection matrix.
+ * 
+ * @param int w : The width of the viewport.
+ * @param int h : The height of the viewport.
+ */
 void Camera::resize(int w, int h)
 {
     this->_projection = w / float(h);
 }
 
-// Rotate the camera (turntable) around the terrain
+/**
+ * rotateY
+ * 
+ * Rotates the camera about the terrain (turntable style). The new current
+ * rotation is returned (rotation is clamped between 0 and 359).
+ * 
+ * @param float value : The value to rotate by.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Camera::rotateY(float value)
 {
     this->_rotation_y += value;
     return this->_rotation_y;
 }
 
-// Rotate the camera over the terrain
+/**
+ * rotateX
+ * 
+ * Rotates the camera over the terrain. The new current rotation is returned
+ * (rotation is clamped between 0 and 89).
+ * 
+ * @param float value : The value to rotate by.
+ * 
+ * @returns float : The new rotation value.
+ */
 float Camera::rotateX(float value)
 {
     this->_rotation_x += value;
@@ -81,7 +136,16 @@ float Camera::rotateX(float value)
     return this->_rotation_x;
 }
 
-// Zoom the camera into/out of the terrain
+/**
+ * zoom
+ * 
+ * Zooms into and out of the terrain along a track from the current camera's
+ * position and the world origin. The zoom is clamped between 1 and 20.
+ * 
+ * @param float value : The value to zoom by.
+ * 
+ * @returns float : The new zoom value.
+ */
 float Camera::zoom(float value)
 {
     this->_zoom += value;
@@ -92,20 +156,46 @@ float Camera::zoom(float value)
         this->_zoom = 20.0f;
     return this->_zoom;
 }
+
+/**
+ * zoom
+ * 
+ * Get the current zoom value.
+ * 
+ * @returns float : The current zoom value.
+ */
 float Camera::zoom()
 {
     Q_BETWEEN(1.0f, this->_zoom, 20.0f);
     return this->_zoom;
 }
 
-// Set the rotation (turntable) around the terrain
+/**
+ * setRotationY
+ * 
+ * Sets the rotation y value, overriding the previous value rather than adding
+ * onto it.
+ * 
+ * @param float value : The value to set the rotation to.
+ * 
+ * @returns float : The new value.
+ */
 float Camera::setRotationY(float value)
 {
     this->_rotation_y = value;
     return this->_rotation_y;
 }
 
-// Set the rotation over the terrain
+/**
+ * setRotationX
+ * 
+ * Sets the rotation x value, overriding the previous value rather than adding
+ * onto it. The value is clamped between 0 and 90.
+ * 
+ * @param float value : The value to set the rotation to.
+ * 
+ * @returns float : The new value.
+ */
 float Camera::setRotationX(float value)
 {
     this->_rotation_x = value;
@@ -114,24 +204,50 @@ float Camera::setRotationX(float value)
     return this->_rotation_x;
 }
 
-// Set the zoom level into the terrain
+/**
+ * setZoom
+ * 
+ * Sets the zoom value overriding the current value rather than adding to it.
+ * 
+ * @param float value : The value to set the zoom to.
+ * 
+ * @returns float : The new zoom value.
+ */
 float Camera::setZoom(float value)
 {
     this->_zoom = value;
     return this->_zoom;
 }
 
-// Get rotation values
+/**
+ * rotationX
+ * 
+ * Returns the current rotation of the x value.
+ * 
+ * @returns float : The current rotation.
+ */
 float Camera::rotationX()
 {
     return this->_rotation_x;
 }
+
+/**
+ * rotationY
+ * 
+ * Returns the current rotation of the y value.
+ * 
+ * @returns float : The current rotation.
+ */
 float Camera::rotationY()
 {
     return this->_rotation_y;
 }
 
-// Applies rotation limits above the terrain
+/**
+ * _clampRotationX
+ * 
+ * Clamps the rotation over the the terrain between 0 and 90 degrees.
+ */
 void Camera::_clampRotationX()
 {
     if (this->_rotation_x < 0.0f)

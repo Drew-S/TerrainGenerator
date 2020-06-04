@@ -2,9 +2,21 @@
 
 #include <QDebug>
 
+/**
+ * VectorMap
+ * 
+ * Create a new empty map.
+ */
 VectorMap::VectorMap() {}
 
-// Set initial size without data
+/**
+ * VectorMap
+ *
+ * Create a vector map with a set size and uses the default fill value.
+ *
+ * @param int width : The width of the map.
+ * @param int height : The height of the map.
+ */
 VectorMap::VectorMap(int width, int height)
 {
     Q_ASSERT(width > 0);
@@ -14,7 +26,15 @@ VectorMap::VectorMap(int width, int height)
     this->height = height;
 }
 
-// Set initial size with a specificied fill color
+/**
+ * VectorMap
+ *
+ * Create a vector map with a set size and provided fill value.
+ *
+ * @param int width : The width of the map.
+ * @param int height : The height of the map.
+ * @param glm::dvec4 fill : The fill value of the map.
+ */
 VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
 {
     Q_ASSERT(width > 0);
@@ -26,34 +46,64 @@ VectorMap::VectorMap(int width, int height, glm::dvec4 fill)
     this->height = height;
 }
 
-// Set size and values from a 1D vector array
+/**
+ * VectorMap
+ *
+ * Create a vector map with a set size and a list of pixel values.
+ *
+ * @param int width : The width of the map.
+ * @param int height : The height of the map.
+ * @param std::vector<glm::dvec4> values : The pixel values of the map.
+ */
 VectorMap::VectorMap(int width, int height, std::vector<glm::dvec4> values)
 {
     Q_ASSERT(width > 0);
     Q_ASSERT(height > 0);
-    qDebug("Creating Vector Map with data: (%dx%d), %d pixels set", width, height, width * height);
+    qDebug("Creating Vector Map with data: (%dx%d), %d pixels set",
+           width,
+           height,
+           width * height);
+
     this->width = width;
     this->height = height;
     this->values = values;
 }
 
-// Create vector map from image
+/**
+ * VectorMap
+ *
+ * Create a vector map from a provided image.
+ *
+ * @param QImage image : The image to create the vector map from.
+ */
 VectorMap::VectorMap(QImage image)
 {
     qDebug("Creating Vector Map from QImage");
     this->_saveImage(image);
 }
 
-// Create vector map from pixmap
+/**
+ * VectorMap
+ *
+ * Create a vector map from a supplied pixmap.
+ *
+ * @param QPixmap pixmap : The provided pixmap.
+ */
 VectorMap::VectorMap(QPixmap image)
 {
     qDebug("Creating Vector Map from QPixmap");
     this->_saveImage(image.toImage());
 }
 
-VectorMap::~VectorMap() {}
-
-// Convert to an intensity map
+/**
+ * toIntensityMap
+ *
+ * Convert the vector map to an intensity map.
+ *
+ * @param IntensityMap::Channel channel : The channel to select from.
+ *
+ * @returns IntensityMap : The newly created intensity map.
+ */
 IntensityMap VectorMap::toIntensityMap(IntensityMap::Channel channel)
 {
     qDebug("Converting Vector Map to Intensity Map");
@@ -129,8 +179,27 @@ IntensityMap VectorMap::toIntensityMap(IntensityMap::Channel channel)
     return map;
 }
 
-// Create vector map from an intensity map
-VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, VectorMap::ColorMode mode)
+/**
+ * fromIntensityMap
+ *
+ * Create a vector map from an intensity map, using the selected color to be
+ * applied to the intensity map with the application colour mode.
+ *
+ * @param IntensityMap& map : The intensity map to create the vector map from.
+ * @param glm::dvec4 color : The colour to be applied to the intensity map.
+ * @param VectorMap::ColorMode : The colour mode to be used in applying the
+ *                               colour to the intensity map.
+ *                               APPLY (rgba * intensity),
+ *                               OVERRIDE_COLOR (rgb * intensity, a),
+ *                               OVERRIDE_MAP (rgb * intensity, intensity),
+ *                               MASK (rgb, intensity),
+ *                               MASK_ALPHA (rgb, a * intensity)
+ *
+ * @returns VectorMap : The created map from the supplied intensity map.                               
+ */
+VectorMap VectorMap::fromIntensityMap(IntensityMap &map,
+                                      glm::dvec4 color,
+                                      VectorMap::ColorMode mode)
 {
     qDebug("Converting Intensity Map to Vector Map");
     VectorMap vec(map.width, map.height);
@@ -145,10 +214,16 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, Vecto
                 vec.append(color * v);
                 break;
             case VectorMap::OVERRIDE_COLOR:
-                vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, color.a));
+                vec.append(glm::dvec4(color.x * v,
+                           color.y * v,
+                           color.z * v,
+                           color.a));
                 break;
             case VectorMap::OVERRIDE_MAP:
-                vec.append(glm::dvec4(color.x * v, color.y * v, color.z * v, v));
+                vec.append(glm::dvec4(color.x * v,
+                                      color.y * v,
+                                      color.z * v,
+                                      v));
                 break;
             case VectorMap::MASK:
                 vec.append(glm::dvec4(color.x, color.y, color.z, v));
@@ -165,11 +240,20 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map, glm::dvec4 color, Vecto
     return vec;
 }
 
-// Convert vector map to an image
+/**
+ * toImage
+ *
+ * Converts the vector map to an image.
+ *
+ * @param bool print_qimage : Debug value whether to print converting or not.
+ *
+ * @returns QImage : The converted image.
+ */
 QImage VectorMap::toImage(bool print_qimage)
 {
     if (print_qimage)
         qDebug("Converting Vector Map to QImage");
+
     QImage image(this->width, this->height, QImage::Format_RGBA64);
     for (int y = 0; y < this->height; y++)
     {
@@ -183,27 +267,60 @@ QImage VectorMap::toImage(bool print_qimage)
     return image;
 }
 
-// Convert vector map to a pixmap
+/**
+ * toPixmap
+ *
+ * Convert the vector map to a pixmap.
+ *
+ * @returns QPixmap : The converted pixmap.
+ */
 QPixmap VectorMap::toPixmap()
 {
     qDebug("Converting Vector Map to QPixmap");
     return QPixmap::fromImage(this->toImage(false));
 }
-
+ 
+/**
+ * scaled
+ *
+ * Scaled the vector map to the specified size. Uses QImage under the hood to
+ * scale the vector map using Qt's linear interpolation.
+ *
+ * @param int width : The newly set width.
+ * @param int height : The new set height.
+ *
+ * @returns VectorMap : The scaled vetor map.
+ */
 VectorMap VectorMap::scaled(int width, int height)
 {
     QImage image = this->toImage().scaled(width, height);
     return VectorMap(image);
 }
 
-// Check if the map is using a solid fill color
+/**
+ * usingFill
+ *
+ * Returns whether or not the vector map is entirely defiend by the fill value.
+ *
+ * @returns bool : Whether or not the fill value is used for the entire map.
+ */
 bool VectorMap::usingFill()
 {
     return this->_use_fill;
 }
 
-// Transform a vector map using a provided lambda
-VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dvec4 value)
+/**
+ * transform
+ *
+ * Transforms the vector map using the supplied function and a fixed value.
+ *
+ * @param [](glm::dvec4, glm::dvec4) -> glm::dvec4 {} : The transformation
+ *                                                      function.
+ * @param glm::dvec4 value : The fixed value to be used in the transformation
+ *                           function.
+ */
+VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4),
+                               glm::dvec4 value)
 {
     VectorMap map;
     if (this->usingFill())
@@ -220,13 +337,27 @@ VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dve
 
     return map;
 }
-VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMap *map)
+
+/**
+ * transform
+ *
+ * Transforms the vector map with s upplied function and another vector map.
+ *
+ * @param [](glm::dvec4, glm::dvec4) -> glm::dvec4 {} : The transformation
+ *                                                      function.
+ * @param VectorMap* map : The other vector map to convert transforms this map
+ *                         with the function pixel by pixel.
+ */
+VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4),
+                               VectorMap *map)
 {
     Q_CHECK_PTR(map);
     VectorMap out;
     if (this->usingFill() && map->usingFill())
     {
-        out = VectorMap(this->width, this->height, func(this->_fill, map->at(0, 0)));
+        out = VectorMap(this->width,
+                        this->height,
+                        func(this->_fill, map->at(0, 0)));
     }
     else
     {
@@ -239,8 +370,17 @@ VectorMap VectorMap::transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMa
     return out;
 }
 
-// Get a value at a specific index, returns the fill color if beyond bounds
-// or empty pixels
+/**
+ * at
+ *
+ * Get the specifc value at a supplied index. Returns the fill value if the
+ * index is beyond the bounds.
+ *
+ * @param int x : The column.
+ * @param int y : The row.
+ *
+ * @returns glm::dvec4 : The value of the pixel index.
+ */
 glm::dvec4 VectorMap::at(int x, int y)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
@@ -252,7 +392,15 @@ glm::dvec4 VectorMap::at(int x, int y)
     return this->values[y * this->width + x];
 }
 
-// Append a value to the array
+/**
+ * append
+ *
+ * Appends values to the end of the value list.
+ *
+ * @param glm::dvec4 value : The value to append to the end of the list.
+ *
+ * @returns bool : Whether appending was successful or not.
+ */
 bool VectorMap::append(glm::dvec4 value)
 {
     if ((int)this->values.size() >= this->width * this->height)
@@ -262,7 +410,18 @@ bool VectorMap::append(glm::dvec4 value)
     return true;
 }
 
-// Set a specific value for an index
+/**
+ * set
+ *
+ * Replace a value at a specified index with a specified value if the index is
+ * within accepted range.
+ * 
+ * @param int x : The column.
+ * @param int y : The row.
+ * @param glm::dvec4 value : The value to replace with.
+ * 
+ * @returns bool : Whether or not the value was applied.
+ */
 bool VectorMap::set(int x, int y, glm::dvec4 value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
@@ -277,17 +436,28 @@ bool VectorMap::set(int x, int y, glm::dvec4 value)
     return true;
 }
 
-// Converts an image to a vector map
+/**
+ * _saveImage
+ * 
+ * Helper function used to convert QImage (or QPixmap converted to QImage) into
+ * a vector map, takes the rgba and converts the colour into a glm::dev4 for
+ * each pixel.
+ * 
+ * @param QImage image : The image to convert to a vector map.
+ */
 void VectorMap::_saveImage(QImage image)
 {
-    this->width = image.width();
     this->height = image.height();
+    this->width = image.width();
     for (int y = 0; y < this->height; y++)
     {
         for (int x = 0; x < this->width; x++)
         {
             QColor color = image.pixelColor(x, y);
-            this->values.push_back(glm::dvec4(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+            this->values.push_back(glm::dvec4(color.redF(),
+                                              color.greenF(),
+                                              color.blueF(),
+                                              color.alphaF()));
         }
     }
 }

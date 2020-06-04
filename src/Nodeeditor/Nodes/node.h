@@ -2,7 +2,14 @@
 
 #include <nodes/NodeDataModel>
 
-// Customized node class for adding general functionality
+/**
+ * Node
+ * 
+ * Subclass of NodeDataModel that is a superclass of all other nodes in this
+ * folder. This defines extra functions for attaching listeners with created,
+ * checks if the node has a shared widget for the properties panel, and gets
+ * the shared proprties widget.
+ */
 class Node : public QtNodes::NodeDataModel
 {
     Q_OBJECT
@@ -13,4 +20,5 @@ public:
     // should be, this is called by my nodeeditor when the node is created
     virtual void created(){};
     virtual bool hasShared() { return false; };
+    virtual QWidget *sharedWidget() { return nullptr; };
 };

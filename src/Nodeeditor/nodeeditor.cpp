@@ -1,27 +1,38 @@
 #include "nodeeditor.h"
 
 #include <QDebug>
-#include <QJsonDocument>
 #include <QHBoxLayout>
+#include <QJsonDocument>
 
 #include <nodes/DataModelRegistry>
 #include <nodes/TypeConverter>
 
+#include "./Datatypes/converters.h"
+#include "./Datatypes/pixmap.h"
 #include "./Nodes/node.h"
 
-#include "./Datatypes/pixmap.h"
-#include "./Datatypes/converters.h"
-
+// Helper macro
+// TODO: With new node.h superclass this is now overly complex, replace.
 #define CAST_NODE(NODE)                         \
     NODE *selected = static_cast<NODE *>(node); \
     QWidget *shared = selected->sharedWidget(); \
     this->_updatePropertieNodesShared(shared);
 
-// This block of code is used to register all the different nodes
-// TODO: Figure out a way for stretch goals to dynamically load models through plugins
+/**
+ * registerDataModels
+ * 
+ * This function creates a registry that is used with QtNodes to define the
+ * nodes that exist in the dataflow diagram.
+ * 
+ * @returns std::shared_ptr<QtNodes::DataModelRegistry> : The registry.
+ * 
+ * TODO: Figure out a way for stretch goals to dynamically load models through plugins
+ */
 static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
 {
-    std::shared_ptr<QtNodes::DataModelRegistry> registry = std::make_shared<QtNodes::DataModelRegistry>();
+    std::shared_ptr<QtNodes::DataModelRegistry> registry =
+        std::make_shared<QtNodes::DataModelRegistry>();
+
     qDebug("Registering Data Models and Data Converters");
 
     registry->registerModel<OutputNode>("Output");
@@ -56,7 +67,15 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     return registry;
 }
 
-// Create a node editor manager
+/**
+ * Nodeeditor
+ * 
+ * Creates a new nodeeditor with the target layout to place the flow view and
+ * the target widget for displaying properties.
+ * 
+ * @param QLayout* target : The layout to place the flowview onto.
+ * @param QWidget* properties : The widget to display sharedWidget on.
+ */
 Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
 {
     Q_CHECK_PTR(target);
@@ -78,7 +97,11 @@ Nodeeditor::Nodeeditor(QLayout *target, QWidget *properties)
     QObject::connect(this->_scene, &QtNodes::FlowScene::nodeDeleted, this, &Nodeeditor::nodeDeleted);
 }
 
-// Remove pointers
+/**
+ * ~Nodeeditor
+ * 
+ * Delete the node editor and its managed QtNode items.
+ */
 Nodeeditor::~Nodeeditor()
 {
     Q_CHECK_PTR(this->_view);
@@ -89,7 +112,15 @@ Nodeeditor::~Nodeeditor()
     delete this->_active_output;
 }
 
-// Swap out or replace the node's property node
+/**
+ * _updatePropertiesNodesShared
+ * 
+ * Sets/replaces the properties dispayed in the side panel. If the pointer is
+ * null, it only removes and hides the properties panel.
+ * 
+ * @param QWidget *shared : The widget to be displayed or nullptr to simply hide
+ *                          the panel.
+ */
 void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
 {
     if (this->_properties_node)
@@ -111,7 +142,19 @@ void Nodeeditor::_updatePropertieNodesShared(QWidget *shared)
     }
 }
 
-// Handler for placing shared widget in the properties container if the node supports it
+/**
+ * _updatePropertiesNode
+ * 
+ * Takes the input node data model and a flag and casts and gets the widget for
+ * displaying on the properties panel.
+ * 
+ * @param QtNodes::NodeDataModel* node : Pointer to the node to get properties
+ *                                       widget for.
+ * @param bool swap : Whether we are swapping existing properties or creating a
+ *                    new one.
+ * 
+ * TODO: Use new node.h method and remove CASTS
+ */
 void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
 {
     Q_CHECK_PTR(node);
@@ -169,8 +212,15 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     }
 }
 
-// When a node is created, if it is an output node and the current active output node
-// is null, set the active output to the newly created output node.
+/**
+ * nodeCreated @slot
+ * 
+ * When a new node is created and placed into the scene. If the model is an
+ * output node we set the active output node and then we get any properties
+ * widget the node has.
+ * 
+ * @param QtNodes::Node& node : The node that was created.
+ */
 void Nodeeditor::nodeCreated(QtNodes::Node &node)
 {
     QString name = node.nodeDataModel()->name();
@@ -184,13 +234,22 @@ void Nodeeditor::nodeCreated(QtNodes::Node &node)
         this->_active_output = static_cast<OutputNode *>(node.nodeDataModel());
 
         // Connect to computing listeners of the output node
-        QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
-        QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
+        QObject::connect(this->_active_output,
+                         &QtNodes::NodeDataModel::computingFinished,
+                         this,
+                         &Nodeeditor::outputComputingFinished);
     }
     this->_updatePropertiesNode(node.nodeDataModel());
 }
 
-// When a node is double clicked, if it is an output node update the active output node
+/**
+ * nodeDoubleClicked @slot
+ * 
+ * When a node is double clicked we set it as the active node (if output) and
+ * update the properties panel with the new nodes widget.
+ * 
+ * @param QtNodes::Node& node : The node that was double clicked.
+ */
 void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
 {
     QString name = node.nodeDataModel()->name();
@@ -200,25 +259,30 @@ void Nodeeditor::nodeDoubleClicked(QtNodes::Node &node)
         qDebug("Updating active output node");
         // Disconnect old listeners
         if (this->_active_output)
-        {
-            QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
-            QObject::disconnect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
-        }
+            QObject::disconnect(this->_active_output,
+                                &QtNodes::NodeDataModel::computingFinished,
+                                this,
+                                &Nodeeditor::outputComputingFinished);
+
         // Update the active output node
         this->_active_output = static_cast<OutputNode *>(node.nodeDataModel());
         // Attach new listeners
-        QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingStarted, this, &Nodeeditor::outputComputingStarted);
-        QObject::connect(this->_active_output, &QtNodes::NodeDataModel::computingFinished, this, &Nodeeditor::outputComputingFinished);
+        QObject::connect(this->_active_output,
+                         &QtNodes::NodeDataModel::computingFinished,
+                         this,
+                         &Nodeeditor::outputComputingFinished);
     }
     this->_updatePropertiesNode(node.nodeDataModel(), true);
 }
 
-// When the output node begins calculating
-// TODO: Have this start a busy indicator
-void Nodeeditor::outputComputingStarted() {}
-
-// When the output is done emit that the generated normal map is done
-// TODO: Have this complete a busy indicator
+/**
+ * outputComputingFinished @slot
+ * 
+ * When the output node has completed its computation (the sum of the dataflow)
+ * we emit changes to be displayed in the opengl widget.
+ * 
+ * @signals outputUpdated
+ */
 void Nodeeditor::outputComputingFinished()
 {
     qDebug("Output node done computing normal map");
@@ -226,13 +290,28 @@ void Nodeeditor::outputComputingFinished()
     emit this->outputUpdated(this->getNormalMap(), this->getHeightMap());
 }
 
+/**
+ * nodeDeleted @slot
+ * 
+ * When a node is deleted this slot updates the properties panel removing any
+ * current attached widget.
+ * 
+ * @param QtNodes::Node& node : Not used in this function.
+ */
 void Nodeeditor::nodeDeleted(QtNodes::Node &node)
 {
     Q_UNUSED(node);
     this->_updatePropertieNodesShared(nullptr);
 }
 
-// Returns the active output node height map or an empty QImage
+/**
+ * getHeightMap
+ * 
+ * Get the generated height map, if the height map is not set we return a blank
+ * image.
+ * 
+ * @returns QImage : The height map.
+ */
 QImage Nodeeditor::getHeightMap()
 {
     if (this->_active_output)
@@ -246,7 +325,14 @@ QImage Nodeeditor::getHeightMap()
     }
 }
 
-// Returns the active output node height map or an blue QImage (normal compensated)
+/**
+ * getNormalMap
+ * 
+ * Get the generated normal map, if the normal map is not set we return a blank
+ * image.
+ * 
+ * @returns QImage : The normal map.
+ */
 QImage Nodeeditor::getNormalMap()
 {
     if (this->_active_output)
@@ -264,14 +350,27 @@ QImage Nodeeditor::getNormalMap()
     }
 }
 
-// Saves the nodeeditor to a save file
+/**
+ * save
+ * 
+ * Returns the QJsonObject version of the obtained raw byte data for the
+ * dataflow diagrams nodes. This is used to save to a project file.
+ * 
+ * @returns QJsonObject : The combined node data.
+ */
 QJsonObject Nodeeditor::save()
 {
     qDebug("Saving dataflow diagram");
     return QJsonDocument::fromJson(this->_scene->saveToMemory()).object();
 }
 
-// Loads the nodeeditor from a save file
+/**
+ * load
+ * 
+ * Loads the dataflow diagram from a json object.
+ * 
+ * @param QJsonObject data : The data to load from.
+ */
 void Nodeeditor::load(QJsonObject data)
 {
     qDebug("Loading dataflow diagram");

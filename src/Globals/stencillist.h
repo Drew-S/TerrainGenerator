@@ -3,15 +3,21 @@
 #include <vector>
 
 #include <QColor>
-#include <QPointF>
-#include <QLineF>
-#include <QPixmap>
 #include <QIcon>
+#include <QLineF>
 #include <QPainter>
+#include <QPixmap>
+#include <QPointF>
 
 #include "../Nodeeditor/Datatypes/intensitymap.h"
 
 // Stencil class loads a monocolour texture for drawing onto pixmaps
+/**
+ * Stencil
+ * 
+ * A class that houses a stencil (image) that is used to draw specific shapes
+ * with alpha onto other pixmaps. Used within the drawing singleton.
+ */
 class Stencil
 {
 public:
@@ -21,7 +27,6 @@ public:
     Stencil(QString filename, double brush, int index);
     // Set the color of the stencil as well
     Stencil(QString filename, double brush, QColor color, int index);
-    ~Stencil();
 
     // Set the color of the stencil
     void setColor(QColor color);
@@ -71,7 +76,14 @@ private:
     QIcon _icon;
 };
 
-// Global singleton that keeps a single reference for each stencil
+/**
+ * StencilList
+ * 
+ * Singleton that houses a list of stencils that can be used in the drawing
+ * dialogue. This became a singleton because it was used in multiple nodes
+ * originally, since moving to a drawing dialogue a singleton is not really
+ * needed, but remains.
+ */
 class StencilList
 {
 public:

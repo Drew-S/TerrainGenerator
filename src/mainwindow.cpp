@@ -1,61 +1,69 @@
 #include "mainwindow.h"
 
+#include <math.h>
 #include <string>
 
-#include <math.h> // pow
+#include <QBuffer>
+#include <QByteArray>
+#include <QCheckBox>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QDebug>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QFile>
+#include <QFileDevice>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QImage>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QList>
+#include <QObject>
+#include <QPushButton>
+#include <QRegExp>
 
+#include <json.hpp>
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
 #include <quazip/quazipnewinfo.h>
 
-#include <json.hpp>
-
-using json = nlohmann::json;
-
-#include <QObject>
-#include <QImage>
-#include <QDebug>
-#include <QFile>
-#include <QFileDevice>
-#include <QFileInfo>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QBuffer>
-#include <QByteArray>
-#include <QDir>
-#include <QFileDialog>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QRegExp>
-#include <QList>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QColorDialog>
-
+#include "Globals/drawing.h"
 #include "Globals/settings.h"
 #include "Globals/stencillist.h"
 #include "Globals/texturelist.h"
-#include "Globals/drawing.h"
 
+using json = nlohmann::json;
+
+// Zips internal datafile name
 #define SAVE_DATA_FILE_NAME "data.json"
-#define EXT ".tgdf"
-#define EXT_REG "\\.tgdf$"
-#define RW_ALL QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ReadGroup | QFileDevice::WriteGroup | QFileDevice::ReadOther | QFileDevice::WriteOther
 
+// Save filename extension
+#define EXT ".tgdf"
+
+// Save filename extension (regex)
+#define EXT_REG "\\.tgdf$"
+
+// https://doc.qt.io/qt-5/qfiledevice.html#Permission-enum
+// linux 666 permissions, Read/Write all (no execute)
+#define RW_ALL (QFileDevice::Permission)0x6666
+
+// Assertion macro for ensuring a number is between two values
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
-MainWindow::MainWindow()
-{
-    qDebug("Using temp directory: %s", qPrintable(SETTINGS->tmpDir().path()));
-}
-MainWindow::~MainWindow() {}
-
-// Setup is a function used to setup the application,
-// Connect to ui elements and controls and link sub components
+/**
+ * setup
+ * 
+ * Used to setup the mainwindows UI elements. Calls global singletons to ensure
+ * they are setup. Attaches UI to the widget. Attaches listeners to the UI.
+ * 
+ * @param Ui::MainWindow* ui : The ui (QWidget) created from Qt Designer that
+ *                                is what is viewed.
+ */
 void MainWindow::setup(Ui::MainWindow *ui)
 {
-    //Ensure global singletons have loaded
+    // Ensure global singletons have loaded
     Q_CHECK_PTR(SETTINGS);
     Q_CHECK_PTR(TEXTURES);
     Q_CHECK_PTR(DRAWING);
@@ -64,62 +72,105 @@ void MainWindow::setup(Ui::MainWindow *ui)
     TEXTURES;
     DRAWING;
     STENCILS;
+
     qDebug("Setting up main window and save dialogue ui, attaching listeners");
+
+    // Attach/create UI elements
     this->_main_ui = ui;
-    this->_editor = new Nodeeditor(ui->NodeEditorLayout, ui->NodePropertiesContainerWidget);
+    this->_editor = new Nodeeditor(ui->NodeEditorLayout,
+                                   ui->NodePropertiesContainerWidget);
     this->_open_gl = this->_main_ui->OpenGLWidget;
 
-    // Connect output widget compute finished to OpenGL to display results
-    QObject::connect(this->_editor, &Nodeeditor::outputUpdated, this->_open_gl, &OpenGL::nodeeditorOutputUpdated);
+    // Listen for editor to signal the dataflow diagram has updated the output
+    QObject::connect(this->_editor,
+                     &Nodeeditor::outputUpdated,
+                     this->_open_gl,
+                     &OpenGL::nodeeditorOutputUpdated);
 
     // Connect file actions to load and save files
-    QObject::connect(this->_main_ui->actionSave_As, &QAction::triggered, this, &MainWindow::saveAs);
-    QObject::connect(this->_main_ui->actionLoad, &QAction::triggered, this, &MainWindow::load);
+    QObject::connect(this->_main_ui->actionSave_As,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::saveAs);
+    QObject::connect(this->_main_ui->actionLoad,
+                     &QAction::triggered,
+                     this,
+                     &MainWindow::load);
 
+    // TODO: Move project settings to its own management class
     // Settings actions
-    QObject::connect(this->_main_ui->combo_preview, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+    QObject::connect(this->_main_ui->combo_preview,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     [=](int index)
+    {
         Q_CHECK_PTR(SETTINGS);
         Q_BETWEEN(0, index, 6);
         SETTINGS->setPreviewResolution((int)pow(2, index + 7));
     });
-    QObject::connect(this->_main_ui->combo_render, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+    QObject::connect(this->_main_ui->combo_render,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     [=](int index)
+    {
         Q_CHECK_PTR(SETTINGS);
         Q_BETWEEN(0, index, 6);
         SETTINGS->setRenderResolution((int)pow(2, index + 7));
     });
-    QObject::connect(this->_main_ui->use_render, &QCheckBox::stateChanged, [=](int state) {
+    QObject::connect(this->_main_ui->use_render,
+                     &QCheckBox::stateChanged,
+                     [=](int state)
+    {
         Q_CHECK_PTR(SETTINGS);
         SETTINGS->setRenderMode(state == 2);
     });
-    QObject::connect(this->_main_ui->draw_lines, &QCheckBox::stateChanged, [this](int state) {
+    QObject::connect(this->_main_ui->draw_lines,
+                     &QCheckBox::stateChanged,
+                     [this](int state)
+    {
         Q_CHECK_PTR(this->_open_gl);
         this->_open_gl->setTerrainDrawLines(state == 2);
     });
-    QObject::connect(this->_main_ui->terrain_color, &QPushButton::clicked, [this]() {
+    QObject::connect(this->_main_ui->terrain_color,
+                     &QPushButton::clicked,
+                     [this]()
+    {
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->terrainColor());
         if (color.isValid())
             this->_open_gl->setTerrainColor(color);
     });
-    QObject::connect(this->_main_ui->terrain_line_color, &QPushButton::clicked, [this]() {
+    QObject::connect(this->_main_ui->terrain_line_color,
+                     &QPushButton::clicked,
+                     [this]()
+    {
         Q_CHECK_PTR(this->_open_gl);
-        QColor color = QColorDialog::getColor(this->_open_gl->terrainLineColor());
+        QColor color =
+            QColorDialog::getColor(this->_open_gl->terrainLineColor());
+
         if (color.isValid())
             this->_open_gl->setTerrainLineColor(color);
     });
-    QObject::connect(this->_main_ui->combo_mesh, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+    QObject::connect(this->_main_ui->combo_mesh,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     [this](int index)
+    {
         Q_CHECK_PTR(this->_open_gl);
         Q_BETWEEN(0, index, 4);
         SETTINGS->setMeshResolution((int)pow(2, index + 4));
         this->_open_gl->setTerrainMeshResolution((int)pow(2, index + 4));
     });
-    QObject::connect(this->_main_ui->sky_color, &QPushButton::clicked, [this]() {
+    QObject::connect(this->_main_ui->sky_color,
+                     &QPushButton::clicked,
+                     [this]()
+    {
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->skyColor());
         if (color.isValid())
             this->_open_gl->setSkyColor(color);
     });
-    QObject::connect(this->_main_ui->light_color, &QPushButton::clicked, [this]() {
+    QObject::connect(this->_main_ui->light_color,
+                     &QPushButton::clicked,
+                     [this]()                 
+    {
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->lightColor());
         if (color.isValid())
@@ -139,20 +190,42 @@ void MainWindow::setup(Ui::MainWindow *ui)
     this->_save_ui->directory_label->setText(QDir::homePath());
 
     // Connect directory to select output directory
-    QObject::connect(this->_save_ui->directory_button, &QPushButton::clicked, this, &MainWindow::_saveAsFile);
+    QObject::connect(this->_save_ui->directory_button,
+                     &QPushButton::clicked,
+                     this,
+                     &MainWindow::_saveAsFile);
 
     // Connect line edit to define filename output (extension is automatic)
-    QObject::connect(this->_save_ui->filename_line_edit, &QLineEdit::textChanged, this, &MainWindow::_saveAsLineEdit);
+    QObject::connect(this->_save_ui->filename_line_edit,
+                     &QLineEdit::textChanged,
+                     this,
+                     &MainWindow::_saveAsLineEdit);
 
-    // Connect the ok button to save as to write file. Connect cancel button to close the dialogue
-    QObject::connect(this->_save_ui->button_box, &QDialogButtonBox::accepted, this, &MainWindow::_saveAsAccept);
-    QObject::connect(this->_save_ui->button_box, &QDialogButtonBox::rejected, this->_save_as_dialogue, &QDialog::reject);
-    QObject::connect(this->_save_ui->pack_files_check_box, &QCheckBox::clicked, this, &MainWindow::_saveAsTogglePack);
+    // Connect the ok button to save as to write file. Connect cancel button to
+    // close the dialogue
+    QObject::connect(this->_save_ui->button_box,
+                     &QDialogButtonBox::accepted,
+                     this,
+                     &MainWindow::_saveAsAccept);
+    QObject::connect(this->_save_ui->button_box,
+                     &QDialogButtonBox::rejected,
+                     this->_save_as_dialogue,
+                     &QDialog::reject);
+    QObject::connect(this->_save_ui->pack_files_check_box,
+                     &QCheckBox::clicked,
+                     this,
+                     &MainWindow::_saveAsTogglePack);
 }
 
-// Open up a file dialogue for the user to select an output directory
+/**
+ * _saveAsFile @slot
+ * 
+ * When called this opens a file dialogue to select the output directory for
+ * saving the project to file.
+ */
 void MainWindow::_saveAsFile()
 {
+    // User selects the output directory
     QString directory = QFileDialog::getExistingDirectory(
         nullptr,
         tr("Select directory to save file to"),
@@ -163,11 +236,19 @@ void MainWindow::_saveAsFile()
 
     Q_CHECK_PTR(this->_save_ui);
 
+    // Update the UI label
     this->_save_ui->directory_label->setText(directory);
     this->_save_as_directory = directory;
 }
 
-// Toggle whether or not to pack images with save file
+/**
+ * _saveAsTogglePack @slot
+ * 
+ * Toggles the pack external resources (linked texture files) flag. When checked
+ * to true, the system will pack the files with the save file.
+ * 
+ * @param bool checked : Toggle value as to whether or not to pack textures.
+ */
 void MainWindow::_saveAsTogglePack(bool checked)
 {
     Q_CHECK_PTR(SETTINGS);
@@ -175,33 +256,51 @@ void MainWindow::_saveAsTogglePack(bool checked)
     SETTINGS->setPackImages(checked);
 }
 
-// Update the filename when the line edit is updated
+/**
+ * _saveAsLineEdit @slot
+ * 
+ * The user updates the filename to save the file as. This updates the save name
+ * of the project file.
+ * 
+ * @param QString const& text : The new filename text of the save file.
+ */
 void MainWindow::_saveAsLineEdit(QString const &text)
 {
     this->_save_as_filename = text;
-    QString file = text;
-    file.replace(QRegExp(EXT_REG), "");
 }
 
-// Saves the project data to the provided output file
-// TODO: A bit deep, separate into sub functions
-// TODO: Add indication for successfully/failing to save
+/**
+ * _saveAsAccept @slot
+ * 
+ * When the user selects to save the project (directory and name must be set).
+ * This will save the current state of the project into the selected output
+ * file. If the pack externals option is checked, external images will be packed
+ * within the zip save file.
+ *
+ * TODO: Add indication for successfully/failing to save.
+ */
 void MainWindow::_saveAsAccept()
 {
     // Terrain Generator Data File : tgdf
     // TODO: Come up with better extension name
-    if (this->_save_as_directory != "" && this->_save_as_filename != "" && this->_save_as_filename != EXT)
+    if (this->_save_as_directory != ""
+        && this->_save_as_filename != ""
+        && this->_save_as_filename != EXT)
     {
-        // <file>.tgdf -> <file> (user having tgdf extension is the same as no extension) (prevents <file>.tgdf.tgdf)
+        // <file>.tgdf -> <file> (user having tgdf extension is the same as no
+        // extension) (prevents <file>.tgdf.tgdf)
         QString filename = this->_save_as_filename;
         filename = filename.replace(QRegExp(EXT_REG), "");
         filename = this->_save_as_directory + "/" + filename + EXT;
         qInfo("Saving to file: %s", qPrintable(filename));
 
+        // Create the save zip file
         QuaZip zip(filename);
         if (!zip.open(QuaZip::mdAdd))
         {
-            qCritical("Unable to open up: '%s' for saving", qPrintable(filename));
+            qCritical("Unable to open up: '%s' for saving",
+                      qPrintable(filename));
+
             this->_save_as_dialogue->reject();
             return;
         }
@@ -209,6 +308,8 @@ void MainWindow::_saveAsAccept()
         Q_CHECK_PTR(TEXTURES);
         Q_CHECK_PTR(SETTINGS);
 
+        // Pack image textures appropriately, (external images if the packed 
+        // flag is set, or if the image is generated (drawn))
         QuaZipFile image_file(&zip);
         for (int i = 0; i < TEXTURES->count(); i++)
         {
@@ -238,7 +339,7 @@ void MainWindow::_saveAsAccept()
 
         Q_CHECK_PTR(this->_save_as_dialogue);
 
-        // Write json data file
+        // Write json project data file
         QuaZipFile file(&zip);
         QuaZipNewInfo info(SAVE_DATA_FILE_NAME);
         info.setPermissions(RW_ALL);
@@ -249,7 +350,6 @@ void MainWindow::_saveAsAccept()
             this->_save_as_dialogue->reject();
             return;
         }
-
         file.write(QJsonDocument(global).toJson());
         file.close();
         zip.close();
@@ -267,7 +367,12 @@ void MainWindow::_saveAsAccept()
     }
 }
 
-// Open up the save as dialogue
+/**
+ * saveAs
+ * 
+ * Open the save as dialogue so the user can set the directory and filename of
+ * the save file and whether or not to pack external files.
+ */
 void MainWindow::saveAs()
 {
     Q_CHECK_PTR(this->_save_as_dialogue);
@@ -275,21 +380,30 @@ void MainWindow::saveAs()
     this->_save_as_dialogue->show();
 }
 
-// Load data from a project file
-// TODO: Implement Validator
-// TODO: A bit deep, separate into sub functions
-// TODO: Add indication for successfully/failing to load
+/**
+ * load
+ * 
+ * Loads the project save file from the filesystem and set it as the current
+ * state of the active project.
+ * 
+ * TODO: Implement Validator.
+ * TODO: Add indication for successfully/failing to load.
+ */
 void MainWindow::load()
 {
     Q_CHECK_PTR(TEXTURES);
+
+    // User selects the project file to load from
     QString filename = QFileDialog::getOpenFileName(
         nullptr,
         tr("Open Project"),
         QDir::homePath(),
-        tr((QString("Project files (*") + QString(EXT) + QString(")")).toStdString().c_str()));
+        tr(qPrintable(
+            QString("Project files (*") + QString(EXT) + QString(")"))));
 
     qInfo("Attempting to load save file: %s", qPrintable(filename));
 
+    // If no file is selected cancel
     if (filename == "")
         return;
 
@@ -301,10 +415,9 @@ void MainWindow::load()
         return;
     }
 
-    // Read data file
+    // Read json project data file
     zip.setCurrentFile(SAVE_DATA_FILE_NAME);
     QuaZipFile file(&zip);
-
     if (!file.open(QIODevice::ReadOnly))
     {
         qCritical("Unable to read zip data file");
@@ -314,6 +427,8 @@ void MainWindow::load()
     QByteArray data = file.readAll();
     file.close();
 
+    // Loop over all files (not json data file) and load image files into the
+    // system
     zip.goToFirstFile();
     do
     {
@@ -322,7 +437,8 @@ void MainWindow::load()
         {
             if (image_file.open(QIODevice::ReadOnly))
             {
-                TEXTURES->loadTexture(image_file.readAll(), zip.getCurrentFileName());
+                TEXTURES->loadTexture(image_file.readAll(),
+                                      zip.getCurrentFileName());
                 image_file.close();
             }
         }
@@ -332,7 +448,8 @@ void MainWindow::load()
     // Create json from data file
     QJsonDocument document = QJsonDocument::fromJson(data);
 
-    qInfo("Save file version: %s", qPrintable(document["save_version"].toString()));
+    qInfo("Save file version: %s",
+          qPrintable(document["save_version"].toString()));
 
     Q_CHECK_PTR(SETTINGS);
     zip.close();

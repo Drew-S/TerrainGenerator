@@ -1,22 +1,25 @@
 #include "output.h"
 
-#include <QList>
-#include <QVector3D>
-#include <QMatrix>
 #include <QColor>
 #include <QDebug>
-#include <QWidget>
+#include <QList>
+#include <QMatrix>
 #include <QProgressBar>
 #include <QVBoxLayout>
+#include <QVector3D>
+#include <QWidget>
 
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
 #include "../Datatypes/vectormap.h"
-
 #include "Globals/settings.h"
 
-// Setup the node
+/**
+ * OutputNode
+ * 
+ * Create the output node, the UI, and default normal map.
+ */
 OutputNode::OutputNode()
 {
     qDebug("Creating Output Node");
@@ -32,76 +35,147 @@ OutputNode::OutputNode()
 
     this->_normal_map = normal;
 
-    QObject::connect(&this->_normal_generator, &NormalMapGenerator::done, [this]() {
+    QObject::connect(&this->_normal_generator,
+                     &NormalMapGenerator::done,
+                     [this]()
+    {
         this->_normal_map = this->_normal_generator.toImage();
         emit this->computingFinished();
 
         QPixmap normal_pixmap;
         normal_pixmap.convertFromImage(this->getNormalMap(), Qt::ColorOnly);
 
-        this->_ui.normal_label->setPixmap(normal_pixmap.scaled(this->_ui.height_label->width(), this->_ui.height_label->height(), Qt::KeepAspectRatio));
+        this->_ui.normal_label->setPixmap(
+            normal_pixmap.scaled(
+                this->_ui.height_label->width(),
+                this->_ui.height_label->height(),
+                Qt::KeepAspectRatio));
+
         this->_ui.progress->hide();
     });
 
-    QObject::connect(&this->_normal_generator, &NormalMapGenerator::started, [this]() {
+    QObject::connect(&this->_normal_generator,
+                     &NormalMapGenerator::started,
+                     [this]()
+    {
         Q_CHECK_PTR(SETTINGS);
         
         this->_ui.progress->show();
 
-        if (SETTINGS->percentProgressText() && !this->_ui.progress->isTextVisible())
+        if (SETTINGS->percentProgressText()
+            && !this->_ui.progress->isTextVisible())
             this->_ui.progress->setTextVisible(true);
-        else if (!SETTINGS->percentProgressText() && this->_ui.progress->isTextVisible())
+        else if (!SETTINGS->percentProgressText()
+                 && this->_ui.progress->isTextVisible())
             this->_ui.progress->setTextVisible(false);
 
         this->_ui.progress->setValue(0);
     });
-    QObject::connect(&this->_normal_generator, &NormalMapGenerator::progress, this->_ui.progress, &QProgressBar::setValue);
+    QObject::connect(&this->_normal_generator,
+                     &NormalMapGenerator::progress,
+                     this->_ui.progress,
+                     &QProgressBar::setValue);
 }
 
-OutputNode::~OutputNode() {}
-
-// Title shown at the top of the node
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
 QString OutputNode::caption() const
 {
     return QString("Output");
 }
 
-// Title shown in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString OutputNode::name() const
 {
     return QString("Output");
 }
 
-// The image label that is embedded in the node
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *OutputNode::embeddedWidget()
 {
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 
-// Get the number of in and out ports
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
 unsigned int OutputNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::In ? 1 : 0;
 }
 
-// Get the output data (nothing)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
 std::shared_ptr<QtNodes::NodeData> OutputNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     return nullptr;
 }
 
-// Get the data type for the port inputs and output
-QtNodes::NodeDataType OutputNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+OutputNode::dataType(QtNodes::PortType port_type,
+                     QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_type);
     Q_UNUSED(port_index);
     return IntensityMapData().type();
 }
 
-// Set the input pixmap data
-void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                           QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     if (node_data)
@@ -114,7 +188,11 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
         this->_height_map = height_map.toImage();
 
         // Display preview image
-        this->_ui.height_label->setPixmap(height_map.toPixmap().scaled(this->_ui.height_label->width(), this->_ui.height_label->height(), Qt::KeepAspectRatio));
+        this->_ui.height_label->setPixmap(
+            height_map.toPixmap().scaled(
+                this->_ui.height_label->width(),
+                this->_ui.height_label->height(),
+                Qt::KeepAspectRatio));
 
         // Emit that calculations are being made
         this->_generateNormalMap(height_map);
@@ -128,19 +206,39 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes
     }
 }
 
-// Returns the generated normal map
+/**
+ * getNormalMap
+ * 
+ * Returns the generated normal map.
+ * 
+ * @returns QImage : The normal map.
+ */
 QImage OutputNode::getNormalMap()
 {
     return this->_normal_map;
 }
 
-// Returns the generated heightmap
+/**
+ * getHeightMap
+ * 
+ * Returns the height map.
+ * 
+ * @returns QImage : The height map.
+ */
 QImage OutputNode::getHeightMap()
 {
     return this->_height_map;
 }
 
-// Generates a normal map using the normal map generator
+/**
+ * _generateNormalMap
+ * 
+ * Given the height map (intensity map) this will generate the normal map.
+ * 
+ * @param IntensityMap height_map : The height map.
+ * 
+ * @signals computingStarted
+ */
 void OutputNode::_generateNormalMap(IntensityMap height_map)
 {
     emit this->computingStarted();
@@ -151,7 +249,16 @@ void OutputNode::_generateNormalMap(IntensityMap height_map)
     this->_normal_generator.generate();
 }
 
-// Input is removed so we reset the height and normal maps
+/**
+ * inputConnectionDeleted @slot
+ * 
+ * Called when an input connection is deleted, this usually resets some data and
+ * regenerates the output data.
+ * 
+ * @param QtNodes::Connection const& connection : The connection being deleted.
+ * 
+ * @signals computingFinished
+ */
 void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
 {
     Q_UNUSED(connection);
@@ -167,7 +274,14 @@ void OutputNode::inputConnectionDeleted(QtNodes::Connection const &connection)
     emit this->computingFinished();
 }
 
-// Save the node for a file
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject OutputNode::save() const
 {
     qDebug("Saving Output Node");
@@ -176,7 +290,13 @@ QJsonObject OutputNode::save() const
     return data;
 }
 
-// Restore the node from a file
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object.
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ */
 void OutputNode::restore(QJsonObject const &data)
 {
     Q_UNUSED(data);

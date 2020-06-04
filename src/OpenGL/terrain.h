@@ -1,32 +1,36 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-
-#include <QOpenGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
+#include <QImage>
+#include <QMatrix4x4>
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
-#include <QMatrix4x4>
+#include <QOpenGLVertexArrayObject>
 #include <QVector> // Used here as QT replacement for std::vector
 #include <QVector2D>
 #include <QVector3D>
-#include <QImage>
 
-// Class to manage the terrain data, shaders, textures, and vertices
-// Used to draw the terrain to the OpenGL widget
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+/**
+ * Terrain
+ * 
+ * Class manages the terrain mesh and is used to set the shader parameters and
+ * set the height and normal map.
+ */
 class Terrain
 {
 public:
     Terrain(int resolution);
-    ~Terrain();
 
     // Set the resolution of the terrain (resolution^2 vertices)
     void setResolution(int resolution);
     // Initialize the OpenGL shader, pointers, etc.
     void initializeGL();
-    // Draw the terrain, calls _paintGL which does drawing, this uses _paintGL twice to draw faces and the lines
+    // Draw the terrain, calls _paintGL which does drawing, this uses _paintGL
+    // twice to draw faces and the lines
     void paintGL(QOpenGLFunctions *f,
                  QMatrix4x4 camera_matrix,
                  QVector3D camera_pos,

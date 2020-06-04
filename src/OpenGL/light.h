@@ -1,25 +1,29 @@
 #pragma once
 
-#include <QVector>
-#include <QVector3D>
+#include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
-#include <QMatrix4x4>
+#include <QVector>
+#include <QVector3D>
 
-// Manages the lights position for use in OpenGL shaders
+/**
+ * Light
+ * 
+ * Class that manages the light value (sun) that is displayed in the opengl
+ * widget. Houses position, intensity, color, and direction. Draws the sun onto
+ * the widget.
+ */
 class Light
 {
 public:
-    Light();
-    ~Light();
-
     // Returns the position of the light in world space
     QVector3D position();
 
     // Returns the intensity of the light
     float intensity();
 
-    // Returns the color of the light as QVector3D for easy use in OpenGL shaders
+    // Returns the color of the light as QVector3D for easy use in OpenGL
+    // shaders
     QVector3D color();
 
     // Rotates the light around the terrain (turntable)

@@ -1,26 +1,29 @@
 #pragma once
 
+#include <QJsonObject>
+#include <QObject>
+
+#include <nodes/Connection>
+#include <nodes/NodeDataModel>
+
 #include "../Datatypes/intensitymap.h"
 #include "../Datatypes/pixmap.h"
-
-#include <nodes/NodeDataModel>
-#include <nodes/Connection>
-
-#include <QObject>
-#include <QJsonObject>
-
 #include "node.h"
 
-// Node that converts a VectorMap input and splits the colour channels out into
-// individual IntensityMap for rgba
+/**
+ * ConverterColorSplitNode
+ * 
+ * This node takes a vector map input and splits out each channel into its own
+ * intensity map output.
+ */
 class ConverterColorSplitNode : public Node
 {
     Q_OBJECT
     friend class ConverterColorSplitNode_Test;
 
 public:
+    // Creates the new node
     ConverterColorSplitNode();
-    ~ConverterColorSplitNode();
 
     // Title shown at the top of the node
     QString caption() const override;

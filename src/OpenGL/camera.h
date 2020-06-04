@@ -1,18 +1,20 @@
 #pragma once
 
-#include <QObject>
 #include <QMatrix4x4>
+#include <QObject>
 #include <QVector3D>
 
-// Camera class manages the QMatrix4x4 projection and view matrix and the QVector3D position for use
-// in the OpenGL shaders.
+/**
+ * Camera
+ * 
+ * Houses the projection matrix and the view matrix. Used to changed the
+ * values for the generation of said matrices. Can return the current rotations
+ * of the camera, the zoom, and the position of the camera in world space.
+ */
 class Camera : public QObject
 {
     Q_OBJECT
 public:
-    Camera();
-    ~Camera();
-
     // Return the generated combined projection and view matrix
     QMatrix4x4 matrix();
 
@@ -47,6 +49,7 @@ public:
     // Resize call, when widget size change recalculate the projection matrix
     void resize(int w, int h);
 
+    // Get the current rotation values for the different axis
     float rotationX();
     float rotationY();
 

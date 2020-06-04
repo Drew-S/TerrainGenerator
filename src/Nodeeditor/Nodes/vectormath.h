@@ -1,26 +1,31 @@
 #pragma once
 
-#include <glm/vec4.hpp>
-
-#include <QWidget>
 #include <QObject>
+#include <QWidget>
 
-#include <nodes/NodeDataModel>
+#include <glm/vec4.hpp>
 #include <nodes/Connection>
+#include <nodes/NodeDataModel>
 
 #include "../Datatypes/pixmap.h"
 #include "../Datatypes/vectormap.h"
+#include "node.h"
 
 #include "ui_VectorMathNode.h"
 
-#include "node.h"
-
+/**
+ * ConverterVectorMathNode
+ * 
+ * Node that applies different math operations on two vectors that produce a
+ * vector. (elementwise multiply or add)
+ */
 class ConverterVectorMathNode : public Node
 {
     Q_OBJECT
     friend class ConverterVectorMathNode_Test;
 
 public:
+    // Mode used to select algorithm
     enum Mode
     {
         MIX,
@@ -30,8 +35,9 @@ public:
         DIVIDE,
         CROSS
     };
+
+    // Create the node
     ConverterVectorMathNode();
-    ~ConverterVectorMathNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -42,15 +48,19 @@ public:
     // Title shown in the selection list
     QString name() const override;
 
-    // The embedded and shared widgets
+    // The embedded widget in the node
     QWidget *embeddedWidget();
+
+    // The shared widget in the properties panel
     QWidget *sharedWidget();
 
     // Get the number of ports (1 output, 2 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only imports VectorMapData)
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Save and load the node for project files
     QJsonObject save() const override;
@@ -60,7 +70,8 @@ public:
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Set the input intensity maps or constant
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port);
 
     // Applying function algorithms
     static glm::dvec4 mix(glm::dvec4 a, glm::dvec4 b);

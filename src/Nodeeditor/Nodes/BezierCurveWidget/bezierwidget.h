@@ -1,19 +1,27 @@
 #pragma once
 
-#include <QGraphicsView>
-#include <QGraphicsLineItem>
-#include <QGraphicsEllipseItem>
-#include <QPointF>
-#include <QMouseEvent>
-#include <QResizeEvent>
-
 #include <vector>
 
-// A segment of the overall curve, manages a single bezier curve.
+#include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
+#include <QGraphicsView>
+#include <QMouseEvent>
+#include <QPointF>
+#include <QResizeEvent>
+
+/**
+ * Bezier
+ * 
+ * The container that houses a single segment of the overall bezier curve.
+ * This manages the two end points, the two control points, the two lines
+ * betwen them, and the curve itself.
+ */
 class Bezier
 {
 public:
+    // Create the default bezier object
     Bezier();
+
     // Create with these values for the different colours
     Bezier(QPen l_pen,                // control to end point line
            QPen c_pen,                // control outline
@@ -25,8 +33,10 @@ public:
            float c_thick,             // control/endpoint outline thickness
            float l_width,             // control to end point line thickness
            float c_width,             // curve thickness
-           QPointF c_0,               // control point 0 (matches with end point 0)
-           QPointF c_1,               // control point 1 (matches with end point 1)
+           QPointF c_0,               // control point 0 (matches with end point
+                                      // 0)
+           QPointF c_1,               // control point 1 (matches with end point
+                                      // 1)
            QGraphicsEllipseItem *e_0, // end point 0
            QGraphicsEllipseItem *e_1, // end point 1
            QGraphicsScene *s);
@@ -78,12 +88,19 @@ public:
     QGraphicsLineItem *line_1 = nullptr;
 };
 
-// Factory is used to create bezier curves (from above) with all the same pen and brush details
-// for a homogenous overall curve
+/**
+ * BezierFactory
+ * 
+ * Factory class for creating Bezier objects that ensures the entirety of the
+ * overall bezier curve is drawn with the same stylings.
+ */
 class BezierFactory
 {
 public:
+    // Create a default factory
     BezierFactory(QGraphicsScene *s);
+
+    // Create a customized factory
     BezierFactory(QPen l_pen,
                   QPen c_pen,
                   QBrush c_brush,
@@ -122,7 +139,13 @@ public:
     float curve_width = 1.0f;
 };
 
-// The editdor widget, draws overall curves and lines and provides a means of getting f(x)
+/**
+ * BezierEditWidget
+ * 
+ * A custom widget that lets users draw curves and slopes using bezier curves
+ * that are constrained to ensure the vertical line test does not fail thus
+ * creating a widget that can apply the function y = f(x).
+ */
 class BezierEditWidget : public QGraphicsView
 {
     Q_OBJECT
@@ -163,7 +186,8 @@ protected:
     void enterEvent(QEvent *event);
     void leaveEvent(QEvent *event);
 
-    // On x key delete extra beziers (delete key does not work, so use x instead, similar to Blender)
+    // On x key delete extra beziers (delete key does not work, so use x
+    // instead, similar to Blender)
     void keyPressEvent(QKeyEvent *event);
 
     // Double click on a curve to split it
@@ -192,21 +216,50 @@ private:
     // The active control element
     QGraphicsEllipseItem *_control = nullptr;
 
-    // The extra control elements (moving an end point moves its partner control points)
+    // The extra control elements (moving an end point moves its partner control
+    // points)
     QGraphicsEllipseItem *_extra_0 = nullptr;
     QGraphicsEllipseItem *_extra_1 = nullptr;
 
-    // The bezier curves be affected by the control point (for redrawing and checks)
+    // The bezier curves be affected by the control point (for redrawing and 
+    // checks)
     Bezier *_bezier_0 = nullptr;
     Bezier *_bezier_1 = nullptr;
 
-    // The overflow lines (these continue from the first and last ends of the curve to 0 and 1)
+    // The overflow lines (these continue from the first and last ends of the
+    // curve to 0 and 1)
     QGraphicsLineItem *_line_start = nullptr;
     QGraphicsLineItem *_line_end = nullptr;
 };
 
-// The bezier function itself, in 1 dimension
+/**
+ * bezier
+ * 
+ * The raw bezier function for a single dimension
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * 
+ * @param double t : The percentage of the bezier to get.
+ * @param double a : The first end point.
+ * @param double b : The first control point.
+ * @param double c : The second control point.
+ * @param double d : The second end point.
+ * 
+ * @returns double : The resulting value.
+ */
 double bezier(double t, double a, double b, double c, double d);
 
-// The bezier function for a point
+/**
+ * bezier
+ * 
+ * The raw bezier function for a single dimension
+ * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * 
+ * @param double t : The percentage of the bezier to get.
+ * @param QPointF a : The first end point.
+ * @param QPointF b : The first control point.
+ * @param QPointF c : The second control point.
+ * @param QPointF d : The second end point.
+ * 
+ * @returns QPointF : The resulting value.
+ */
 QPointF bezier(double t, QPointF a, QPointF b, QPointF c, QPointF d);

@@ -1,13 +1,18 @@
 #include "vectorintensity.h"
 
-#include "Globals/settings.h"
-
 #include <QComboBox>
 #include <QDebug>
 
+#include "Globals/settings.h"
+
+/**
+ * ConverterVectorIntensityNode
+ * 
+ * Creates the node and the UI.
+ */
 ConverterVectorIntensityNode::ConverterVectorIntensityNode()
 {
-    qDebug("Creating Vector to Intensity Converter Node, attaching listeners and UI widget");
+    qDebug("Creating Vector to Intensity Converter Node and UI widgets");
     this->_widget = new QWidget();
     this->_shared_widget = new QWidget();
 
@@ -15,12 +20,24 @@ ConverterVectorIntensityNode::ConverterVectorIntensityNode()
     this->_shared_ui.setupUi(this->_shared_widget);
 }
 
-ConverterVectorIntensityNode::~ConverterVectorIntensityNode() {}
-
+/**
+ * created
+ * 
+ * Function is called when the node is created so it can connect to listeners.
+ * 
+ * @signals dataUpdated
+ */
 void ConverterVectorIntensityNode::created()
 {
-    QObject::connect(this->_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
-    QObject::connect(this->_shared_ui.mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ConverterVectorIntensityNode::modeChanged);
+    QObject::connect(this->_ui.mode,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     this,
+                     &ConverterVectorIntensityNode::modeChanged);
+
+    QObject::connect(this->_shared_ui.mode,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     this,
+                     &ConverterVectorIntensityNode::modeChanged);
 
     Q_CHECK_PTR(SETTINGS);
     QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
@@ -58,53 +75,118 @@ void ConverterVectorIntensityNode::created()
     });
 }
 
-// Title shown at the top of the node
-QString
-ConverterVectorIntensityNode::caption() const
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
+QString ConverterVectorIntensityNode::caption() const
 {
     return QString("Vector to Intensity Map");
 }
 
-// Title shown in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString ConverterVectorIntensityNode::name() const
 {
     return QString("Vector to Intensity Converter");
 }
 
-// The image label that is embedded in the node
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *ConverterVectorIntensityNode::embeddedWidget()
 {
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
+
+/**
+ * sharedWidget
+ * 
+ * Returns a pointer to the widget that gets displayed in the properties panel.
+ * 
+ * @returns QWidget* : The shared widget.
+ */
 QWidget *ConverterVectorIntensityNode::sharedWidget()
 {
     Q_CHECK_PTR(this->_shared_widget);
     return this->_shared_widget;
 }
 
-// Get the number of ports (1 output, 1 input)
-unsigned int ConverterVectorIntensityNode::nPorts(QtNodes::PortType port_type) const
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
+unsigned int
+ConverterVectorIntensityNode::nPorts(QtNodes::PortType port_type) const
 {
     Q_UNUSED(port_type);
     return 1;
 }
 
-// Get the port datatype
-QtNodes::NodeDataType ConverterVectorIntensityNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+ConverterVectorIntensityNode::dataType(QtNodes::PortType port_type,
+                                       QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_index);
-    return port_type == QtNodes::PortType::In ? VectorMapData().type() : IntensityMapData().type();
+    return port_type == QtNodes::PortType::In ? VectorMapData().type()
+                                              : IntensityMapData().type();
 }
 
-// Get the output data (the IntensityMapData)
-std::shared_ptr<QtNodes::NodeData> ConverterVectorIntensityNode::outData(QtNodes::PortIndex port)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
+std::shared_ptr<QtNodes::NodeData>
+ConverterVectorIntensityNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     return std::make_shared<IntensityMapData>(this->_output);
 }
 
-// Save and load the node
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject ConverterVectorIntensityNode::save() const
 {
     qDebug("Saving vector to intensity converter node");
@@ -113,14 +195,32 @@ QJsonObject ConverterVectorIntensityNode::save() const
     data["channel"] = (int)this->_channel;
     return data;
 }
+
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object.
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ */
 void ConverterVectorIntensityNode::restore(QJsonObject const &data)
 {
     qDebug("Restoring vector to intensity converter node");
     this->_channel = (IntensityMap::Channel)data["channel"].toInt(0);
 }
 
-// Needed for all nodes, even if there are no inputs
-void ConverterVectorIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port_index)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void ConverterVectorIntensityNode::setInData(
+    std::shared_ptr<QtNodes::NodeData> node_data,
+    QtNodes::PortIndex port_index)
 {
     Q_UNUSED(port_index);
     if (node_data)
@@ -131,7 +231,13 @@ void ConverterVectorIntensityNode::setInData(std::shared_ptr<QtNodes::NodeData> 
     }
 }
 
-// Generate resulting output
+/**
+ * _generate
+ * 
+ * Generates the output data from the supplied and available data.
+ * 
+ * @signals dataUpdated
+ */
 void ConverterVectorIntensityNode::_generate()
 {
     qDebug("Generating output");
@@ -143,15 +249,30 @@ void ConverterVectorIntensityNode::_generate()
     emit this->dataUpdated(0);
 }
 
-// When the connection is deleted use default value
-void ConverterVectorIntensityNode::inputConnectionDeleted(QtNodes::Connection const &connection)
+/**
+ * inputConnectionDeleted @slot
+ * 
+ * Called when an input connection is deleted, this usually resets some data and
+ * regenerates the output data.
+ * 
+ * @param QtNodes::Connection const& connection : The connection being deleted.
+ */
+void ConverterVectorIntensityNode::inputConnectionDeleted(
+    QtNodes::Connection const &connection)
 {
     Q_UNUSED(connection);
     this->_set = false;
     this->_generate();
 }
 
-// When the mode changes
+/**
+ * modeChanged @slot
+ * 
+ * Called to change the mode used to convert the vector map. Regenerates the
+ * output.
+ * 
+ * @param int index : The new mode.
+ */
 void ConverterVectorIntensityNode::modeChanged(int index)
 {
     this->_channel = (IntensityMap::Channel)index;

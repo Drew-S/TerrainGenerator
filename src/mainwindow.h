@@ -1,33 +1,47 @@
 #pragma once
 
+#include <QDialog>
+#include <QDir>
 #include <QMainWindow>
-
-#include "ui_Main.h"
-#include "ui_SaveAsDialogue.h"
 
 #include "Nodeeditor/nodeeditor.h"
 #include "OpenGL/opengl.h"
 
-#include <QDialog>
-#include <QDir>
+#include "ui_Main.h"
+#include "ui_SaveAsDialogue.h"
 
-// Class that manages the main window, controls save/load from file
+/**
+ * MainWindow
+ * 
+ * MainWindow houses the primary interface that the user interacts with. Within
+ * this class other classes handles specific widgets. Manages saving and
+ * loading, and rendering.
+ */
 class MainWindow : public QMainWindow
 {
 public:
-    MainWindow();
-    ~MainWindow();
-
+    // Setup with the provided UI and attach listeners
     void setup(Ui::MainWindow *ui);
 
+    // Save the current project to the previous file (save) or a new file
+    // (saveAs).
     void saveAs();
     // void save();
+
+    // Load a project file from the system.
     void load();
 
 private slots:
+    // On save as selected, file dialogue used to select output directory
     void _saveAsFile();
+
+    // When the save as filename is changed user selects filename
     void _saveAsLineEdit(QString const &text);
+
+    // When the accept is pressed we save the file
     void _saveAsAccept();
+
+    // When the pack option is checked we select to pack files together
     void _saveAsTogglePack(bool checked);
 
 private:
@@ -43,5 +57,6 @@ private:
     Ui::MainWindow *_main_ui;
     Ui::SaveAsDialogue *_save_ui;
 
+    // Dialogue for save as functions
     QDialog *_save_as_dialogue;
 };

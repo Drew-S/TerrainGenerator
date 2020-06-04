@@ -2,12 +2,19 @@
 
 #include <vector>
 
-#include <QDir>
-#include <QTemporaryDir>
-#include <QObject>
 #include <QColor>
+#include <QDir>
+#include <QObject>
+#include <QTemporaryDir>
 
 // Global singleton for sharing settings throughout
+/**
+ * Settings
+ * 
+ * Singleton for housing global settings (project and application) that can be
+ * accessed from anywhere. Houses getters, setters, and signals for global
+ * settings.
+ */
 class Settings : public QObject
 {
     Q_OBJECT
@@ -16,9 +23,9 @@ public:
     static Settings *getInstance();
     ~Settings();
 
-    // Getters (for most if not all settings)
-    QDir tmpDir();
-    std::vector<QDir> getAssetDirectories();
+    // Getters
+    QDir tmpDir(); // Get only
+    std::vector<QDir> getAssetDirectories(); // Get only
 
     bool renderMode();
     int previewResolution();
@@ -31,7 +38,7 @@ public:
     bool packImages();
     bool percentProgressText();
 
-    // Setters (for settings that can be changed)
+    // Setters
     void setRenderMode(bool mode);
     void setPreviewResolution(int resolution);
     void setRenderResolution(int resolution);
@@ -47,6 +54,7 @@ public:
     // void restore(QJsonObject const &data);
 
 signals:
+    // Signals for when a value is changed through setters
     void renderModeChanged(bool mode);
     void previewResolutionChanged(int resolution);
     void renderResolutionChanged(int resolution);
@@ -60,13 +68,13 @@ private:
     static Settings *_single;
 
     // Settings
-    QTemporaryDir *_tmp_dir;       // /tmp/TerrainGenerator_XXXXXX/
-    QDir _system_asset_directory;  // /user/share/TerrainGenerator/...
-    QDir _user_asset_directory;    // /home/<user>/.TerrainGenerator/...
-    int _mesh_resolution = 256;    // Vertices on OpenGL preview mesh
-    int _preview_resolution = 256; // Image resolution during design
-    int _render_resolution = 1024; // Image resolution when rendering/exporting
-    bool _render_mode = false;     // Whether to use render resolution or preview
+    QTemporaryDir *_tmp_dir;        // /tmp/TerrainGenerator_XXXXXX/
+    QDir _system_asset_directory;   // /user/share/TerrainGenerator/...
+    QDir _user_asset_directory;     // /home/<user>/.TerrainGenerator/...
+    int _mesh_resolution = 256;     // Vertices on OpenGL preview mesh
+    int _preview_resolution = 256;  // Image resolution during design
+    int _render_resolution = 1024;  // Image resolution when rendering/exporting
+    bool _render_mode = false;      // Whether to use render resolution or not
     // QColor _sun{255, 255, 255};     // Sun light colour in OpenGL window
     // QColor _sky{196, 214, 252};     // Sky/ambient light colour in OpenGL window
     // QColor _terrain{191, 191, 191}; // Terrain colour in OpenGL window

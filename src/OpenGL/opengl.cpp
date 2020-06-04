@@ -1,18 +1,25 @@
 #include "opengl.h"
 
-#include "ui_OpenGLControls.h"
-
-#include <QOpenGLFunctions>
+#include <QDebug>
+#include <QMatrix>
 #include <QOpenGLContext>
-#include <QSurfaceFormat>
+#include <QOpenGLFunctions>
 #include <QPoint>
 #include <QPointF>
-#include <QMatrix>
-#include <QDebug>
+#include <QSurfaceFormat>
 
 #include <GL/gl.h>
 
-// Creates an OpenGL widget (QOpenGLWidget)
+#include "ui_OpenGLControls.h"
+
+/**
+ * OpenGL
+ * 
+ * Create the opengl widget, setup the terrain, light, camera, and other
+ * information.
+ * 
+ * @param QWidget* parent : Set the parent widget.
+ */
 OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
 {
     qDebug("Setting up OpenGL widget");
@@ -73,16 +80,38 @@ OpenGL::OpenGL(QWidget *parent) : QOpenGLWidget(parent)
     this->_control_sun_rotation_y->setSliderPosition(sun_rotation_y);
 
     // Attach listeners for the camera controls
-    QObject::connect(this->_control_cam_rotation_x, &QSlider::valueChanged, this, &OpenGL::camRotationX);
-    QObject::connect(this->_control_cam_rotation_y, &QSlider::valueChanged, this, &OpenGL::camRotationY);
-    QObject::connect(this->_control_cam_zoom, &QSlider::valueChanged, this, &OpenGL::camZoom);
+    QObject::connect(this->_control_cam_rotation_x,
+                     &QSlider::valueChanged,
+                     this,
+                     &OpenGL::camRotationX);
+
+    QObject::connect(this->_control_cam_rotation_y,
+                     &QSlider::valueChanged,
+                     this,
+                     &OpenGL::camRotationY);
+
+    QObject::connect(this->_control_cam_zoom,
+                     &QSlider::valueChanged,
+                     this,
+                     &OpenGL::camZoom);
 
     // Attach listeners for the sun controls
-    QObject::connect(this->_control_sun_rotation_x, &QSlider::valueChanged, this, &OpenGL::sunRotationX);
-    QObject::connect(this->_control_sun_rotation_y, &QSlider::valueChanged, this, &OpenGL::sunRotationY);
+    QObject::connect(this->_control_sun_rotation_x,
+                     &QSlider::valueChanged,
+                     this,
+                     &OpenGL::sunRotationX);
+
+    QObject::connect(this->_control_sun_rotation_y,
+                     &QSlider::valueChanged,
+                     this,
+                     &OpenGL::sunRotationY);
 }
 
-// Clean up objects
+/**
+ * ~OpenGL
+ * 
+ * Deletes the pointers to the other values. Destroys the widget.
+ */
 OpenGL::~OpenGL()
 {
     Q_CHECK_PTR(this->_terrain);
@@ -93,6 +122,13 @@ OpenGL::~OpenGL()
     delete this->_light;
 }
 
+/**
+ * setTerrainDrawLines
+ * 
+ * Set whether or not to draw terrain vertex lines.
+ * 
+ * @param bool lines : Whether or not to draw the lines
+ */
 void OpenGL::setTerrainDrawLines(bool lines)
 {
     Q_CHECK_PTR(this->_terrain);
@@ -100,29 +136,68 @@ void OpenGL::setTerrainDrawLines(bool lines)
     this->update();
 }
 
+/**
+ * setTerrainColor
+ * 
+ * Sets the colour of the terrain.
+ * 
+ * @param QColo color : The colour of the terrain.
+ */
 void OpenGL::setTerrainColor(QColor color)
 {
     Q_CHECK_PTR(this->_terrain);
     this->_terrain->setTerrainColor(color);
     this->update();
 }
+
+/**
+ * setTerrainLineColor
+ * 
+ * Set the color of the terrain lines.
+ * 
+ * @param QColor color : The colour of the terrain lines.
+ */
 void OpenGL::setTerrainLineColor(QColor color)
 {
     Q_CHECK_PTR(this->_terrain);
     this->_terrain->setLineColor(color);
     this->update();
 }
+
+/**
+ * setTerrainMeshResolution
+ * 
+ * Sets the resolution of the terrain mesh.
+ * 
+ * @param int resolution : The resolution of the mesh.
+ */
 void OpenGL::setTerrainMeshResolution(int resolution)
 {
     Q_CHECK_PTR(this->_terrain);
     this->_terrain->setResolution(resolution);
     this->update();
 }
+
+/**
+ * setSkyColor
+ * 
+ * Set the background colour of the sky, also used for the ambient colour.
+ * 
+ * @param QColor color : The colour of the sky.
+ */
 void OpenGL::setSkyColor(QColor color)
 {
     this->_ambient = QVector3D(color.redF(), color.greenF(), color.blueF());
     this->update();
 }
+
+/**
+ * setLightColor
+ * 
+ * Sets the colour of the sun.
+ * 
+ * @param QColor color : The colour of the sun.
+ */
 void OpenGL::setLightColor(QColor color)
 {
     Q_CHECK_PTR(this->_light);
@@ -130,25 +205,64 @@ void OpenGL::setLightColor(QColor color)
     this->update();
 }
 
+/**
+ * terrainDrawLines
+ * 
+ * Get whether we are drawing lines on the terrain or not.
+ * 
+ * @returns bool : Whether the line are being drawn.
+ */
 bool OpenGL::terrainDrawLines()
 {
     Q_CHECK_PTR(this->_terrain);
     return this->_terrain->drawLines();
 }
+
+/**
+ * terrainColor
+ * 
+ * Get the current terrain colour.
+ * 
+ * @returns QColor : The current colour of the terrain.
+ */
 QColor OpenGL::terrainColor()
 {
     Q_CHECK_PTR(this->_terrain);
     return this->_terrain->terrainColor();
 }
+
+/**
+ * terrainLineColor
+ * 
+ * Get the colour of the terrain lines.
+ * 
+ * @returns QColor : The current terrain line colour.
+ */
 QColor OpenGL::terrainLineColor()
 {
     Q_CHECK_PTR(this->_terrain);
     return this->_terrain->lineColor();
 }
+
+/**
+ * skyColor
+ * 
+ * Get the current sky colour.
+ * 
+ * @returns QColor : The current sky colour.
+ */
 QColor OpenGL::skyColor()
 {
     return QColor::fromRgbF(this->_ambient.x(), this->_ambient.y(), this->_ambient.z());
 }
+
+/**
+ * lightColor
+ * 
+ * Get the current sun colour.
+ * 
+ * @returns QColor : The current light colour.
+ */
 QColor OpenGL::lightColor()
 {
     Q_CHECK_PTR(this->_light);
@@ -156,7 +270,12 @@ QColor OpenGL::lightColor()
     return QColor::fromRgbF(vec.x(), vec.y(), vec.z());
 }
 
-// Initialize OpenGL functions and objects
+/**
+ * initializeGL
+ * 
+ * Initializes the OpenGL functions, the parameters, the terrain, the camera,
+ * etc.
+ */
 void OpenGL::initializeGL()
 {
     // Get the open gl functions. f->* is the same as the "raw" opengl functions with f-> prefixed on
@@ -179,7 +298,15 @@ void OpenGL::initializeGL()
     this->_terrain->initializeGL();
 }
 
-// On widget being resize, recalculate the camera perspective, and update the control widget size
+/**
+ * resizeGL
+ * 
+ * Updates the widget resolution, updates the gizmos, and updates the camera
+ * values.
+ * 
+ * @param int w : The width of the widget.
+ * @param iht h : The height of the widget.
+ */
 void OpenGL::resizeGL(int w, int h)
 {
     Q_CHECK_PTR(this->_terrain);
@@ -188,7 +315,11 @@ void OpenGL::resizeGL(int w, int h)
     this->_controls->setGeometry(0, -10, w, h);
 }
 
-// Paint the scene, lights, objects, etc.
+/**
+ * paintGL
+ * 
+ * Updates the viewport, the gizmos, terrain, etc.
+ */
 void OpenGL::paintGL()
 {
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
@@ -327,7 +458,13 @@ void OpenGL::paintGL()
     glLineWidth(1.0f);
 }
 
-// On mouse wheel activity, zoom in (was implemented early to debug OpenGL implementation)
+/**
+ * wheelEvent
+ * 
+ * When the wheel is scrolled we adjust the zoom value of the camera.
+ * 
+ * @param QWheelEvent* event : The mouse scroll wheel event.
+ */
 void OpenGL::wheelEvent(QWheelEvent *event)
 {
     Q_CHECK_PTR(this->_camera);
@@ -341,13 +478,27 @@ void OpenGL::wheelEvent(QWheelEvent *event)
     this->update();
 }
 
-// When the OpenGL widget is clicked, enable dragging and set the starting point
+/**
+ * mousePressEvent
+ * 
+ * On mouse press we save the previous position for relative mouse movement used
+ * for rotation in the move event.
+ * 
+ * @param QMouseEvent* event : The mouse press event.
+ */
 void OpenGL::mousePressEvent(QMouseEvent *event)
 {
     this->_prev = event->pos();
 }
 
-// When the mouse moves. Mouse tracking is off = only called if clicked (dragging)
+/**
+ * mouseMoveEvent
+ * 
+ * When the mouse is moved and the correct buttons are pressed we update the
+ * camera or the suns rotation as the mouse moves.
+ * 
+ * @param QMouseEvent* event : The mouse move event.
+ */
 void OpenGL::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() != Qt::LeftButton)
@@ -387,13 +538,27 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
     update();
 }
 
-// When the sun widgets are changed
+/**
+ * sunRotationX @slot
+ * 
+ * Update the suns rotation along the x-axis from the UI.
+ * 
+ * @param int value : The new rotation value.
+ */
 void OpenGL::sunRotationX(int value)
 {
     Q_CHECK_PTR(this->_light);
     this->_light->setRotationX((float)value);
     this->update();
 }
+
+/**
+ * sunRotationY @slot
+ * 
+ * Update the suns rotation along the y-axis from the UI.
+ * 
+ * @param int value : The new rotation value.
+ */
 void OpenGL::sunRotationY(int value)
 {
     Q_CHECK_PTR(this->_light);
@@ -401,19 +566,40 @@ void OpenGL::sunRotationY(int value)
     this->update();
 }
 
-// When the camera widgets are changed
+/**
+ * camRotationX @slot
+ * 
+ * Update the camera rotation along the x-axis from the UI.
+ * 
+ * @param int value : The new rotation value.
+ */
 void OpenGL::camRotationX(int value)
 {
     Q_CHECK_PTR(this->_camera);
     this->_camera->setRotationX((float)value);
     this->update();
 }
+
+/**
+ * camRotationY @slot
+ * 
+ * Update the camera rotation along the y-axis from the UI.
+ * 
+ * @param int value : The new rotation value.
+ */
 void OpenGL::camRotationY(int value)
 {
     Q_CHECK_PTR(this->_camera);
     this->_camera->setRotationY((float)value);
     this->update();
 }
+/**
+ * camZoom @slot
+ * 
+ * Update the camera zoom value from UI.
+ * 
+ * @param int value : The new zoom value.
+ */
 void OpenGL::camZoom(int value)
 {
     Q_CHECK_PTR(this->_camera);
@@ -422,6 +608,15 @@ void OpenGL::camZoom(int value)
 }
 
 // When the nodeeditor has new updated textures
+/**
+ * nodeeditorOutputUpdated @slot
+ * 
+ * Called when the nodeeditor has updated normal/height maps from the dataflow
+ * diagram. Used to update the scene.
+ * 
+ * @param QImage normal_map : The new normal map.
+ * @param QImage height_map : The new height map.
+ */
 void OpenGL::nodeeditorOutputUpdated(QImage normal_map, QImage height_map)
 {
     Q_CHECK_PTR(this->_terrain);

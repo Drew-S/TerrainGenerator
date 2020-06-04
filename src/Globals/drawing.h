@@ -2,46 +2,56 @@
 
 #include <vector>
 
-#include "ui_TextureDrawing.h"
+#include <QColor>
+#include <QDialog>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QModelIndex>
+#include <QObject>
+#include <QPainter>
+#include <QPointF>
+#include <QPushButton>
+#include <QStandardItemModel>
 
 #include "Globals/stencillist.h"
 #include "Globals/texturelist.h"
 
-#include <QDialog>
-#include <QGraphicsScene>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsEllipseItem>
-#include <QObject>
-#include <QPointF>
-#include <QStandardItemModel>
-#include <QModelIndex>
-#include <QPushButton>
-#include <QColor>
-#include <QPainter>
+#include "ui_TextureDrawing.h"
 
-// Dialogue used for manipulating (drawing) on existing textures
+/**
+ * DrawingDialogue
+ * 
+ * This is a singleton class that houses a drawing dialogue. Within the dialogue
+ * the user can select existing textures and draw on them to create new
+ * textures.
+ */
 class DrawingDialogue : public QObject
 {
     Q_OBJECT
 public:
+    // Get the singleton instance
     static DrawingDialogue *getInstance();
     ~DrawingDialogue();
 
     // Show the dialogue, using existing selected texture
-    // defaults to 0
     void show();
 
     // Show the dialogue with a specific texture (index on the texturelist)
     void show(int index);
 
 public slots:
-    // Update pixmap as the user draws
+    // Update display pixmap as the user draws
     void textureUpdated();
+
+    // Update the texture list when there is a new texture
     void newTexture(int index);
+
+    // Pop the last changes from the history stack
     void undo();
 
 protected:
-    // Controls drawing and zooming
+    // Controls drawing, undo, and zooming
     bool eventFilter(QObject *object, QEvent *event);
 
 private:

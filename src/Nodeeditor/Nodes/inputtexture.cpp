@@ -2,19 +2,22 @@
 
 #include <QDebug>
 #include <QFileDialog>
-#include <QRegion>
 #include <QFileInfo>
 #include <QMouseEvent>
+#include <QRegion>
 #include <QToolButton>
-
-#include "../Datatypes/pixmap.h"
-
-#include "Globals/drawing.h"
-#include "Globals/settings.h"
 
 #include <glm/vec4.hpp>
 
-// Setup the node
+#include "../Datatypes/pixmap.h"
+#include "Globals/drawing.h"
+#include "Globals/settings.h"
+
+/**
+ * InputTextureNode
+ * 
+ * Creates the node and creates the UI.
+ */
 InputTextureNode::InputTextureNode()
 {
     qDebug("Creating Input Texture Node, attaching UI");
@@ -28,27 +31,63 @@ InputTextureNode::InputTextureNode()
     this->_ui.setupUi(this->_widget);
 }
 
+/**
+ * created
+ * 
+ * Function is called when the node is created so it can connect to listeners.
+ * 
+ * @signals dataUpdated
+ */
 void InputTextureNode::created()
 {
-    QObject::connect(this->_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
-    QObject::connect(this->_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::show);
+    QObject::connect(this->_ui.load_texture,
+                     &QPushButton::clicked,
+                     this,
+                     &InputTextureNode::_loadFile);
+
+    QObject::connect(this->_ui.new_texture,
+                     &QPushButton::clicked,
+                     this->_dialogue,
+                     &QDialog::show);
+
     QObject::connect(this->_ui.edit_button, &QToolButton::clicked, [this]() {
         if (this->_texture_index != -1)
             DRAWING->show(this->_texture_index);
     });
 
-    QObject::connect(this->_shared_ui.load_texture, &QPushButton::clicked, this, &InputTextureNode::_loadFile);
-    QObject::connect(this->_shared_ui.new_texture, &QPushButton::clicked, this->_dialogue, &QDialog::show);
-    QObject::connect(this->_shared_ui.edit_button, &QToolButton::clicked, [this]() {
+    QObject::connect(this->_shared_ui.load_texture,
+                     &QPushButton::clicked,
+                     this,
+                     &InputTextureNode::_loadFile);
+
+    QObject::connect(this->_shared_ui.new_texture,
+                     &QPushButton::clicked,
+                     this->_dialogue,
+                     &QDialog::show);
+
+    QObject::connect(this->_shared_ui.edit_button,
+                     &QToolButton::clicked,
+                     [this]()
+    {
         if (this->_texture_index != -1)
             DRAWING->show(this->_texture_index);
     });
 
-    QObject::connect(this->_new_texture_ui.resolution, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+    QObject::connect(this->_new_texture_ui.resolution,
+                     QOverload<int>::of(&QSpinBox::valueChanged),
+                     [this](int value)
+    {
         this->_new_file_res = value;
     });
-    QObject::connect(this->_new_texture_ui.ok_button, &QPushButton::clicked, this, &InputTextureNode::_newFileAccept);
-    QObject::connect(this->_new_texture_ui.cancel_button, &QPushButton::clicked, this->_dialogue, &QDialog::reject);
+    QObject::connect(this->_new_texture_ui.ok_button,
+                     &QPushButton::clicked,
+                     this,
+                     &InputTextureNode::_newFileAccept);
+
+    QObject::connect(this->_new_texture_ui.cancel_button,
+                     &QPushButton::clicked,
+                     this->_dialogue,
+                     &QDialog::reject);
 
     Q_CHECK_PTR(SETTINGS);
     QObject::connect(SETTINGS, &Settings::previewResolutionChanged, [this]() {
@@ -63,57 +102,119 @@ void InputTextureNode::created()
     });
 }
 
-InputTextureNode::~InputTextureNode() {}
-
-// Title shown at the top of the node
+/**
+ * caption
+ * 
+ * Return a string that is displayed on the node and in the properties.
+ * 
+ * @returns QString : The caption.
+ */
 QString InputTextureNode::caption() const
 {
     return "Texture";
 }
 
-// Title shown in the selection list
+/**
+ * name
+ * 
+ * Return a string that is displayed in the node selection list.
+ * 
+ * @returns QString : The name.
+ */
 QString InputTextureNode::name() const
 {
     return "Texture";
 }
 
-// The image label that is embedded in the node
+/**
+ * embeddedWidget
+ * 
+ * Returns a pointer to the widget that gets embedded within the node in the
+ * dataflow diagram.
+ * 
+ * @returns QWidget* : The embedded widget.
+ */
 QWidget *InputTextureNode::embeddedWidget()
 {
     Q_CHECK_PTR(this->_widget);
     return this->_widget;
 }
 
-// The image label that is shared with the properties
+/**
+ * sharedWidget
+ * 
+ * Returns a pointer to the widget that gets displayed in the properties panel.
+ * 
+ * @returns QWidget* : The shared widget.
+ */
 QWidget *InputTextureNode::sharedWidget()
 {
     Q_CHECK_PTR(this->_shared);
     return this->_shared;
 }
 
-// Get the number of in and out ports
+/**
+ * nPorts
+ * 
+ * Returns the number of ports the node has per type of port.
+ * 
+ * @param QtNodes::PortType port_type : The type of port to get the number of
+ *                                      ports. QtNodes::PortType::In (input),
+ *                                      QtNodes::PortType::Out (output)
+ * 
+ * @returns unsigned int : The number of ports.
+ */
 unsigned int InputTextureNode::nPorts(QtNodes::PortType port_type) const
 {
     return port_type == QtNodes::PortType::Out ? 1 : 0;
 }
 
-// Get the data type for the port inputs and output
-QtNodes::NodeDataType InputTextureNode::dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const
+/**
+ * dataType
+ * 
+ * Returns the data type for each of the ports.
+ * 
+ * @param QtNodes::PortType port_type : The type of port (in or out).
+ * @param QtNodes::PortIndex port_index : The port index on each side.
+ * 
+ * @returns QtNodes::NodeDataType : The type of data the port provides/accepts.
+ */
+QtNodes::NodeDataType
+InputTextureNode::dataType(QtNodes::PortType port_type,
+                           QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_type);
     Q_UNUSED(port_index);
     return VectorMapData().type();
 }
 
-// Needed for all nodes, even if there are no inputs
-void InputTextureNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port)
+/**
+ * setInData
+ * 
+ * Sets the input data on a port.
+ * 
+ * @param std::shared_ptr<QtNodes::NodeData> node_data : The shared pointer data
+ *                                                       being inputted.
+ * @param QtNodes::PortIndex port : The port the data is being set on.
+ */
+void InputTextureNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                                 QtNodes::PortIndex port)
 {
     Q_UNUSED(node_data);
     Q_UNUSED(port);
 }
 
-// Get the data attached to a port
-std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex port)
+/**
+ * outData
+ * 
+ * Returns a shared pointer for transport along a connection to another node.
+ * 
+ * @param QtNodes::PortIndex port : The port to get data from.
+ * 
+ * @returns std::shared_ptr<QtNodes::NodeData> : The shared output data.
+ */
+std::shared_ptr<QtNodes::NodeData>
+InputTextureNode::outData(QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
     Q_CHECK_PTR(SETTINGS);
@@ -125,15 +226,30 @@ std::shared_ptr<QtNodes::NodeData> InputTextureNode::outData(QtNodes::PortIndex 
     if (this->_texture != nullptr)
         return std::make_shared<VectorMapData>(this->_texture->vectorMap(size));
 
-    return std::make_shared<VectorMapData>(VectorMap(size, size, glm::dvec4(0.00, 0.00, 0.00, 1.00)));
+    return std::make_shared<VectorMapData>(VectorMap(size,
+                                                     size,
+                                                     glm::dvec4(0.00,
+                                                                0.00,
+                                                                0.00,
+                                                                1.00)));
 }
 
+/**
+ * _loadFile @slot
+ * 
+ * Called when the load button is pressed. The user selects an input texture
+ * to load into the project.
+ * 
+ * @signals dataUpdated
+ */
 void InputTextureNode::_loadFile()
 {
-    // QFileDialog::getOpenFileName cannot be interacted with in a headless testing environment
-    // Since we can assume QFileDialog works as expected we use a fixed test file for testing
+    // QFileDialog::getOpenFileName cannot be interacted with in a headless
+    // testing environment Since we can assume QFileDialog works as expected we
+    // use a fixed test file for testing
 #ifdef TEST_MODE
-    QString filename = QDir::cleanPath(QString(PWD) + QString("/assets/textures/test.png"));
+    QString filename = QDir::cleanPath(QString(PWD)
+                     + QString("/assets/textures/test.png"));
 #else
     QString filename = QFileDialog::getOpenFileName(
         nullptr,
@@ -149,12 +265,24 @@ void InputTextureNode::_loadFile()
     {
         this->_texture_index = index;
         this->_texture = TEXTURES->at(index);
-        QObject::connect(this->_texture, &Texture::updated, this, &InputTextureNode::textureUpdated);
+        QObject::connect(this->_texture,
+                         &Texture::updated,
+                         this,
+                         &InputTextureNode::textureUpdated);
+
         this->_setPixmaps();
         emit this->dataUpdated(0);
     }
 }
 
+/**
+ * _newFileAccept @slot
+ * 
+ * Called when the new texture dialogue has been accepted, this will create a
+ * new blank texture.
+ * 
+ * @signals dataUpdated
+ */
 void InputTextureNode::_newFileAccept()
 {
     this->_dialogue->accept();
@@ -166,12 +294,21 @@ void InputTextureNode::_newFileAccept()
         this->_texture_index = index;
         this->_new_file = true;
         this->_texture = TEXTURES->at(index);
-        QObject::connect(this->_texture, &Texture::updated, this, &InputTextureNode::textureUpdated);
+        QObject::connect(this->_texture,
+                         &Texture::updated,
+                         this,
+                         &InputTextureNode::textureUpdated);
+
         this->_setPixmaps();
         emit this->dataUpdated(0);
     }
 }
 
+/**
+ * _setPixmaps @slot
+ * 
+ * Updates the labels that displays the loaded/created textures.
+ */
 void InputTextureNode::_setPixmaps()
 {
     if (this->_texture != nullptr)
@@ -181,6 +318,7 @@ void InputTextureNode::_setPixmaps()
                 this->_ui.texture_display->width(),
                 this->_ui.texture_display->height(),
                 Qt::KeepAspectRatio));
+
         this->_shared_ui.texture_display->setPixmap(
             this->_texture->pixmap().scaled(
                 this->_shared_ui.texture_display->width(),
@@ -194,7 +332,14 @@ void InputTextureNode::_setPixmaps()
     }
 }
 
-// Save the node to for a file
+/**
+ * save
+ * 
+ * Saves the state of the node into a QJsonObject for the system to save to
+ * file.
+ * 
+ * @returns QJsonObject : The saved state of the node.
+ */
 QJsonObject InputTextureNode::save() const
 {
     Q_CHECK_PTR(SETTINGS);
@@ -223,7 +368,15 @@ QJsonObject InputTextureNode::save() const
     return data;
 }
 
-// Restore the node from a save
+/**
+ * restore
+ * 
+ * Restores the state of the node from a provided json object.
+ * 
+ * @param QJsonObject const& data : The data to restore from.
+ * 
+ * @signals dataUpdated
+ */
 void InputTextureNode::restore(QJsonObject const &data)
 {
     Q_CHECK_PTR(TEXTURES);
@@ -240,13 +393,24 @@ void InputTextureNode::restore(QJsonObject const &data)
         {
             this->_texture_index = index;
             this->_texture = TEXTURES->at(index);
-            QObject::connect(this->_texture, &Texture::updated, this, &InputTextureNode::textureUpdated);
+            QObject::connect(this->_texture,
+                             &Texture::updated,
+                             this,
+                             &InputTextureNode::textureUpdated);
+                             
             this->_setPixmaps();
             emit this->dataUpdated(0);
         }
     }
 }
 
+/**
+ * textureUpdated @slot
+ * 
+ * Called when the attached texture is updated.
+ * 
+ * @signals dataUpdated
+ */
 void InputTextureNode::textureUpdated()
 {
     this->_setPixmaps();

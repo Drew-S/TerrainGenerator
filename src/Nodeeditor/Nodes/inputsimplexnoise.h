@@ -1,34 +1,43 @@
 #pragma once
 
+#include <QJsonObject>
+#include <QObject>
+#include <QPixmap>
+#include <QThread>
+#include <QVector3D>
+#include <QWidget>
+
 #include "SimplexNoise.h"
+#include <nodes/Connection>
+#include <nodes/NodeDataModel>
 
 #include "../Datatypes/intensitymap.h"
-#include "../Datatypes/vectormap.h"
-
 #include "../Datatypes/pixmap.h"
-
-#include "ui_SimplexNoiseNode.h"
-#include "ui_SimplexNoiseNode_no_scroll.h"
-
-#include <nodes/NodeDataModel>
-#include <nodes/Connection>
-
-#include <QPixmap>
-#include <QWidget>
-#include <QObject>
-#include <QVector3D>
-#include <QJsonObject>
-#include <QThread>
+#include "../Datatypes/vectormap.h"
 
 #include "node.h"
 
-// Simplex Worker generates the simplex noise map in its own thread
+#include "ui_SimplexNoiseNode_no_scroll.h"
+#include "ui_SimplexNoiseNode.h"
+
+/**
+ * SimlpexNoiseWorker
+ * 
+ * Worker class for running the simplex noise generation within its own separate
+ * thread.
+ * 
+ * TODO: Implement cancel/pause/continue slots.
+ */
 class SimplexNoiseWorker : public QObject
 {
     Q_OBJECT
 public:
     // Set any data that is needed, (must be in other thread first)
-    void set(float octives, float frequency, float persistence, QVector3D offset, IntensityMap *height_map);
+    void set(float octives,
+             float frequency,
+             float persistence,
+             QVector3D offset,
+             IntensityMap *height_map);
 
 public slots:
     // Run generation
@@ -41,22 +50,29 @@ signals:
     void done();
 
 private:
+    // Generation parameters
     float _octives = 8.0f;
     float _frequency = 5.0f;
     float _persistence = 0.5f;
     QVector3D _offset{0.0f, 0.0f, 0.0f};
+
+    // Resulting height map
     IntensityMap *_height_map;
 };
 
-// Input Node for generating simplex noise maps
+/**
+ * InputSimplexNoiseNode
+ * 
+ * Input node for creating simplex noise textures.
+ */
 class InputSimplexNoiseNode : public Node
 {
     Q_OBJECT
     friend class InputSimplexNoiseNode_Test;
 
 public:
+    // Creates the node
     InputSimplexNoiseNode();
-    ~InputSimplexNoiseNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -75,16 +91,20 @@ public:
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only exports VectorMapData)
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Get the output data (the VectorMapData)
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
+    // Save and restore the nodes state
     QJsonObject save() const override;
     void restore(QJsonObject const &data) override;
 
     // Needed for all nodes, even if there are no inputs
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port);
 
 public slots:
     // Reset to use constant values when input removed

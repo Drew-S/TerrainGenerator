@@ -2,18 +2,25 @@
 
 #include <vector>
 
+#include <QColor>
 #include <QImage>
 #include <QPixmap>
-#include <QColor>
 
 #include <glm/vec4.hpp>
 
 #include "intensitymap.h"
 
-// Vector map is a 2D "image" of 3D vectors in high precision doubles
+/**
+ * VectorMap
+ *
+ * Houses a 2 dimensional array of (internally as a 1 dimensional array) of 
+ * glm::dev4 (4 value double vector) a fourth dimension version of intensity
+ * map.
+ */
 class VectorMap
 {
 public:
+    // Modes for converting from an intensity map.
     enum ColorMode
     {
         APPLY,
@@ -22,17 +29,30 @@ public:
         MASK,
         MASK_ALPHA
     };
-    // Create map from a variety of sources or to generate
-    VectorMap();
-    VectorMap(int width, int height);
-    VectorMap(int width, int height, glm::dvec4 fill);
-    VectorMap(int width, int height, std::vector<glm::dvec4> values);
-    VectorMap(QImage image);
-    VectorMap(QPixmap image);
-    ~VectorMap();
 
-    // Converters to create from/to an intensity map
-    IntensityMap toIntensityMap(IntensityMap::Channel channel = IntensityMap::BLUE);
+    // Create a new map
+    VectorMap();
+    
+    // Create a vector map with a size and default fill value.
+    VectorMap(int width, int height);
+
+    // Create a vector map with a size and a set fill value.
+    VectorMap(int width, int height, glm::dvec4 fill);
+
+    // Create a vector map with a size and a set of mapped values.
+    VectorMap(int width, int height, std::vector<glm::dvec4> values);
+
+    // Create a vector map from a supplied image.
+    VectorMap(QImage image);
+
+    // Create a vector map from a supplied pixmap.
+    VectorMap(QPixmap image);
+
+    // Converter to an intensity with a specified channel.
+    IntensityMap toIntensityMap(IntensityMap::Channel channel
+                                = IntensityMap::BLUE);
+
+    // Convert from an intensity map using the applied mode a color override.
     static VectorMap fromIntensityMap(
         IntensityMap &map,
         glm::dvec4 color = glm::dvec4(1.00, 1.00, 1.00, 1.00),
@@ -52,13 +72,17 @@ public:
 
     // Transform a vector map using a provided lambda
     //                                  pixel       value
-    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4), glm::dvec4 value);
-    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4), VectorMap *map);
+    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4),
+                        glm::dvec4 value);
+
+    VectorMap transform(glm::dvec4 func(glm::dvec4, glm::dvec4),
+                        VectorMap *map);
 
     // Get a specific value
     glm::dvec4 at(int x, int y);
 
-    // Append a value (for filling with generated data) (bool whether can/successful)
+    // Append a value (for filling with generated data) (bool whether
+    // can/successful)
     bool append(glm::dvec4 value);
 
     // Set a specific pixel (bool whether can/successful)

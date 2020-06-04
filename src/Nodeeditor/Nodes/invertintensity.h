@@ -1,19 +1,23 @@
 #pragma once
 
-#include "../Datatypes/pixmap.h"
-
 #include "../Datatypes/intensitymap.h"
-
+#include "../Datatypes/pixmap.h"
 #include "node.h"
 
+/**
+ * ConverterInvertIntensityNode
+ * 
+ * Inverts an intensity map input by applying the function f(i) = 1 - i for
+ * each pixel (i) in the map.
+ */
 class ConverterInvertIntensityNode : public Node
 {
     Q_OBJECT
     friend class ConverterInvertIntensityNode_Test;
 
 public:
+    // Create the node
     ConverterInvertIntensityNode();
-    ~ConverterInvertIntensityNode();
 
     // Title shown at the top of the node
     QString caption() const override;
@@ -28,7 +32,9 @@ public:
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only imports VectorMapData)
-    QtNodes::NodeDataType dataType(QtNodes::PortType port_type, QtNodes::PortIndex port_index) const override;
+    QtNodes::NodeDataType
+    dataType(QtNodes::PortType port_type,
+             QtNodes::PortIndex port_index) const override;
 
     // Save and load the node for project files
     QJsonObject save() const override;
@@ -38,7 +44,8 @@ public:
     std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex port);
 
     // Set the input intensity map
-    void setInData(std::shared_ptr<QtNodes::NodeData> node_data, QtNodes::PortIndex port);
+    void setInData(std::shared_ptr<QtNodes::NodeData> node_data,
+                   QtNodes::PortIndex port);
 
 public slots:
     void inputConnectionDeleted(QtNodes::Connection const &connection);

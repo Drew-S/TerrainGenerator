@@ -2,22 +2,25 @@
 
 #include <vector>
 
-#include <QObject>
-#include <QPixmap>
-#include <QImage>
-#include <QIcon>
-#include <QPainter>
-#include <QPointF>
 #include <QByteArray>
+#include <QIcon>
+#include <QImage>
 #include <QJsonObject>
+#include <QObject>
+#include <QPainter>
+#include <QPixmap>
+#include <QPointF>
 
-#include "Globals/stencillist.h"
-#include "../Nodeeditor/Datatypes/vectormap.h"
 #include "../Nodeeditor/Datatypes/intensitymap.h"
+#include "../Nodeeditor/Datatypes/vectormap.h"
+#include "Globals/stencillist.h"
 
-// Texture class houses pixmap that can be drawn on,
-// used to share textures with pointer (multiple texture
-// nodes or the drawing dialogue)
+/**
+ * Texture
+ * 
+ * The texture class houses loaded and generated textures that are provided in
+ * the InputTextureNode class and edited with the drawing singleton.
+ */
 class Texture : public QObject
 {
     Q_OBJECT
@@ -32,7 +35,6 @@ public:
     Texture(int w, int h);
     // With size and a filename
     Texture(int w, int h, QString filename);
-    ~Texture();
 
     // Convert to pixmap
     QPixmap pixmap(int scale = -1);
@@ -46,10 +48,12 @@ public:
     // For saving internally in zip
     bool bytes(QByteArray *bytes);
 
+    // Flags as to whether the texture is generated (pack into saves)
+    // and/or edited (ask to save changes before exiting for external resources)
     bool generated();
     bool edited();
 
-    // Texture name
+    // Texture name's
     QString name();
     QString filename();
     QString saveName();
@@ -88,11 +92,13 @@ private:
     bool _edited = false;
 };
 
-// Global singleton that manages all the Texture's provided in the system
-// This is used to allow nodes to select existing loaded textures from
-// as central location rather than separate management. Makes draw management
-// easier and allows for multiple nodes to reference the same texture without
-// duplicating data
+/**
+ * TextureList
+ * 
+ * Singleton class that houses the entire list of textures used throughout the
+ * program. InputTextureNodes that create new textures do so through this
+ * singleton. The drawing singleton lists active textures by polling this.
+ */
 class TextureList : public QObject
 {
     Q_OBJECT
