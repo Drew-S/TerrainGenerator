@@ -284,6 +284,8 @@ void Terrain::_paintGL(QOpenGLFunctions *f,
     // Set lines mode toggle
     this->_program.setUniformValue("lines", lines_mode);
 
+    // Attach textures
+    glActiveTexture(GL_TEXTURE0);
     // Set texture filtering
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MIN_FILTER,
@@ -293,11 +295,35 @@ void Terrain::_paintGL(QOpenGLFunctions *f,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    // Attach textures
-    glActiveTexture(GL_TEXTURE0);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_EDGE);
+
     glBindTexture(GL_TEXTURE_2D, this->_height->textureId());
 
     glActiveTexture(GL_TEXTURE1);
+
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_EDGE);
+                    
     glBindTexture(GL_TEXTURE_2D, this->_normal->textureId());
 
     this->_program.setUniformValue("height_map", GL_TEXTURE0);
