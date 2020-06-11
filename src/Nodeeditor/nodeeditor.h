@@ -29,6 +29,8 @@
 #include "./Nodes/vectordot.h"
 #include "./Nodes/vectorintensity.h"
 #include "./Nodes/vectormath.h"
+#include "./Nodes/erosion.h"
+#include "./Nodes/smooth.h"
 
 /**
  * Nodeeditor
@@ -48,6 +50,7 @@ public:
     // Returns the height/normal map of the active selected output node
     QImage getHeightMap();
     QImage getNormalMap();
+    QImage getAlbedoMap();
 
     // Save/load the editor nodes, layout, and connections
     QJsonObject save();
@@ -66,7 +69,7 @@ public slots:
 signals:
     // When the output node has completed rendering the normal map emit a
     // signal with updated normal and height maps
-    void outputUpdated(QImage normal_map, QImage height_map);
+    void outputUpdated(QImage normal_map, QImage height_map, QImage albedo_map);
 
 private:
     // Sets the properties widget.

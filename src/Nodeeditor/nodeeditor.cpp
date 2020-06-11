@@ -52,6 +52,8 @@ static std::shared_ptr<QtNodes::DataModelRegistry> registerDataModels()
     registry->registerModel<ConverterNormalizeNode>("Converters");
     registry->registerModel<ConverterBezierCurveNode>("Converters");
     registry->registerModel<ConverterClampNode>("Converters");
+    registry->registerModel<ConverterErosionNode>("Converters");
+    registry->registerModel<ConverterSmoothNode>("Converters");
 
     // Converters to automatically convert IntensityMap <-> VectorMap data between nodes
     registry->registerTypeConverter(std::make_pair(
@@ -287,7 +289,9 @@ void Nodeeditor::outputComputingFinished()
 {
     qDebug("Output node done computing normal map");
     // Inform parents that there are new normal and height maps (main.cpp)
-    emit this->outputUpdated(this->getNormalMap(), this->getHeightMap());
+    emit this->outputUpdated(this->getNormalMap(),
+                             this->getHeightMap(),
+                             this->getAlbedoMap());
 }
 
 /**
@@ -347,6 +351,31 @@ QImage Nodeeditor::getNormalMap()
         normal.setColor(0, qRgba(128, 128, 255, 255));
         normal.fill(0);
         return normal;
+    }
+}
+
+/**
+ * getAlbedoMap
+ * 
+ * Get the supplied albedo map, if the albedo map is not set we return a blank
+ * image.
+ * 
+ * @returns QImage : The albedo map.
+ */
+QImage Nodeeditor::getAlbedoMap()
+{
+    if (this->_active_output)
+    {
+        OutputNode *node = static_cast<OutputNode *>(this->_active_output);
+        return node->getAlbedoMap();
+    }
+    else
+    {
+        QImage albedo(1, 1, QImage::Format_Indexed8);
+        albedo.setColorCount(1);
+        albedo.setColor(0, qRgba(200, 200, 200, 255));
+        albedo.fill(0);
+        return albedo;
     }
 }
 
