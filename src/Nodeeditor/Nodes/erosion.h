@@ -1,3 +1,12 @@
+/**
+ * Erosion Node is not quiet accurate enough
+ * 
+ * NOTE: The flow of the water appears to be correct
+ * NOTE: The erosion of the soil appears to be correct
+ * NOTE: The sediment of the soil appears to be incorrect FIXME: Incorrect sedimentation
+ * NOTE: Evaporation is wrong? FIXME: See above, may be connected.
+ * 
+ */
 #pragma once
 
 #include <QObject>
