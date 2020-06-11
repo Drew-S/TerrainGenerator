@@ -128,7 +128,7 @@ QWidget *OutputNode::embeddedWidget()
  */
 unsigned int OutputNode::nPorts(QtNodes::PortType port_type) const
 {
-    return port_type == QtNodes::PortType::In ? 1 : 0;
+    return port_type == QtNodes::PortType::In ? 2 : 0;
 }
 
 /**
@@ -161,8 +161,19 @@ OutputNode::dataType(QtNodes::PortType port_type,
                      QtNodes::PortIndex port_index) const
 {
     Q_UNUSED(port_type);
-    Q_UNUSED(port_index);
-    return IntensityMapData().type();
+    switch ((int)port_index)
+    {
+    case 0:
+        return IntensityMapData().type();
+        break;
+    case 1:
+        return VectorMapData().type();
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+    Q_UNREACHABLE();
 }
 
 /**
@@ -177,25 +188,43 @@ OutputNode::dataType(QtNodes::PortType port_type,
 void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
                            QtNodes::PortIndex port)
 {
-    Q_UNUSED(port);
     if (node_data)
     {
-        // Cast pointer into VectorMapData pointer
-        this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data);
+        switch((int)port)
+        {
+        case 0:
+            {
+            // Cast pointer into IntensityMapData pointer
+            this->_input =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data);
 
-        IntensityMap height_map = this->_input->intensityMap();
+            IntensityMap height_map = this->_input->intensityMap();
 
-        this->_height_map = height_map.toImage();
+            this->_height_map = height_map.toImage();
 
-        // Display preview image
-        this->_ui.height_label->setPixmap(
-            height_map.toPixmap().scaled(
-                this->_ui.height_label->width(),
-                this->_ui.height_label->height(),
-                Qt::KeepAspectRatio));
+            // Display preview image
+            this->_ui.height_label->setPixmap(
+                height_map.toPixmap().scaled(
+                    this->_ui.height_label->width(),
+                    this->_ui.height_label->height(),
+                    Qt::KeepAspectRatio));
 
-        // Emit that calculations are being made
-        this->_generateNormalMap(height_map);
+            // Emit that calculations are being made
+            this->_generateNormalMap(height_map);
+            }
+            break;
+        case 1:
+            // Cast pointer into VectorMapData pointer
+            this->_input_albedo =
+                std::dynamic_pointer_cast<VectorMapData>(node_data);
+
+            this->_albedo_map = this->_input_albedo->vectorMap().toImage();
+            emit this->computingFinished();
+            break;
+        default:
+            Q_UNREACHABLE();
+            break;
+        }
     }
     // No pixmap, set null image
     else
@@ -228,6 +257,18 @@ QImage OutputNode::getNormalMap()
 QImage OutputNode::getHeightMap()
 {
     return this->_height_map;
+}
+
+/**
+ * getAlbedoMap
+ * 
+ * Returns the albedo map.
+ * 
+ * @returns QImage : The albedo map.
+ */
+QImage OutputNode::getAlbedoMap()
+{
+    return this->_albedo_map;
 }
 
 /**

@@ -42,6 +42,7 @@ public:
     // Update the existing height/normal map textures
     void setHeightMap(QImage height_map);
     void setNormalMap(QImage normal_map);
+    void setAlbedoMap(QImage albedo_map);
 
     // Set adjustable values
     void setDrawLines(bool lines);
@@ -86,4 +87,6 @@ private:
     QOpenGLTexture *_height;
     // Normal map texture
     QOpenGLTexture *_normal;
+    // Albedo map texture
+    QOpenGLTexture *_albedo;
 };

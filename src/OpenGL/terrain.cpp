@@ -64,6 +64,17 @@ void Terrain::initializeGL()
     this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
+    // Once transforms are applied in fragment shader the color (128, 128, 255)
+    // or (0.5, 0.5, 1.0) becomes (0, 1, 0) normal vector
+    QImage albedo(res, res, QImage::Format_Indexed8);
+    albedo.setColorCount(1);
+    albedo.setColor(0, qRgba(200, 200, 200, 255));
+    albedo.fill(0);
+
+    this->_albedo = new QOpenGLTexture(albedo.mirrored());
+    this->_albedo->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_albedo->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
     // Initialize the vertex shader
     Q_CHECK_PTR(SETTINGS);
     QString assets = QDir::cleanPath(SETTINGS->getAssetDirectories()[0].path() 
@@ -128,7 +139,9 @@ void Terrain::setDrawLines(bool lines)
  */
 void Terrain::setTerrainColor(QColor color)
 {
-    this->_terrain_color = QVector3D(color.redF(), color.greenF(), color.blueF());
+    this->_terrain_color = QVector3D(color.redF(),
+                                     color.greenF(),
+                                     color.blueF());
 }
 
 /**
@@ -162,7 +175,9 @@ bool Terrain::drawLines()
  */
 QColor Terrain::terrainColor()
 {
-    return QColor::fromRgbF(this->_terrain_color.x(), this->_terrain_color.y(), this->_terrain_color.z());
+    return QColor::fromRgbF(this->_terrain_color.x(),
+                            this->_terrain_color.y(),
+                            this->_terrain_color.z());
 }
 
 /**
@@ -174,7 +189,9 @@ QColor Terrain::terrainColor()
  */
 QColor Terrain::lineColor()
 {
-    return QColor::fromRgbF(this->_line_color.x(), this->_line_color.y(), this->_line_color.z());
+    return QColor::fromRgbF(this->_line_color.x(),
+                            this->_line_color.y(),
+                            this->_line_color.z());
 }
 
 /**
@@ -286,27 +303,8 @@ void Terrain::_paintGL(QOpenGLFunctions *f,
 
     // Attach textures
     glActiveTexture(GL_TEXTURE0);
-    // Set texture filtering
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
-
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MAG_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
-
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_EDGE);
-
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T,
-                    GL_CLAMP_TO_EDGE);
 
     glBindTexture(GL_TEXTURE_2D, this->_height->textureId());
-
-    glActiveTexture(GL_TEXTURE1);
-
     // Set texture filtering
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MIN_FILTER,
@@ -323,11 +321,52 @@ void Terrain::_paintGL(QOpenGLFunctions *f,
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_T,
                     GL_CLAMP_TO_EDGE);
+
+    glActiveTexture(GL_TEXTURE1);
                     
     glBindTexture(GL_TEXTURE_2D, this->_normal->textureId());
+    
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_EDGE);
+
+    glActiveTexture(GL_TEXTURE2);
+                    
+    glBindTexture(GL_TEXTURE_2D, this->_albedo->textureId());
+    
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_EDGE);
 
     this->_program.setUniformValue("height_map", GL_TEXTURE0);
     this->_program.setUniformValue("normal_map", GL_TEXTURE1 - GL_TEXTURE0);
+    this->_program.setUniformValue("albedo_map", GL_TEXTURE2 - GL_TEXTURE0);
 
     // Draw the terrain
     f->glDrawElements(GL_TRIANGLES,
@@ -448,4 +487,21 @@ void Terrain::setNormalMap(QImage normal_map)
     this->_normal = new QOpenGLTexture(normal_map);
     this->_normal->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     this->_normal->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+}
+
+/**
+ * setAlbedoMap
+ * 
+ * Set the albedo map image.
+ * 
+ * @param QImage albedo_map : The albedo map image.
+ */
+void Terrain::setAlbedoMap(QImage albedo_map)
+{
+    Q_CHECK_PTR(this->_albedo);
+    qDebug("Updating Albedo Map");
+    delete this->_albedo;
+    this->_albedo = new QOpenGLTexture(albedo_map);
+    this->_albedo->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    this->_albedo->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 }

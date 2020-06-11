@@ -36,7 +36,7 @@ public:
     // The embedded widget in the node
     QWidget *embeddedWidget();
 
-    // Get the number of ports (0 output, 1 input)
+    // Get the number of ports (0 output, 2 input)
     unsigned int nPorts(QtNodes::PortType port_type) const override;
 
     // Get the port datatype (only imports VectorMapData)
@@ -55,6 +55,7 @@ public:
     // Get the normal and height maps
     QImage getNormalMap();
     QImage getHeightMap();
+    QImage getAlbedoMap();
 
 public slots:
     void inputConnectionDeleted(QtNodes::Connection const &connection);
@@ -65,6 +66,7 @@ private:
 
     // The shared pointer for the inputted pixmap
     std::shared_ptr<IntensityMapData> _input;
+    std::shared_ptr<VectorMapData> _input_albedo;
 
     // Generator for the normal map
     NormalMapGenerator _normal_generator;
@@ -74,6 +76,8 @@ private:
 
     // Houses the generated normal map
     QImage _normal_map;
+
+    QImage _albedo_map;
 
     // The embedded widget
     Ui::Output _ui;

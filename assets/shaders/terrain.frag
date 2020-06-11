@@ -1,6 +1,7 @@
 #version 330
 
 uniform highp sampler2D normal_map;
+uniform highp sampler2D albedo_map;
 
 // Object color, terrain color
 // TODO: Long term, add albedo color map
@@ -21,7 +22,7 @@ in highp vec2 frag_uv;
 // Model transformation
 in highp mat4 frag_model;
 
-// in highp float height_value;
+in highp float height_value;
 
 // Lighting constants
 float ambient_strength = 0.25;
@@ -30,7 +31,10 @@ float diffuse_strength = 1.0;
 
 float specular_strength = 0.1;
 
+vec3 up = vec3(0.0, 1.0, 0.0);
+
 void main(void) {
+  vec3 C = texture2D(albedo_map, frag_uv).rgb;
   // Build tangent space to object space normal transform
   vec3 plane_normal = vec3(0.0, 1.0, 0.0);
   vec3 plane_tangent = vec3(1.0, 0.0, 0.0);
@@ -63,6 +67,30 @@ void main(void) {
   vec3 specular = specular_strength * spec * light_color * light_intensity;
 
   // Apply lighting
-  vec3 result = (specular + diffuse + ambient) * color;
+  vec3 result = (specular + diffuse + ambient);
+
+  float angle =
+      acos(dot(normal, up) / (sqrt(dot(normal, normal)) * sqrt(dot(up, up))));
+
+  //   if (height_value > 0.9)
+  //     C = vec3(1.0, 1.0, 1.0);
+  //   else if (height_value > 0.7)
+  //     C = vec3(0.45, 0.45, 0.45);
+  //   else if (height_value > 0.5)
+  //     C = vec3(7.0, 61.0, 26.0) / 255.0;
+  //   else if (height_value > 0.2)
+  //     C = vec3(13.0, 150.0, 61.0) / 255.0;
+  //   else if (height_value > 0.1)
+  //     C = vec3(146.0, 173.0, 39.0) / 255.0;
+  //   else
+  //     C = vec3(56.0, 78.0, 224.0) / 255.0;
+
+  //   if (height_value > 0.5 && angle > 0.7853)
+  //     C = vec3(0.45, 0.45, 0.45);
+  //   else if (height_value <= 0.5 && angle > 0.7853)
+  //     C = vec3(146.0, 173.0, 39.0) / 255.0;
+
+  result *= C;
+
   gl_FragColor = vec4(result, 1.0);
 }

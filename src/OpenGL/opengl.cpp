@@ -535,7 +535,7 @@ void OpenGL::mouseMoveEvent(QMouseEvent *event)
         this->_control_cam_rotation_y->setSliderPosition((int)cam_rotation_y);
     }
     // Update the OpenGL data
-    update();
+    this->update();
 }
 
 /**
@@ -616,11 +616,15 @@ void OpenGL::camZoom(int value)
  * 
  * @param QImage normal_map : The new normal map.
  * @param QImage height_map : The new height map.
+ * @param QImage albedo_map : The new albedo map.
  */
-void OpenGL::nodeeditorOutputUpdated(QImage normal_map, QImage height_map)
+void OpenGL::nodeeditorOutputUpdated(QImage normal_map,
+                                     QImage height_map,
+                                     QImage albedo_map)
 {
     Q_CHECK_PTR(this->_terrain);
     this->_terrain->setHeightMap(height_map);
     this->_terrain->setNormalMap(normal_map);
+    this->_terrain->setAlbedoMap(albedo_map);
     this->update();
 }

@@ -10,7 +10,7 @@ uniform highp mat4 model;
 
 // Height scale factor
 // TODO: Include UI option for this
-float scale = 0.5;
+float scale = 1.0;
 
 uniform highp sampler2D height_map;
 
@@ -21,7 +21,7 @@ out highp vec3 frag_pos;
 out highp vec2 frag_uv;
 out highp mat4 frag_model;
 
-// out highp float height_value;
+out highp float height_value;
 
 void main(void) {
   float offset = 0.0;
@@ -34,7 +34,7 @@ void main(void) {
   // Get the height value from the height map
   vec4 height = texture2D(height_map, uv);
   vec4 vert = vec4(vertex.x, height.z * scale + offset, vertex.z, 1.0);
-  //   height_value = height.z;
+  height_value = height.z;
 
   // Apply the transformations to the vertex
   gl_Position = camera * model * vert;

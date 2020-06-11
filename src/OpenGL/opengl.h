@@ -58,7 +58,9 @@ public slots:
     void camZoom(int value);
 
     // Called when the nodeeditor has updated normal and height maps
-    void nodeeditorOutputUpdated(QImage normal_map, QImage height_map);
+    void nodeeditorOutputUpdated(QImage normal_map,
+                                 QImage height_map,
+                                 QImage albedo_map);
 
 protected:
     // Initialize gl functions and settings

@@ -426,10 +426,11 @@ bool VectorMap::set(int x, int y, glm::dvec4 value)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
         return false;
+
     int index = y * this->width + x;
     this->_use_fill = false;
     if (index >= (int)this->values.size())
-        for (int i = (int)this->values.size(); i < index; i++)
+        for (int i = (int)this->values.size(); i <= index; i++)
             this->values.push_back(this->_fill);
 
     this->values[index] = value;
