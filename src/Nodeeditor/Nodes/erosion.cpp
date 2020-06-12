@@ -22,14 +22,14 @@
     for (int y = 0; y < map.height; y++) \
         for (int x = 0; x < map.width; x++)
 
-// static double COR = 1.00;
-// static double CEN = 4.00;
-// static double MID = 20.00;
+#define COR 0.50
+#define CEN 2.00
+#define MID 100.00
 
-// static double SMOOTH_KERNEL[3][3] = {
-//     {COR, CEN, COR},
-//     {CEN, MID, CEN},
-//     {COR, CEN, COR}};
+static double K[3][3] = {
+    {COR, CEN, COR},
+    {CEN, MID, CEN},
+    {COR, CEN, COR}};
 
 static int clamp(int x, int l, int h)
 {
@@ -290,6 +290,51 @@ ConverterErosionNode::outData(QtNodes::PortIndex port)
     Q_UNREACHABLE();
 }
 
+void ConverterErosionNode::smooth()
+{
+    IntensityMap map(this->_output.width, this->_output.height);
+    double L = CEN + 2.00 * COR;
+    LOOP_MAP(this->_output)
+    {
+        if (this->w_2.at(x,y) == 0.00)
+        {
+            map.set(x, y, this->_output.at(x, y));
+            continue;
+        }
+
+        double div = MID + 4.00 * CEN + 4.00 * COR;
+
+        if (x <= 0 || x >= this->_output.width - 1)
+            div -= L;
+
+        if (y <= 0 || y >= this->_output.height - 1)
+            div -= L;
+
+        if ((x <= 0 || x >= this->_output.width - 1)
+            && (y <= 0 || y >= this->_output.height - 1))
+            div += COR;
+
+        double M[3][3] = {
+            {this->_output.at(x - 1, y - 1),
+             this->_output.at(x, y - 1),
+             this->_output.at(x + 1, y - 1)},
+            {this->_output.at(x - 1, y),
+             this->_output.at(x, y),
+             this->_output.at(x + 1, y)},
+            {this->_output.at(x - 1, y + 1),
+             this->_output.at(x, y + 1),
+             this->_output.at(x + 1, y + 1)}
+        };
+
+        double v = M[0][0] * K[0][0] + M[1][0] * K[1][0] + M[2][0] * K[2][0]
+                   + M[0][1] * K[0][1] + M[1][1] * K[1][1] + M[2][1] * K[2][1]
+                   + M[0][2] * K[0][2] + M[1][2] * K[1][2] + M[2][2] * K[2][2];
+
+        map.set(x, y, v / div);
+    }
+    this->_output = map;
+}
+
 void ConverterErosionNode::waterIncrement1()
 {
     LOOP_MAP(this->_output)
@@ -427,6 +472,8 @@ void ConverterErosionNode::erosionAndDeposition3()
 {
     LOOP_MAP(this->_output)
     {
+        if (this->w_2.at(x,y) == 0.00)
+            continue;
         // \vec{n}^l = \left<b_t(x+1,y) - b_t(x-1,y),
         //                   b_t(x,y-1) - b_t(x,y+1),
         //                   2\right>
@@ -452,16 +499,13 @@ void ConverterErosionNode::erosionAndDeposition3()
         // (Mei et al., 2007, p. 51)
         double C = this->K_c * alpha * sqrt(glm::dot(vel, vel));
 
-        // \mu = C - s_t(x,y)+
-        double mu = C - this->s.at(x, y);
-
         // \Delta s
         double delta = 0.00;
 
         // Mu is greater, water can carry more sediment
-        if (mu > 0 )
+        if (C > this->s.at(x, y))
         {
-            delta = this->K_s * mu;
+            delta = this->K_s * (C - this->s.at(x,y));
             this->_erosion.set(x, y, this->_erosion.at(x, y) + delta);
         }
 
@@ -473,10 +517,9 @@ void ConverterErosionNode::erosionAndDeposition3()
         // (Mei et al., 2007, p. 51)
         
         // Mu is lesser, water needs to deposit sediment
-        else if (mu < 0)
+        else if (C < this->s.at(x, y))
         {
-            delta = this->K_d * mu;
-            qDebug() << "Deposit:" << delta;
+            delta = this->K_d * (C - this->s.at(x,y));
             this->_sediment.set(x, y, this->_sediment.at(x, y) + delta);
         }
 
@@ -486,8 +529,15 @@ void ConverterErosionNode::erosionAndDeposition3()
         // d_{t + \Delta t} &= d_t + K_d(C - s_t)
         // \end{aligned}
         // (Mei et al., 2007, p. 51)
-        this->_output.set(x, y, this->_output.at(x, y) - delta);
-        this->s_1.set(x, y, this->s.at(x, y) + delta);
+        double off = 0.00;
+        if (this->_output.at(x, y) - delta < 0.00)
+            off = -(this->_output.at(x, y) - delta);
+
+        if (this->s.at(x, y) - delta < 0.00)
+            off = -(this->s.at(x, y) - delta);
+
+        this->_output.set(x, y, this->_output.at(x, y) - delta + off);
+        this->s_1.set(x, y, this->s.at(x, y) + delta - off);
         // this->w_2.set(x, y, this->w_2.at(x, y) + delta);
     }
 }
@@ -542,35 +592,6 @@ void ConverterErosionNode::evaporation5()
     }
 }
 
-void ConverterErosionNode::smooth()
-{
-    double max_d = 0.2;
-    IntensityMap map(this->_output.width, this->_output.height);
-    LOOP_MAP(this->_output)
-    {
-        double h = this->_output.at(x, y);
-
-        double h_L = this->_output.at(x - 1, y);
-        double h_R = this->_output.at(x + 1, y);
-        double h_T = this->_output.at(x, y - 1);
-        double h_B = this->_output.at(x, y + 1);
-
-        double d_L = h - h_L;
-        double d_R = h - h_R;
-        double d_T = h - h_T;
-        double d_B = h - h_B;
-
-        double avg = h;
-
-        if ((abs(d_T) > max_d || abs(d_B) > max_d)
-            && (d_R * d_L > 0.00 || d_T * d_B > 0.00))
-            avg = (h + h_L + h_R + h_T + h_B) / 5.00;
-
-        map.set(x, y, avg);
-    }
-    this->_output = map;
-}
-
 /**
  * _generate
  * 
@@ -599,7 +620,9 @@ void ConverterErosionNode::_generate()
 
     this->p = this->dT * this->A * this->g / this->L;
 
-    this->r.set(this->_output.width / 2, this->_output.height / 2, 1.00);
+    for (int y = th / 4; y < th; y += th / 2)
+        for (int x = tw / 4; x < tw; x += tw / 2)
+            this->r.set(x, y, 0.50);
 
     for (int i = 0; i < this->I; i++)
     {
@@ -608,8 +631,14 @@ void ConverterErosionNode::_generate()
         this->erosionAndDeposition3();
         this->sedimentTransportation4();
         this->evaporation5();
+        this->smooth();
         this->r = IntensityMap(tw, tw, 0.00);
     }
+
+    this->_output = this->_output.transform([](double a, double b) -> double {
+        return a + b;
+    }, &this->s);
+
     emit this->dataUpdated(0);
     emit this->dataUpdated(1);
     emit this->dataUpdated(2);

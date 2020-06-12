@@ -113,8 +113,8 @@ private:
     double K_d = 0.012; // Sediment depositing constant
     double K_e = 0.000055; // Evaporation constant
     double dT = 16.6666666666666666666666666; // Change in time
-    double dX = 0.50; // Change in grid distance (x)
-    double dY = 0.50; // Change in grid distance (y)
+    double dX = 2.00; // Change in grid distance (x)
+    double dY = 2.00; // Change in grid distance (y)
     double p = 1.00;
     int I = 1;
 
