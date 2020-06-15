@@ -8,6 +8,7 @@
 #include "erosion.h"
 
 #include <math.h>
+#include <random>
 
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -15,32 +16,159 @@
 #include <QSpinBox>
 #include <QThread>
 
-#include <glm/ext.hpp>
 #include <glm/vec2.hpp>
 
-#define LOOP_MAP(map)                    \
-    for (int y = 0; y < map.height; y++) \
-        for (int x = 0; x < map.width; x++)
-
-#define COR 0.50
-#define CEN 2.00
-#define MID 100.00
-
-static double K[3][3] = {
-    {COR, CEN, COR},
-    {CEN, MID, CEN},
-    {COR, CEN, COR}};
-
-static int clamp(int x, int l, int h)
-{
-    return std::min(h, std::max(l, x));
-}
-
+/**
+ * mix
+ * 
+ * Interpolates a value between a range using a percentage value.
+ * 
+ * @param double x : The start value.
+ * @param double y : The end value.
+ * @param double a : The percentage value between x and y.
+ * 
+ * @returns double : The interpolated value.
+ */
 static double mix(double x, double y, double a)
 {
     return x * (1.00 - a) + y * a;
 }
 
+/**
+ * biLinearMix
+ * 
+ * Bilinear interpolation between four values and two percentages. Applies 
+ * mix(a, b, x), mix(c, d, x) and then mixes the result with y. See above mix
+ * function. Used for interpolating a value in between four pixels.
+ * 
+ * @param double a : The first value to use (a - b).
+ * @param double b : The second value to use (a - b).
+ * @param double c : The third value to use (c - d).
+ * @param double d : The fourth value to use (c - d).
+ * @param double x : The interpolation percentage for (a - b) and (c - d).
+ * @param double y : The interpolation percentage for the result from
+ *                   interpolating (a - b) and (c - d).
+ * 
+ * @returns double : The resulting interpolated value.
+ */
+static double biLinearMix(double a,
+                          double b,
+                          double c,
+                          double d,
+                          double x,
+                          double y)
+{
+    return mix(mix(a, b, x), mix(c, d, x), y);
+}
+
+/**
+ * height
+ * 
+ * Get the height at a position on the map. Uses bilinear interpolation to get
+ * the value for between pixels.
+ * 
+ * @param IntensityMap *map : The map to get value from.
+ * @param double x : The x position to get.
+ * @param double y : The y position to get.
+ * 
+ * @returns double : The interpolated height
+ */
+static double height(IntensityMap *map, double x, double y)
+{
+    int x_0 = (int)floor(x);
+    int y_0 = (int)floor(y);
+
+    double xp = x - floor(x);
+    double yp = y - floor(y);
+
+    return biLinearMix(map->at(x_0, y_0, true),
+                       map->at(x_0 + 1, y_0, true),
+                       map->at(x_0, y_0 + 1, true),
+                       map->at(x_0 + 1, y_0 + 1, true),
+                       xp, yp);
+}
+
+/**
+ * interpolateAdd
+ * 
+ * Helper function that adds a value to a map using interpolation for values
+ * between pixels.
+ * 
+ * @param IntensityMap *map : The map to affect.
+ * @param double x : The x position to affect.
+ * @param double y : The y position to affect.
+ * @param double v : The value to place into the map.
+ */
+static void interpolateAdd(IntensityMap *map, double x, double y, double v)
+{
+    int x_0 = (int)floor(x);
+    int y_0 = (int)floor(y);
+
+    double xp = x - floor(x);
+    double yp = y - floor(y);
+    double xp_1 = 1.00 - xp;
+    double yp_1 = 1.00 - yp;
+
+    map->set(x_0, y_0, map->at(x_0, y_0, true) + v * xp_1 * yp_1);
+    map->set(x_0 + 1, y_0, map->at(x_0 + 1, y_0, true) + v * xp * yp_1);
+    map->set(x_0, y_0 + 1, map->at(x_0, y_0 + 1, true) + v * xp_1 * yp);
+    map->set(x_0 + 1, y_0 + 1, map->at(x_0 + 1, y_0 + 1, true) + v * xp * yp);
+}
+
+/**
+ * clamp
+ * 
+ * Clamps an input value between a low and high value. f(x) -> l <= x <= h
+ * 
+ * @param int x : The value to clamp.
+ * @param int l : The low value.
+ * @param int h : The high value.
+ * 
+ * @returns int : The clamped value.
+ */
+static int clamp(int x, int l, int h)
+{
+    return std::min(h, std::max(l, x));
+}
+
+/**
+ * gradient
+ * 
+ * Obtain the direction (x, y) of greatest descent, the -gradient. The value is
+ * calculated using linear interpolation to get appropriate heights between
+ * pixels.
+ * 
+ * @param IntensityMap *map : The height map.
+ * @param double x : The x position to get
+ * @param double y : The y position to get
+ * 
+ * @returns glm::dvec2 : The direction of greatest descent
+ */
+static glm::dvec2 gradient(IntensityMap *map, double x, double y)
+{
+    int x_0 = (int)floor(x);
+    int y_0 = (int)floor(y);
+
+    double xp = x - floor(x);
+    double yp = y - floor(y);
+
+    // Interpolate left/right positions
+    double r = mix(map->at(x_0 + 1, y_0 - 1), map->at(x_0 + 1, y_0 + 1), yp);
+    double l = mix(map->at(x_0 - 1, y_0 - 1), map->at(x_0 - 1, y_0 + 1), yp);
+
+    // Interpolate top/bottom positions
+    double t = mix(map->at(x_0 - 1, y_0 + 1), map->at(x_0 - 1, y_0 + 1), xp);
+    double b = mix(map->at(x_0 - 1, y_0 - 1), map->at(x_0 - 1, y_0 - 1), xp);
+
+    // Get the descent
+    return glm::dvec2( 0.5 * (l - r), 0.5 * (t - b));
+}
+
+/**
+ * ConverterErosionNode
+ * 
+ * Creates the node.
+ */
 ConverterErosionNode::ConverterErosionNode()
 {
     this->_widget = new QWidget();
@@ -59,33 +187,40 @@ void ConverterErosionNode::created()
                      this,
                      &ConverterErosionNode::_generate);
 
-    QObject::connect(this->_ui.spin_kc,
+    QObject::connect(this->_ui.spin_inertia,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
-                         this->K_c = value;
+                         this->_inertia = value;
                      });
 
-    QObject::connect(this->_ui.spin_ks,
+    QObject::connect(this->_ui.spin_radius,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
-                         this->K_s = value;
+                         this->_erosion_radius = value;
                      });
 
-    QObject::connect(this->_ui.spin_kd,
+    QObject::connect(this->_ui.spin_evaporation,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
-                         this->K_d = value;
+                         this->_evaporation_rate = value;
                      });
 
-    QObject::connect(this->_ui.spin_ke,
+    QObject::connect(this->_ui.spin_smooth,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
-                         this->K_e = value;
+                         this->_smooth_strength = value;
                      });
+
     QObject::connect(this->_ui.spin_iterations,
                      QOverload<int>::of(&QSpinBox::valueChanged),
                      [this](int value) {
-                         this->I = value;
+                         this->_iterations = value;
+                     });
+
+    QObject::connect(this->_ui.spin_life,
+                     QOverload<int>::of(&QSpinBox::valueChanged),
+                     [this](int value) {
+                         this->_max_drop_life = value;
                      });
 }
 
@@ -290,306 +425,57 @@ ConverterErosionNode::outData(QtNodes::PortIndex port)
     Q_UNREACHABLE();
 }
 
-void ConverterErosionNode::smooth()
+/**
+ * _smooth
+ * 
+ * Applies a smoothing function (kernel) to a pixel at a specific point.
+ * Used during the sediment placement process as there is some heavy
+ * artifacting. Interesting side effect of this function the way it is, is the
+ * changing of the smooth value effects an intensity of the erosion effect.
+ * 
+ * @param int x : The x pixel to smooth.
+ * @param int y : The y pixel to smooth.
+ */
+void ConverterErosionNode::_smooth(int x, int y)
 {
-    IntensityMap map(this->_output.width, this->_output.height);
-    double L = CEN + 2.00 * COR;
-    LOOP_MAP(this->_output)
-    {
-        if (this->w_2.at(x,y) == 0.00)
-        {
-            map.set(x, y, this->_output.at(x, y));
-            continue;
-        }
+    // Simple smoothing kernel
+    static double K[3][3] = {
+        {1.00, 4.00, 1.00},
+        {4.00, this->_smooth_strength + 20.00, 4.00},
+        {1.00, 4.00, 1.00}};
 
-        double div = MID + 4.00 * CEN + 4.00 * COR;
+    // Averaging value
+    double div = this->_smooth_strength + 40.00;
 
-        if (x <= 0 || x >= this->_output.width - 1)
-            div -= L;
+    // Compensation for edge values
+    if (x <= 0 || x >= this->_output.width - 1)
+        div -= 6.00;
 
-        if (y <= 0 || y >= this->_output.height - 1)
-            div -= L;
+    if (y <= 0 || y >= this->_output.height - 1)
+        div -= 6.00;
 
-        if ((x <= 0 || x >= this->_output.width - 1)
-            && (y <= 0 || y >= this->_output.height - 1))
-            div += COR;
+    if ((x <= 0 || x >= this->_output.width - 1)
+        && (y <= 0 || y >= this->_output.height - 1))
+        div += 1.00;
 
-        double M[3][3] = {
-            {this->_output.at(x - 1, y - 1),
-             this->_output.at(x, y - 1),
-             this->_output.at(x + 1, y - 1)},
-            {this->_output.at(x - 1, y),
-             this->_output.at(x, y),
-             this->_output.at(x + 1, y)},
-            {this->_output.at(x - 1, y + 1),
-             this->_output.at(x, y + 1),
-             this->_output.at(x + 1, y + 1)}
-        };
+    // Get pixels to smooth with
+    double M[3][3] = {
+        {this->_output.at(x - 1, y - 1),
+         this->_output.at(x, y - 1),
+         this->_output.at(x + 1, y - 1)},
+        {this->_output.at(x - 1, y),
+         this->_output.at(x, y),
+         this->_output.at(x + 1, y)},
+        {this->_output.at(x - 1, y + 1),
+         this->_output.at(x, y + 1),
+         this->_output.at(x + 1, y + 1)}};
 
-        double v = M[0][0] * K[0][0] + M[1][0] * K[1][0] + M[2][0] * K[2][0]
-                   + M[0][1] * K[0][1] + M[1][1] * K[1][1] + M[2][1] * K[2][1]
-                   + M[0][2] * K[0][2] + M[1][2] * K[1][2] + M[2][2] * K[2][2];
+    // Apply smoothing
+    double v = M[0][0] * K[0][0] + M[1][0] * K[1][0] + M[2][0] * K[2][0]
+             + M[0][1] * K[0][1] + M[1][1] * K[1][1] + M[2][1] * K[2][1]
+             + M[0][2] * K[0][2] + M[1][2] * K[1][2] + M[2][2] * K[2][2];
 
-        map.set(x, y, v / div);
-    }
-    this->_output = map;
-}
-
-void ConverterErosionNode::waterIncrement1()
-{
-    LOOP_MAP(this->_output)
-    {
-        // d_1(x,y) = d_t(x,y) + \Delta t \cdot r_t(x,y)
-        // (Mei et al., 2007, p. 49)
-        this->w_1.set(x, y, this->w.at(x, y) + this->dT * this->r.at(x, y));
-    }
-}
-
-void ConverterErosionNode::flowSimulation2()
-{
-    LOOP_MAP(this->_output)
-    {
-        // \Delta H = b_t(x,y) + d_1(x,y)
-        // (Mei et al., 2007, p. 50)
-        double dH = this->_output.at(x, y) + this->w_1.at(x, y);
-
-        // \begin{aligned}
-        // \Delta H^L &= b_t(x,y) + d_1(x,y) - b_t(x-1,y) - d_1(x-1,y) \\
-        //            &= \Delta H - b_t(x-1,y) - d_1(x-1,y)
-        // \end{aligned}
-        // (Mei et al., 2007, p. 50)
-        double dH_L = dH - this->_output.at(x - 1, y) - this->w_1.at(x - 1, y);
-        double dH_R = dH - this->_output.at(x + 1, y) - this->w_1.at(x + 1, y);
-        double dH_T = dH - this->_output.at(x, y - 1) - this->w_1.at(x, y - 1);
-        double dH_B = dH - this->_output.at(x, y + 1) - this->w_1.at(x, y + 1);
-
-        glm::dvec4 flux = this->f.at(x, y);
-
-        // \begin{aligned}
-        // p &= \Delta t \cdot A \cdot \frac{g}{l} \\
-        // f_{t + \Delta t}^L(x,y) &= max(0, f_t^L(x,y) + \Delta t \cdot A \cdot
-        //                            \frac{g \cdot \Delta h^L(x,y)}{l}) \\
-        //                         &= max(0, f_t^L(x,y) + p \cdot h^L(x,y))
-        // \end{aligneds}
-        // (Mei et al., 2007, p. 50)
-        double fL = std::max(0.00, flux.x + this->p * dH_L);
-        double fR = std::max(0.00, flux.y + this->p * dH_R);
-        double fT = std::max(0.00, flux.z + this->p * dH_T);
-        double fB = std::max(0.00, flux.w + this->p * dH_B);
-
-        // K = min(1, \frac{d_1 \cdot l_X l_Y}
-        //                 {(f^L + f^R + f^T + f^B) \cdot \Delta t})
-        // (Mei et al., 2007, p. 50)
-        double K = std::min(1.00, (this->w_1.at(x,y) * this->dX * this->dY)
-                                / ((fL + fR + fT + fB) * this->dT));
-
-        // f_{t + \Delta t}^i = K \cdot f_{t + \Delta t}^i, \;\; i = L,R,T,B
-        // (Mei et al., 2007, p. 50)
-        fL *= K;
-        fR *= K;
-        fT *= K;
-        fB *= K;
-
-        // Boundary clamp.
-        // Prevent flowing over edge of the flat earth. /s
-        if (x <= 0)
-            fL = 0.00;
-        if (x >= this->_output.width - 1)
-            fR = 0.00;
-        if (y <= 0)
-            fT = 0.00;
-        if (y >= this->_output.height - 1)
-            fB = 0.00;
-
-        // Pack the flux into vector map
-        // TODO: Convert both IntensityMap and VectorMap into a single 2DMap
-        //       class using templates, thus velocity vector here can be better
-        //       packed using glm::dvec2 rather than using a glm::dvec4 with z
-        //       and w being unused and wasted space
-        this->f.set(x, y, glm::dvec4(fL, fR, fT, fB));
-    }
-
-    LOOP_MAP(this->_output)
-    {
-        glm::dvec4 flux = this->f.at(x, y);
-        double f_out_L = flux.x;
-        double f_out_R = flux.y;
-        double f_out_T = flux.z;
-        double f_out_B = flux.w;
-        // f_{out} &= f_{t + \Delta t}^L(x,y) + f_{t + \Delta t}^R(x,y)
-        //            + f_{t + \Delta t}^T(x,y) + f_{t + \Delta t}^B(x,y)
-        double f_out = f_out_L + f_out_R + f_out_T + f_out_B;
-
-        double f_in_R = this->f.at(x - 1, y).y;
-        double f_in_L = this->f.at(x + 1, y).x;
-        double f_in_B = this->f.at(x, y - 1).w;
-        double f_in_T = this->f.at(x, y + 1).z;
-        // f_{in} &= f_{t + \Delta t}^R(x-1,y) + f_{t + \Delta t}^L(x+1,y)
-        //            + f_{t + \Delta t}^B(x,y-1) + f_{t + \Delta t}^T(x,y+1)
-        double f_in = f_in_L + f_in_R + f_in_T + f_in_B;
-
-        // \begin{aligned}
-        // \Delta V(x,y) &= \Delta t \cdot \left(\sum f_{in}
-        //                                       - \sum f_{out}\right) \\
-        //     &= \Delta t \cdot \left(f_t^R(x-1,y) + f_t^T(x, y-1)\right. \\
-        //     & \quad\quad\quad\;\;\left.+ f_t^L(x+1, y)
-        //                                + f_t^B(x, y+1)\right. \\
-        //     & \quad\quad\quad\;\;\left.- \sum f_{t + \Delta t}^i(x,y)\right),
-        //     \quad i =L,R,T,B
-        // \end{aligned}
-        // (Mei et al., 2007, p. 50)
-        double dV = this->dT * (f_in - f_out);
-
-        // d_2(x,y) = d_1(x,y) + \frac{\Delta V(x,y)}{l_Xl_Y}
-        // (Mei et al., 2007, p. 50)
-        this->w_2.set(x, y, std::max(0.00, this->w_1.at(x, y) + dV / (this->dX * this->dY)));
-
-        // \Delta W_X = \frac{f^R(x-1,y) - f^L(x,y) + f^R(x,y) - f^L(x+1,y)}{2}
-        // (Mei et al., 2007, p. 50)
-        double dW_x = (f_in_R - f_out_L + f_out_R - f_in_L) / 2.00;
-        double dW_y = (f_in_B - f_out_T + f_out_B - f_in_T) / 2.00;
-
-        // \bar{d} &= \frac{d_1(x,y) + d_2(x,y)}{2}
-        // (Mei et al., 2007, p. 50)
-        double d_bar = (this->w_1.at(x, y) + this->w_2.at(x, y)) / 2.00;
-
-        double uV = 0.00;
-        double vV = 0.00;
-
-        // l_Y \cdot \bar{d} \cdot u = \Delta W_X
-        // (Mei et al., 2007, p. 50)
-        if (dW_x != 0.00)
-            uV = dW_x / (this->dY * d_bar);
-
-        if (dW_y != 0.00)
-            vV = dW_y / (this->dX * d_bar);
-
-        this->v.set(x, y, glm::dvec4(uV, vV, 0.00, 0.00));
-    }
-}
-
-void ConverterErosionNode::erosionAndDeposition3()
-{
-    LOOP_MAP(this->_output)
-    {
-        if (this->w_2.at(x,y) == 0.00)
-            continue;
-        // \vec{n}^l = \left<b_t(x+1,y) - b_t(x-1,y),
-        //                   b_t(x,y-1) - b_t(x,y+1),
-        //                   2\right>
-        glm::dvec3 l_n(this->_output.at(x + 1, y) - this->_output.at(x - 1, y),
-                       this->_output.at(x, y - 1) - this->_output.at(x, y + 1),
-                       2.00);
-
-        // \vec{n}^l = \text{norm}(\vec{n}^l) 
-        l_n = glm::normalize(l_n);
-
-        // \begin{aligned}
-        // \vec{n} &= \left<0, 0, 1\right>
-        // \alpha &= \sin\left(\max\left(0.01, \cos^{-1}\left(\frac{\vec{n}^l
-        //        \cdot \vec{n}}{||\vec{n}^l||\;||\vec{n}||}\right\right)\right)
-        // \end{aligned}
-        double alpha = sin(std::max(0.01, acos(glm::dot(l_n, this->n))));
-                                // / (sqrt(glm::dot(l_n, l_n))
-                                //   * sqrt(glm::dot(this->n, this->n))))));
-
-        glm::dvec2 vel(this->v.at(x, y).x, this->v.at(x, y).y);
-
-        // C(x,y) = K_c \cdot \sin(\alpha(x,y)) \cdot |\vec{v}(x,y)|
-        // (Mei et al., 2007, p. 51)
-        double C = this->K_c * alpha * sqrt(glm::dot(vel, vel));
-
-        // \Delta s
-        double delta = 0.00;
-
-        // Mu is greater, water can carry more sediment
-        if (C > this->s.at(x, y))
-        {
-            delta = this->K_s * (C - this->s.at(x,y));
-            this->_erosion.set(x, y, this->_erosion.at(x, y) + delta);
-        }
-
-        // \begin{aligned}
-        // b_{t + \Delta t} &= b_t - K_s(C - s_t) \\
-        // s_1 &= s_t + K_s(C - s_t) \\
-        // d_{t + \Delta t} &= d_t + K_s(C - s_t)
-        // \end{aligned}
-        // (Mei et al., 2007, p. 51)
-        
-        // Mu is lesser, water needs to deposit sediment
-        else if (C < this->s.at(x, y))
-        {
-            delta = this->K_d * (C - this->s.at(x,y));
-            this->_sediment.set(x, y, this->_sediment.at(x, y) + delta);
-        }
-
-        // \begin{aligned}
-        // b_{t + \Delta t} &= b_t - K_d(C - s_t) \\
-        // s_1 &= s_t + K_d(C - s_t) \\
-        // d_{t + \Delta t} &= d_t + K_d(C - s_t)
-        // \end{aligned}
-        // (Mei et al., 2007, p. 51)
-        double off = 0.00;
-        if (this->_output.at(x, y) - delta < 0.00)
-            off = -(this->_output.at(x, y) - delta);
-
-        if (this->s.at(x, y) - delta < 0.00)
-            off = -(this->s.at(x, y) - delta);
-
-        this->_output.set(x, y, this->_output.at(x, y) - delta + off);
-        this->s_1.set(x, y, this->s.at(x, y) + delta - off);
-        // this->w_2.set(x, y, this->w_2.at(x, y) + delta);
-    }
-}
-
-void ConverterErosionNode::sedimentTransportation4()
-{
-    LOOP_MAP(this->_output)
-    {
-        // \bar{x} = x - v \cdot \Delta t
-        double x_bar = (double)x - this->v.at(x, y).x * this->dT;
-        double y_bar = (double)y - this->v.at(x, y).y * this->dT;
-
-        // \bar{x}^p = \bar{x} \lfloor \bar{x} \rfloor
-        double x_p = x_bar - floor(x_bar);
-        double y_p = y_bar - floor(y_bar);
-
-        // \begin{aligned}
-        // x_0 &= \text{clamp}\left(\lfloor \bar{x} \rfloor, 0, \text{width}
-        //                                                      - 1\right) \\
-        // x_1 &= \text{clamp}\left(x_0 + 1, 0, \text{width} - 1\right)
-        // \end{aligned}
-        int x_0 = clamp((int)floor(x_bar), 0, this->_output.width - 1);
-        int y_0 = clamp((int)floor(y_bar), 0, this->_output.height - 1);
-        int x_1 = clamp(x_0 + 1, 0, this->_output.width - 1);
-        int y_1 = clamp(y_0 + 1, 0, this->_output.height - 1);
-
-        // \text{mix}(x,y,a) = x \cdot (1 - a) + y \cdot a
-
-        // We implicitly interpolate from the 4 closest values, hence the mixes.
-        // If we land on an exact grid, interpolation will simply become that
-        // specific value
-        // s_{t + \Delta t}(x,y) = s_1(x - u \cdot \Delta t,
-        //                             y - v \cdot \Delta t)
-        // (Mei et al., 2007, p. 51)
-        this->s.set(x, y, mix(mix(this->s_1.at(x_0, y_0),
-                                  this->s_1.at(x_1, y_0),
-                                  x_p),
-                             mix(this->s_1.at(x_0, y_1),
-                                 this->s_1.at(x_1, y_1),
-                                 x_p),
-                             y_p));
-    }
-}
-
-void ConverterErosionNode::evaporation5()
-{
-    LOOP_MAP(this->_output)
-    {
-        // d_{t + \Delta t}(x,y) = d_2(x,y) \cdot (1 - K_e \cdot \Delta t)
-        // (Mei et al., 2007, p. 51)
-        this->w.set(x, y, this->w_2.at(x, y) * (1.00 - this->K_e * this->dT));
-    }
+    this->_output.set(x, y, v / div);
 }
 
 /**
@@ -602,44 +488,158 @@ void ConverterErosionNode::evaporation5()
 void ConverterErosionNode::_generate()
 {
     Q_CHECK_PTR(this->_input);
-
     this->_output = this->_input->intensityMap();
-    int tw = this->_output.width;
-    int th = this->_output.height;
-    this->w = IntensityMap(tw, th, 0.00);
-    this->w_1 = IntensityMap(tw, th, 0.00);
-    this->w_2 = IntensityMap(tw, th, 0.00);
-    this->s = IntensityMap(tw, th, 0.00);
-    this->s_1 = IntensityMap(tw, th, 0.00);
-    this->f = VectorMap(tw, th, glm::dvec4(0.00, 0.00, 0.00, 0.00));
-    this->v = VectorMap(tw, th, glm::dvec4(0.00, 0.00, 0.00, 0.00));
-    this->r = IntensityMap(tw, th, 0.00);
 
-    this->_sediment = IntensityMap(tw, th, 0.00);
-    this->_erosion = IntensityMap(tw, th, 0.00);
+    this->_sediment =
+        IntensityMap(this->_output.width, this->_output.height, 0.00);
+        
+    this->_erosion =
+        IntensityMap(this->_output.width, this->_output.height, 0.00);
 
-    this->p = this->dT * this->A * this->g / this->L;
+    // Generate a random distribution of rain drops
+    std::default_random_engine gen;
 
-    for (int y = th / 4; y < th; y += th / 2)
-        for (int x = tw / 4; x < tw; x += tw / 2)
-            this->r.set(x, y, 0.50);
+    std::uniform_real_distribution<double>
+        distrib_x(0.00, (double)this->_output.width - 1.00);
 
-    for (int i = 0; i < this->I; i++)
+    std::uniform_real_distribution<double>
+        distrib_y(0.00, (double)this->_output.height - 1.00);
+
+    // Erosion radius distance, for rounding erosion distance from point
+    double r = sqrt(2.00 * this->_erosion_radius * this->_erosion_radius);
+
+    // Generate _iterations number of rain drops
+    for (int i = 0; i < this->_iterations; i++)
     {
-        this->waterIncrement1();
-        this->flowSimulation2();
-        this->erosionAndDeposition3();
-        this->sedimentTransportation4();
-        this->evaporation5();
-        this->smooth();
-        this->r = IntensityMap(tw, tw, 0.00);
+        // Setup default values
+        double dir_x = 0.00;
+        double dir_y = 0.00;
+
+        // Random raindrop location
+        // TODO: Add a rainmap (intensity map) that affects water value
+        double pos_x = distrib_x(gen);
+        double pos_y = distrib_y(gen);
+
+        double speed = 1.00;
+        double sediment = 0.00;
+        double water = 1.00;
+
+        // While the raindrop lives, move, erode, and deposit.
+        for (int l = 0; l < this->_max_drop_life; l++)
+        {
+            // Get the current height
+            double old_height = height(&this->_output, pos_x, pos_y);
+
+            // Get the greatest descent
+            glm::dvec2 grad = gradient(&this->_output, pos_x, pos_y);
+
+            // Update the movement direction with inertia and gradient descent
+            dir_x = dir_x * this->_inertia
+                    - grad.x * (1.00 - this->_inertia);
+
+            dir_y = dir_y * this->_inertia
+                    - grad.y * (1.00 - this->_inertia);
+
+            // Normalize the movement (1 pixel radius distance of movement)
+            double norm = sqrt(dir_x * dir_x + dir_y * dir_y);
+            if (norm != 0.00)
+            {
+                dir_x /= norm;
+                dir_y /= norm;
+            }
+
+            // Update particle position
+            pos_x += dir_x;
+            pos_y += dir_y;
+
+            // Fell off map or stopped moving? Go to next particle
+            if ((dir_x == 0.00 && dir_y == 0.00)
+                || pos_x < 0.00
+                || pos_x > (double)this->_output.width - 1.00
+                || pos_y < 0.00
+                || pos_y > (double)this->_output.height - 1.00)
+                break;
+
+            // Get new position height
+            double new_height = height(&this->_output, pos_x, pos_y);
+
+            // Get the change in height
+            double delta_height = new_height - old_height;
+
+            // Calculate the sediment capacity
+            double sediment_cap =
+                std::max(-delta_height * speed * water
+                         * this->_sediment_capacity,
+                         this->_min_sediment_capacity);
+
+            // If sediment is beyond capacity deposit sediment
+            if (sediment > sediment_cap
+                || delta_height > 0.00
+                || (dir_x == 0.00 && dir_y == 0.00))
+            {
+                // Deposit at most the change in height (prevents holes)
+                double deposit = delta_height > 0.00
+                                 ? std::min(delta_height, sediment)
+                                 : (sediment - sediment_cap)
+                                   * this->_deposit_speed;
+
+                // Update the sediment value
+                sediment -= deposit;
+                    
+                // Place the depositing value onto the map
+                interpolateAdd(&this->_output, pos_x, pos_y, deposit);
+                interpolateAdd(&this->_sediment, pos_x, pos_y, deposit);
+
+                // Smooth particle (apply intensity)
+                this->_smooth((int)round(pos_x), (int)round(pos_y));
+            }
+
+            // Still have capacity for sediment, erode some terrain
+            else
+            {
+                // Get erosion amount
+                double erode = std::min((sediment_cap - sediment)
+                                        * this->_erosion_speed,
+                                        -delta_height);
+
+                // Erode pixels in a radius from position
+                for (double x = -this->_erosion_radius;
+                     x <= this->_erosion_radius;
+                     x += 1.00)
+                {
+                    for (double y = -this->_erosion_radius;
+                         y <= this->_erosion_radius;
+                         y += 1.00)
+                    {
+                        // Reduce erosion the farther away from the point
+                        double strength = std::min(0.001,
+                                            (r - sqrt(x * x + y * y))
+                                            / r * erode);
+
+                        // Update the terrain with erosion
+                        interpolateAdd(&this->_output,
+                                       pos_x + x,
+                                       pos_y + y,
+                                       -strength);
+
+                        interpolateAdd(&this->_erosion,
+                                       pos_x + x,
+                                       pos_y + y,
+                                       -strength);
+                        
+                        // Normally would be 'sediment += strength' however,
+                        // there is an odd problem where sediment is 0,
+                        // strength is some positive number, but sediment
+                        // becomes -strength
+                        sediment = abs(sediment + strength);
+                    }
+                }
+            }
+            // Update the speed of the droplet
+            speed = sqrt(speed * speed + delta_height * this->_g);
+            // Slowly evaporate the water
+            water *= (1.00 - this->_evaporation_rate);
+        }
     }
-
-    this->_output = this->_output.transform([](double a, double b) -> double {
-        return a + b;
-    }, &this->s);
-
     emit this->dataUpdated(0);
-    emit this->dataUpdated(1);
-    emit this->dataUpdated(2);
 }
