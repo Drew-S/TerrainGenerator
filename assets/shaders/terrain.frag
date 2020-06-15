@@ -19,6 +19,8 @@ uniform highp vec3 camera_pos;
 in highp vec3 frag_pos;
 in highp vec2 frag_uv;
 
+in lowp float line_mode;
+
 // Model transformation
 in highp mat4 frag_model;
 
@@ -35,6 +37,8 @@ vec3 up = vec3(0.0, 1.0, 0.0);
 
 void main(void) {
   vec3 C = texture2D(albedo_map, frag_uv).rgb;
+  if (line_mode == 1.0)
+    C = color;
   // Build tangent space to object space normal transform
   vec3 plane_normal = vec3(0.0, 1.0, 0.0);
   vec3 plane_tangent = vec3(1.0, 0.0, 0.0);
