@@ -60,7 +60,7 @@ public:
     IntensityMap transform(double func(double, double), IntensityMap *map);
 
     // Get a specific value
-    double at(int x, int y);
+    double at(int x, int y, bool clamp_to = false);
 
     // Check if the map is using a solid fill color (all pixels the same)
     bool usingFill();

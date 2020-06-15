@@ -1,6 +1,24 @@
 #include "intensitymap.h"
 
+#include <math.h>
+
 #include <QDebug>
+
+/**
+ * clamp
+ * 
+ * Clamps the value x between low and high, low <= x <= high
+ * 
+ * @param int x : The value to clamp.
+ * @param int low : The low value to clamp to.
+ * @param int high : The high value to clamp to.
+ * 
+ * @returns int : The clamped value.
+ */
+static int clamp(int x, int low, int high)
+{
+    return std::max(low, std::min(high, x));
+}
 
 /**
  * IntensityMap
@@ -244,13 +262,22 @@ IntensityMap IntensityMap::transform(double func(double, double),
  *
  * @param int x : The column.
  * @param int y : The row.
+ * @param bool clamp : Use the clamp value rather than the fill, default=false;
  *
  * @returns double : The intensity at the specified index.
  */
-double IntensityMap::at(int x, int y)
+double IntensityMap::at(int x, int y, bool clamp_to)
 {
     if (x < 0 || x >= this->width || y < 0 || y >= this->height)
-        return this->_fill;
+    {
+        if (clamp_to)
+            return this->at(
+                clamp(x, 0, this->width - 1),
+                clamp(y, 0, this->height - 1),
+                clamp_to);
+        else
+            return this->_fill;
+    }
 
     int index = y * this->width + x;
     if (index >= (int)this->values.size())
