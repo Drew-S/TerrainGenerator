@@ -32,8 +32,13 @@ OutputNode::OutputNode()
     normal.setColorCount(1);
     normal.setColor(0, qRgba(128, 128, 255, 255));
     normal.fill(0);
-
     this->_normal_map = normal;
+
+    QImage albedo(1, 1, QImage::Format_Indexed8);
+    albedo.setColorCount(1);
+    albedo.setColor(0, qRgba(210, 210, 210, 255));
+    albedo.fill(0);
+    this->_albedo_map = albedo;
 
     QObject::connect(&this->_normal_generator,
                      &NormalMapGenerator::done,
