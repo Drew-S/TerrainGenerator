@@ -25,8 +25,6 @@
  * 
  * Worker class for running the simplex noise generation within its own separate
  * thread.
- * 
- * TODO: Implement cancel/pause/continue slots.
  */
 class SimplexNoiseWorker : public QObject
 {
@@ -43,11 +41,15 @@ public slots:
     // Run generation
     void generate();
 
+    // Stop generation
+    void stop();
+
 signals:
     // Updating signals
     void started();
     void progress(int perc);
     void done();
+    void stopped();
 
 private:
     // Generation parameters
@@ -58,6 +60,9 @@ private:
 
     // Resulting height map
     IntensityMap *_height_map;
+
+    // Flag for interuption
+    bool _run = false;
 };
 
 /**
@@ -73,6 +78,7 @@ class InputSimplexNoiseNode : public Node
 public:
     // Creates the node
     InputSimplexNoiseNode();
+    ~InputSimplexNoiseNode();
 
     // When the node is created attach listeners
     void created() override;
@@ -137,6 +143,7 @@ private:
     QVector3D _offset{0.0f, 0.0f, 0.0f};
 
     QThread _thread;
+    SimplexNoiseWorker *_worker = nullptr;
 
     // Inputs
     std::shared_ptr<IntensityMapData> _in_octives;

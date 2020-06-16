@@ -43,7 +43,7 @@ void SimplexNoiseWorker::set(float octives,
 }
 
 /**
- * generate
+ * generate @slot
  * 
  * Generates the simplex noise in the separate thread.
  * 
@@ -54,6 +54,7 @@ void SimplexNoiseWorker::set(float octives,
 void SimplexNoiseWorker::generate()
 {
     emit this->started();
+    this->_run = true;
     SimplexNoise noise(this->_frequency / 1000.0f,
                        1.0f,
                        1.99f,
@@ -96,9 +97,26 @@ void SimplexNoiseWorker::generate()
             this->_height_map->append(intensity);
             emit this->progress((int)round(100.0f * (float)i / (float)total));
             i++;
+            if (!this->_run)
+            {
+                emit this->stopped();
+                return;
+            }
         }
     }
     emit this->done();
+}
+
+/**
+ * stop @slot
+ * 
+ * Sets the run flag to stop to interupt any further work during generate
+ */
+void SimplexNoiseWorker::stop()
+{
+    if (!this->_run)
+        emit this->stopped();
+    this->_run = false;
 }
 
 /******************************************************************************
@@ -119,6 +137,18 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
     this->_ui.setupUi(this->_widget);
     this->_widget->setMinimumSize(281, 302);
     this->_shared_ui.setupUi(this->_shared_widget);
+}
+
+/**
+ * ~InputSimplexNoiseNode
+ * 
+ * Delets the simplex noise, safely shutting down the worker thread.
+ */
+InputSimplexNoiseNode::~InputSimplexNoiseNode()
+{
+    this->_thread.quit();
+    this->_thread.wait();
+    delete this->_worker;
 }
 
 /**
@@ -381,51 +411,64 @@ void InputSimplexNoiseNode::_generate()
     // Ratio compensates the preview resolution to better reflect the render output
     this->_intensity_map = IntensityMap(size, size);
 
-    SimplexNoiseWorker *worker = new SimplexNoiseWorker();
-    worker->moveToThread(&this->_thread);
-    QObject::connect(&this->_thread,
-                     &QThread::finished,
-                     worker,
-                     &QObject::deleteLater);
+    if (!this->_worker)
+    {
+        this->_worker = new SimplexNoiseWorker();
+        this->_worker->moveToThread(&this->_thread);
 
-    QObject::connect(worker,
-                     &SimplexNoiseWorker::done,
-                     this,
-                     &InputSimplexNoiseNode::simplexDone);
+        QObject::connect(this->_worker,
+                        &SimplexNoiseWorker::done,
+                        this,
+                        &InputSimplexNoiseNode::simplexDone);
 
-    QObject::connect(worker, &SimplexNoiseWorker::started, [this]() {
-        Q_CHECK_PTR(SETTINGS);
-        
-        this->_ui.progress->show();
-        this->_shared_ui.progress->show();
+        QObject::connect(this->_worker, &SimplexNoiseWorker::started, [this]() {
+            Q_CHECK_PTR(SETTINGS);
+            
+            this->_ui.progress->show();
+            this->_shared_ui.progress->show();
 
-        if (SETTINGS->percentProgressText()
-            && !this->_ui.progress->isTextVisible())
-            this->_ui.progress->setTextVisible(true);
-        else if (!SETTINGS->percentProgressText()
-                 && this->_ui.progress->isTextVisible())
-            this->_ui.progress->setTextVisible(false);
+            if (SETTINGS->percentProgressText()
+                && !this->_ui.progress->isTextVisible())
+                this->_ui.progress->setTextVisible(true);
+            else if (!SETTINGS->percentProgressText()
+                    && this->_ui.progress->isTextVisible())
+                this->_ui.progress->setTextVisible(false);
 
-        if (SETTINGS->percentProgressText()
-            && !this->_shared_ui.progress->isTextVisible())
-            this->_shared_ui.progress->setTextVisible(true);
-        else if (!SETTINGS->percentProgressText()
-                 && this->_shared_ui.progress->isTextVisible())
-            this->_shared_ui.progress->setTextVisible(false);
-    });
-    QObject::connect(worker,
-                     &SimplexNoiseWorker::progress,
-                     this->_ui.progress,
-                     &QProgressBar::setValue);
+            if (SETTINGS->percentProgressText()
+                && !this->_shared_ui.progress->isTextVisible())
+                this->_shared_ui.progress->setTextVisible(true);
+            else if (!SETTINGS->percentProgressText()
+                    && this->_shared_ui.progress->isTextVisible())
+                this->_shared_ui.progress->setTextVisible(false);
+        });
+        QObject::connect(this->_worker,
+                        &SimplexNoiseWorker::progress,
+                        this->_ui.progress,
+                        &QProgressBar::setValue);
 
-    QObject::connect(worker,
-                     &SimplexNoiseWorker::progress,
-                     this->_shared_ui.progress,
-                     &QProgressBar::setValue);
+        QObject::connect(this->_worker,
+                        &SimplexNoiseWorker::progress,
+                        this->_shared_ui.progress,
+                        &QProgressBar::setValue);
 
-    this->_thread.start();
-    worker->set(octives, frequency, persistence, offset, &this->_intensity_map);
-    QMetaObject::invokeMethod(worker, "generate", Qt::QueuedConnection);
+        QObject::connect(this->_worker,
+                         &SimplexNoiseWorker::stopped,
+                         [this]() {
+                             this->_ui.progress->hide();
+                             this->_shared_ui.progress->hide();
+                             this->_generate();
+                         });
+
+        this->_thread.start();
+    }
+
+    this->_worker->set(octives,
+                       frequency,
+                       persistence,
+                       offset,
+                       &this->_intensity_map);
+
+    QMetaObject::invokeMethod(this->_worker, "generate", Qt::QueuedConnection);
 }
 
 /**
@@ -644,7 +687,10 @@ void InputSimplexNoiseNode::octivesChanged(double value)
     this->_octives = (float)value;
     this->_ui.spin_octives->setValue(this->_octives);
     this->_shared_ui.spin_octives->setValue(this->_octives);
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
 
 /**
@@ -660,7 +706,10 @@ void InputSimplexNoiseNode::frequencyChanged(double value)
     this->_frequency = (float)value;
     this->_ui.spin_frequency->setValue(this->_frequency);
     this->_shared_ui.spin_frequency->setValue(this->_frequency);
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
 
 /**
@@ -676,7 +725,10 @@ void InputSimplexNoiseNode::persistenceChanged(double value)
     this->_persistence = (float)value;
     this->_ui.spin_persistence->setValue(this->_persistence);
     this->_shared_ui.spin_persistence->setValue(this->_persistence);
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
 
 /**
@@ -692,7 +744,10 @@ void InputSimplexNoiseNode::xChanged(double value)
     this->_offset.setX((float)value);
     this->_ui.spin_x->setValue(this->_offset.x());
     this->_shared_ui.spin_x->setValue(this->_offset.x());
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
 
 /**
@@ -708,7 +763,10 @@ void InputSimplexNoiseNode::yChanged(double value)
     this->_offset.setY((float)value);
     this->_ui.spin_y->setValue(this->_offset.y());
     this->_shared_ui.spin_y->setValue(this->_offset.y());
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
 
 /**
@@ -724,5 +782,8 @@ void InputSimplexNoiseNode::zChanged(double value)
     this->_offset.setZ((float)value);
     this->_ui.spin_z->setValue(this->_offset.z());
     this->_shared_ui.spin_z->setValue(this->_offset.z());
-    this->_generate();
+    if (this->_worker)
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    else
+        this->_generate();
 }
