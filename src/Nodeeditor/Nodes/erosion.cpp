@@ -1,10 +1,3 @@
-/**
- * Mei, X., Decaudin, P., & Hu, B.-G. (2007). Fast Hydraulic Erosion Simulation
- *        and Visualization on GPU. 15th Pacific Conference on Computer Graphics
- *        and Applications (PG’07), Computer Graphics and Applications, 2007.
- *        PG ’07. 15th Pacific Conference On, 47–56.
- *        https://doi.org/10.1109/PG.2007.15
- */
 #include "erosion.h"
 
 #include <math.h>
