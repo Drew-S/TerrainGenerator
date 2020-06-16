@@ -22,6 +22,9 @@
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
+  <property name="toolTip">
+   <string>Generate smooth random terrain</string>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color:  rgba(0,0,0,0)</string>
   </property>
@@ -60,6 +63,9 @@
          <width>239</width>
          <height>100</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Resulting Texture</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -123,6 +129,9 @@
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="spin_octives">
+         <property name="toolTip">
+          <string>Level of detail</string>
+         </property>
          <property name="prefix">
           <string>Octives </string>
          </property>
@@ -132,6 +141,9 @@
          <property name="maximum">
           <double>64.000000000000000</double>
          </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+         </property>
          <property name="value">
           <double>8.000000000000000</double>
          </property>
@@ -139,6 +151,9 @@
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="spin_frequency">
+         <property name="toolTip">
+          <string>Scale of the texture</string>
+         </property>
          <property name="prefix">
           <string>Frequency </string>
          </property>
@@ -148,6 +163,9 @@
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+         </property>
          <property name="value">
           <double>5.000000000000000</double>
          </property>
@@ -155,6 +173,9 @@
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="spin_persistence">
+         <property name="toolTip">
+          <string>Relative blending</string>
+         </property>
          <property name="prefix">
           <string>Persistence </string>
          </property>
@@ -163,6 +184,9 @@
          </property>
          <property name="singleStep">
           <double>0.010000000000000</double>
+         </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
          </property>
          <property name="value">
           <double>0.500000000000000</double>
@@ -192,6 +216,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="toolTip">
+            <string>Shift image left/right</string>
+           </property>
            <property name="prefix">
             <string>x </string>
            </property>
@@ -200,6 +227,9 @@
            </property>
            <property name="maximum">
             <double>1000.000000000000000</double>
+           </property>
+           <property name="stepType">
+            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
            </property>
           </widget>
          </item>
@@ -217,6 +247,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="toolTip">
+            <string>Shift image up/down</string>
+           </property>
            <property name="prefix">
             <string>y </string>
            </property>
@@ -225,6 +258,9 @@
            </property>
            <property name="maximum">
             <double>1000.000000000000000</double>
+           </property>
+           <property name="stepType">
+            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
            </property>
           </widget>
          </item>
@@ -242,6 +278,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="toolTip">
+            <string>Shift image in/out</string>
+           </property>
            <property name="prefix">
             <string>z </string>
            </property>
@@ -250,6 +289,9 @@
            </property>
            <property name="maximum">
             <double>1000.000000000000000</double>
+           </property>
+           <property name="stepType">
+            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
            </property>
           </widget>
          </item>

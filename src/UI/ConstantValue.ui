@@ -13,12 +13,19 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="toolTip">
+   <string>Provide a constant value</string>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QDoubleSpinBox" name="constant"/>
+    <widget class="QDoubleSpinBox" name="constant">
+     <property name="toolTip">
+      <string>Provide a constant value</string>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

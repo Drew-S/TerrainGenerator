@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="toolTip">
+   <string>Provide a constant vector</string>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
   </property>
@@ -45,6 +48,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Vector (x) value</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -56,6 +62,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>
@@ -73,6 +82,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Vector (y) value</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -84,6 +96,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>
@@ -101,6 +116,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Vector (z) value</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -112,6 +130,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>
@@ -129,6 +150,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Vector (w) value</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -140,6 +164,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>

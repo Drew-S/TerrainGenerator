@@ -13,12 +13,18 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="toolTip">
+   <string>Convert a vector input to a mono channel output</string>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="mode">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The method to create the output&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Red&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Output the red channel&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Green&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Output the green channel&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Blue&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Output the blue channel&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Alpha&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Output the alpha channel&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Average&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Average all the channels (r + g + b + a) / 4&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Min&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Choose the smallest channel&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Max&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Choose the largest channel&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="currentIndex">
       <number>4</number>
      </property>

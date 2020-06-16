@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -151,6 +154,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="combo_mesh">
+          <property name="toolTip">
+           <string>The number of vertices of the terrain along a single edge (total vertices are squared)</string>
+          </property>
           <property name="editable">
            <bool>false</bool>
           </property>
@@ -190,6 +196,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="combo_preview">
+          <property name="toolTip">
+           <string>The resolution of the images during preview</string>
+          </property>
           <property name="currentIndex">
            <number>1</number>
           </property>
@@ -239,6 +248,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="combo_render">
+          <property name="toolTip">
+           <string>The resolution of the images during rendering</string>
+          </property>
           <property name="currentIndex">
            <number>3</number>
           </property>
@@ -288,6 +300,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="use_render">
+          <property name="toolTip">
+           <string>Use render settings instead of preview for image resolution?</string>
+          </property>
           <property name="text">
            <string>Use render resolution for preview?</string>
           </property>
@@ -295,6 +310,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="draw_lines">
+          <property name="toolTip">
+           <string>Draw the terrain vertex edges?</string>
+          </property>
           <property name="text">
            <string>Draw Terrain Lines?</string>
           </property>
@@ -322,6 +340,9 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>The default colour of the terrain</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(191,191,191);</string>
             </property>
@@ -332,6 +353,9 @@
           </item>
           <item>
            <widget class="QLabel" name="label">
+            <property name="toolTip">
+             <string>The default colour of the terrain</string>
+            </property>
             <property name="text">
              <string>Terrain Colour</string>
             </property>
@@ -361,6 +385,9 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>The colour of the vertex edges of the terrain</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255,255,255);</string>
             </property>
@@ -371,6 +398,9 @@
           </item>
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="toolTip">
+             <string>The colour of the vertex edges of the terrain</string>
+            </property>
             <property name="text">
              <string>Line Colour</string>
             </property>
@@ -400,6 +430,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>The colour of the sky, background colour</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(196,214,252);</string>
             </property>
@@ -410,6 +443,9 @@
           </item>
           <item>
            <widget class="QLabel" name="label_7">
+            <property name="toolTip">
+             <string>The colour of the sky, background colour</string>
+            </property>
             <property name="text">
              <string>Sky Colour</string>
             </property>
@@ -439,6 +475,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>The colour of the light source</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255,255,255);</string>
             </property>
@@ -449,6 +488,9 @@
           </item>
           <item>
            <widget class="QLabel" name="label_8">
+            <property name="toolTip">
+             <string>The colour of the light source</string>
+            </property>
             <property name="text">
              <string>Sun Colour</string>
             </property>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>151</width>
-    <height>190</height>
+    <height>116</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,6 +19,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QDoubleSpinBox" name="val_in_0">
+     <property name="toolTip">
+      <string>First value</string>
+     </property>
      <property name="readOnly">
       <bool>false</bool>
      </property>
@@ -30,6 +33,9 @@
      </property>
      <property name="singleStep">
       <double>0.100000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>
@@ -53,6 +59,9 @@
      </item>
      <item>
       <widget class="QComboBox" name="mode">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Method to apply to values&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Mix&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Blend the two values together &lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;(a + b) / 2&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Add&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Add the top to the boom &lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;a + b&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Subtract&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Subtract the top from the bottom &lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;a - b&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Multiply&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Multiply the top by the botton &lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;a * b&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Divide&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Divide the top by the bottom &lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;a / b&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt; (if b is 0, the result is 0)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Min&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Choose the smallest of the top and bottom&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Max&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Choose the largest of the top and bottom&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Pow&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Raise the top to the power of the bottom&lt;/span&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt; a ^ b&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <item>
         <property name="text">
          <string>Mix</string>
@@ -112,6 +121,9 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="val_in_1">
+     <property name="toolTip">
+      <string>Second Value</string>
+     </property>
      <property name="minimum">
       <double>-999999.000000000000000</double>
      </property>
@@ -120,6 +132,9 @@
      </property>
      <property name="singleStep">
       <double>0.100000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>

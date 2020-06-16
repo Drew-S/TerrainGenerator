@@ -47,6 +47,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="pack_files_check_box">
+       <property name="toolTip">
+        <string>Save external textures in the save file?</string>
+       </property>
        <property name="text">
         <string>Pack External Resources</string>
        </property>
@@ -56,6 +59,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="directory_button">
+         <property name="toolTip">
+          <string>The directory to save the file to</string>
+         </property>
          <property name="text">
           <string>Directory</string>
          </property>
@@ -78,7 +84,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="filename_line_edit"/>
+      <widget class="QLineEdit" name="filename_line_edit">
+       <property name="toolTip">
+        <string>The name of the file to choose (extension not needed)</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

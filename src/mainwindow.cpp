@@ -136,7 +136,14 @@ void MainWindow::setup(Ui::MainWindow *ui)
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->terrainColor());
         if (color.isValid())
+        {
             this->_open_gl->setTerrainColor(color);
+            this->_main_ui->terrain_color->setStyleSheet(
+                QString::asprintf("background-color: rgba(%d,%d,%d,255);",
+                color.red(),
+                color.green(),
+                color.blue()));
+        }
     });
     QObject::connect(this->_main_ui->terrain_line_color,
                      &QPushButton::clicked,
@@ -147,7 +154,14 @@ void MainWindow::setup(Ui::MainWindow *ui)
             QColorDialog::getColor(this->_open_gl->terrainLineColor());
 
         if (color.isValid())
+        {
             this->_open_gl->setTerrainLineColor(color);
+            this->_main_ui->terrain_line_color->setStyleSheet(
+                QString::asprintf("background-color: rgba(%d,%d,%d,255);",
+                color.red(),
+                color.green(),
+                color.blue()));
+        }
     });
     QObject::connect(this->_main_ui->combo_mesh,
                      QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -165,7 +179,14 @@ void MainWindow::setup(Ui::MainWindow *ui)
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->skyColor());
         if (color.isValid())
+        {
             this->_open_gl->setSkyColor(color);
+            this->_main_ui->sky_color->setStyleSheet(
+                QString::asprintf("background-color: rgba(%d,%d,%d,255);",
+                color.red(),
+                color.green(),
+                color.blue()));
+        }
     });
     QObject::connect(this->_main_ui->light_color,
                      &QPushButton::clicked,
@@ -174,7 +195,14 @@ void MainWindow::setup(Ui::MainWindow *ui)
         Q_CHECK_PTR(this->_open_gl);
         QColor color = QColorDialog::getColor(this->_open_gl->lightColor());
         if (color.isValid())
+        {
             this->_open_gl->setLightColor(color);
+            this->_main_ui->light_color->setStyleSheet(
+                QString::asprintf("background-color: rgba(%d,%d,%d,255);",
+                color.red(),
+                color.green(),
+                color.blue()));
+        }
     });
 
     // Fix Nodeeditor and OpenGL widget splitter size

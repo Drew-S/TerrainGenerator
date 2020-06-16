@@ -53,6 +53,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="toolTip">
+      <string/>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

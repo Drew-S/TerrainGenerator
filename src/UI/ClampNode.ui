@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>148</width>
+    <width>177</width>
     <height>118</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="toolTip">
+   <string>Clamp values between min and max</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
@@ -19,6 +22,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="combo_clamp">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clamping mode&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Clamp&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Hard limit&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#4d4d4d;&quot;&gt;Sigmoid&lt;/span&gt;&lt;span style=&quot; color:#1b1b1b;&quot;&gt;: Smooth transform&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <item>
       <property name="text">
        <string>Clamp</string>
@@ -48,11 +54,20 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="spin_min">
+       <property name="toolTip">
+        <string>Minimum value to clamp above</string>
+       </property>
        <property name="minimum">
         <double>-99999.000000000000000</double>
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>
@@ -75,11 +90,17 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="spin_max">
+       <property name="toolTip">
+        <string>Maximum value to clamp below</string>
+       </property>
        <property name="minimum">
         <double>-99999.000000000000000</double>
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
        <property name="value">
         <double>1.000000000000000</double>

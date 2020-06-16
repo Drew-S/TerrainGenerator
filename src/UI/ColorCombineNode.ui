@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>231</width>
-    <height>293</height>
+    <height>234</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="toolTip">
+   <string>Combine Indidividual mono channels into a single colour map</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
@@ -26,11 +29,17 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="spin_red">
+     <property name="toolTip">
+      <string>Input for the red channel</string>
+     </property>
      <property name="maximum">
       <double>1.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>
@@ -46,11 +55,17 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="spin_green">
+     <property name="toolTip">
+      <string>Input for the green channel</string>
+     </property>
      <property name="maximum">
       <double>1.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>
@@ -66,11 +81,17 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="spin_blue">
+     <property name="toolTip">
+      <string>Input for the blue channel</string>
+     </property>
      <property name="maximum">
       <double>1.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>
@@ -86,11 +107,17 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="spin_alpha">
+     <property name="toolTip">
+      <string>Input for the alpha channel</string>
+     </property>
      <property name="maximum">
       <double>1.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.010000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
      </property>
      <property name="value">
       <double>1.000000000000000</double>

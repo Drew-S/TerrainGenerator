@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="toolTip">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Apply vector dot product to two vectors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgba(0,0,0,0);</string>
   </property>
@@ -29,9 +32,12 @@
       <widget class="QDoubleSpinBox" name="spin_x_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>137</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>First vector (x) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -45,6 +51,9 @@
        <property name="maximum">
         <double>999999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -54,9 +63,12 @@
       <widget class="QDoubleSpinBox" name="spin_y_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>135</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>First vector (y) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -70,6 +82,9 @@
        <property name="maximum">
         <double>99999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -79,9 +94,12 @@
       <widget class="QDoubleSpinBox" name="spin_z_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>First vector (z) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -95,6 +113,9 @@
        <property name="maximum">
         <double>99999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -104,9 +125,12 @@
       <widget class="QDoubleSpinBox" name="spin_w_0">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>139</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>First vector (w) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -119,6 +143,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
        <property name="value">
         <double>1.000000000000000</double>
@@ -149,9 +176,12 @@
       <widget class="QDoubleSpinBox" name="spin_x_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Second vector (x) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -165,6 +195,9 @@
        <property name="maximum">
         <double>99999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -174,9 +207,12 @@
       <widget class="QDoubleSpinBox" name="spin_y_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>135</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Second vector (y) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -190,6 +226,9 @@
        <property name="maximum">
         <double>99999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -199,9 +238,12 @@
       <widget class="QDoubleSpinBox" name="spin_z_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>134</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Second vector (z) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -215,6 +257,9 @@
        <property name="maximum">
         <double>99999.000000000000000</double>
        </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+       </property>
        <property name="value">
         <double>1.000000000000000</double>
        </property>
@@ -224,9 +269,12 @@
       <widget class="QDoubleSpinBox" name="spin_w_1">
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>139</width>
          <height>26</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Second vector (w) value</string>
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
@@ -239,6 +287,9 @@
        </property>
        <property name="maximum">
         <double>99999.000000000000000</double>
+       </property>
+       <property name="stepType">
+        <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
        </property>
       </widget>
      </item>

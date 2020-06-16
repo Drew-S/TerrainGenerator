@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>212</width>
-    <height>321</height>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="toolTip">
+   <string>Use a texture file as input</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget { background-color: rgba(0,0,0,0); } QPushButton{ background-color: normal; }</string>
@@ -46,6 +49,9 @@
          <height>128</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Texture</string>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -77,6 +83,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QToolButton" name="edit_button">
+         <property name="toolTip">
+          <string>Edit Texture</string>
+         </property>
          <property name="text">
           <string>...</string>
          </property>
@@ -113,6 +122,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QPushButton" name="new_texture">
+       <property name="toolTip">
+        <string>Create a new blank (white) texture</string>
+       </property>
        <property name="text">
         <string>New</string>
        </property>
@@ -133,6 +145,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="load_texture">
+       <property name="toolTip">
+        <string>Load existing texture image from system</string>
+       </property>
        <property name="text">
         <string>Load</string>
        </property>

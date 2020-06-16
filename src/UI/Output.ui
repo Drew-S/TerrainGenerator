@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>190</width>
+    <width>238</width>
     <height>263</height>
    </rect>
   </property>
@@ -18,6 +18,9 @@
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="toolTip">
+   <string>Output the pipeline for preview and rendering</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget { background-color: rgba(0,0,0,0); } QLabel { background-color: rgba(117, 117, 117, 255); border: 1px solid black; }</string>
@@ -52,11 +55,39 @@
          <height>100</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Height Map</string>
+       </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
        <property name="text">
         <string>Height Map</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="normal_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Normal Map</string>
+       </property>
+       <property name="text">
+        <string>Normal Map</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -94,24 +125,18 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="normal_label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
          <width>100</width>
          <height>100</height>
         </size>
        </property>
-       <property name="text">
-        <string>Normal Map</string>
+       <property name="toolTip">
+        <string>Albedo Texture</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+       <property name="text">
+        <string>Albedo Texture</string>
        </property>
       </widget>
      </item>
