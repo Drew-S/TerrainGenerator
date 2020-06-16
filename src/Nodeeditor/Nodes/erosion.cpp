@@ -165,7 +165,9 @@ static glm::dvec2 gradient(IntensityMap *map, double x, double y)
 ConverterErosionNode::ConverterErosionNode()
 {
     this->_widget = new QWidget();
+    this->_shared_widget = new QWidget();
     this->_ui.setupUi(this->_widget);
+    this->_shared_ui.setupUi(this->_shared_widget);
 }
 
 /**
@@ -175,45 +177,100 @@ ConverterErosionNode::ConverterErosionNode()
  */
 void ConverterErosionNode::created()
 {
-    QObject::connect(this->_ui.run_btn,
-                     &QPushButton::clicked,
-                     this,
-                     &ConverterErosionNode::_generate);
-
     QObject::connect(this->_ui.spin_inertia,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
                          this->_inertia = value;
+                         this->_shared_ui.spin_inertia->setValue(value);
+                         this->_generate();
                      });
 
     QObject::connect(this->_ui.spin_radius,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
                          this->_erosion_radius = value;
+                         this->_shared_ui.spin_radius->setValue(value);
+                         this->_generate();
                      });
 
     QObject::connect(this->_ui.spin_evaporation,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
                          this->_evaporation_rate = value;
+                         this->_shared_ui.spin_evaporation->setValue(value);
+                         this->_generate();
                      });
 
     QObject::connect(this->_ui.spin_smooth,
                      QOverload<double>::of(&QDoubleSpinBox::valueChanged),
                      [this](double value) {
                          this->_smooth_strength = value;
+                         this->_shared_ui.spin_smooth->setValue(value);
+                         this->_generate();
                      });
 
     QObject::connect(this->_ui.spin_iterations,
                      QOverload<int>::of(&QSpinBox::valueChanged),
                      [this](int value) {
                          this->_iterations = value;
+                         this->_shared_ui.spin_iterations->setValue(value);
+                         this->_generate();
                      });
 
     QObject::connect(this->_ui.spin_life,
                      QOverload<int>::of(&QSpinBox::valueChanged),
                      [this](int value) {
                          this->_max_drop_life = value;
+                         this->_shared_ui.spin_life->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_inertia,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     [this](double value) {
+                         this->_inertia = value;
+                         this->_ui.spin_inertia->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_radius,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     [this](double value) {
+                         this->_erosion_radius = value;
+                         this->_ui.spin_radius->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_evaporation,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     [this](double value) {
+                         this->_evaporation_rate = value;
+                         this->_ui.spin_evaporation->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_smooth,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     [this](double value) {
+                         this->_smooth_strength = value;
+                         this->_ui.spin_smooth->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_iterations,
+                     QOverload<int>::of(&QSpinBox::valueChanged),
+                     [this](int value) {
+                         this->_iterations = value;
+                         this->_ui.spin_iterations->setValue(value);
+                         this->_generate();
+                     });
+
+    QObject::connect(this->_shared_ui.spin_life,
+                     QOverload<int>::of(&QSpinBox::valueChanged),
+                     [this](int value) {
+                         this->_max_drop_life = value;
+                         this->_ui.spin_life->setValue(value);
+                         this->_generate();
                      });
 }
 
@@ -264,9 +321,8 @@ QWidget *ConverterErosionNode::embeddedWidget()
  */
 QWidget *ConverterErosionNode::sharedWidget()
 {
-    return nullptr;
-    // Q_CHECK_PTR(this->_shared_widget);
-    // return this->_shared_widget;
+    Q_CHECK_PTR(this->_shared_widget);
+    return this->_shared_widget;
 }
 
 /**
@@ -480,6 +536,9 @@ void ConverterErosionNode::_smooth(int x, int y)
  */
 void ConverterErosionNode::_generate()
 {
+    if (!this->_set)
+        return;
+
     Q_CHECK_PTR(this->_input);
     this->_output = this->_input->intensityMap();
 

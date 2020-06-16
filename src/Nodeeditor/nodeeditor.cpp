@@ -205,6 +205,10 @@ void Nodeeditor::_updatePropertiesNode(QtNodes::NodeDataModel *node, bool swap)
     {
         CAST_NODE(ConverterClampNode)
     }
+    else if (name == ConverterErosionNode().name())
+    {
+        CAST_NODE(ConverterErosionNode)
+    }
     else if (swap)
     {
         this->_properties->layout()->removeWidget(this->_properties_node);

@@ -24,6 +24,7 @@
 #include "node.h"
 
 #include "ui_Erosion.h"
+#include "ui_Erosion_Scroll.h"
 
 /**
  * ConverterErosionNode
@@ -100,5 +101,7 @@ private:
     double _smooth_strength = 0.10;
 
     Ui::Erosion _ui;
+    Ui::Erosion_Scroll _shared_ui;
     QWidget *_widget;
+    QWidget *_shared_widget;
 };

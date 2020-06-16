@@ -142,13 +142,14 @@ InputSimplexNoiseNode::InputSimplexNoiseNode()
 /**
  * ~InputSimplexNoiseNode
  * 
- * Delets the simplex noise, safely shutting down the worker thread.
+ * Deletes the simplex noise, safely shutting down the worker thread.
  */
 InputSimplexNoiseNode::~InputSimplexNoiseNode()
 {
     this->_thread.quit();
     this->_thread.wait();
-    delete this->_worker;
+    if (this->_worker)
+        delete this->_worker;
 }
 
 /**

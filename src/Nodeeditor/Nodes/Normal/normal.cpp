@@ -55,6 +55,9 @@ void NormalWorker::generate()
     emit this->started();
     int i = 0;
     int total = this->_height_map->width * this->_height_map->height;
+
+    this->_run = true;
+
     // Loop over all the pixels
     for (int x = 0; x < this->_height_map->width; x++)
     {
@@ -101,9 +104,27 @@ void NormalWorker::generate()
             normal.setPixelColor(x, y, color);
             emit this->progress((int)round(100.0f * (float)i / (float)total));
             i++;
+
+            if (!this->_run)
+            {
+                emit this->stopped();
+                return;
+            }
         }
     }
     emit this->done(normal);
+}
+
+/**
+ * stop @slot
+ * 
+ * Sets the run flag to stop to interupt any further work during generate
+ */
+void NormalWorker::stop()
+{
+    if (!this->_run)
+        emit this->stopped();
+    this->_run = false;
 }
 
 /**
@@ -143,9 +164,21 @@ double NormalWorker::_getHeightIntensity(int x, int y, IntensityMap *map)
 /**
  * NormalMapGenerator
  * 
- * Create a new empty normal map generator.
+ * Creates a normal map generator
  */
 NormalMapGenerator::NormalMapGenerator() {}
+
+/**
+ * ~NormalMapGenerator
+ * 
+ * Deletes the simplex noise, safely shutting down the worker thread.
+ */
+NormalMapGenerator::~NormalMapGenerator() {
+    this->_normal_thread.quit();
+    this->_normal_thread.wait();
+    if (this->_worker)
+        delete this->_worker;
+}
 
 /**
  * NormalMagGenerator
@@ -179,21 +212,40 @@ void NormalMapGenerator::setImage(IntensityMap height_map)
 void NormalMapGenerator::generate()
 {
     qInfo("Generating normal map");
-    NormalWorker *worker = new NormalWorker();
+    if (!this->_worker)
+    {
+        this->_worker = new NormalWorker();
 
-    worker->moveToThread(&this->_normal_thread);
-    QObject::connect(&this->_normal_thread, &QThread::finished, worker, &QObject::deleteLater);
-    QObject::connect(worker, &NormalWorker::done, this, &NormalMapGenerator::normalDone);
-    QObject::connect(worker, &NormalWorker::started, [this]() {
-        emit this->started();
-    });
-    QObject::connect(worker, &NormalWorker::progress, [this](int perc) {
-        emit this->progress(perc);
-    });
-    qDebug() << this->thread()->currentThreadId();
-    this->_normal_thread.start();
-    worker->set(&this->_height_map);
-    QMetaObject::invokeMethod(worker, "generate", Qt::QueuedConnection);
+        this->_worker->moveToThread(&this->_normal_thread);
+
+        QObject::connect(this->_worker,
+                        &NormalWorker::done,
+                        this,
+                        &NormalMapGenerator::normalDone);
+
+        QObject::connect(this->_worker, &NormalWorker::started, [this]() {
+            emit this->started();
+        });
+        QObject::connect(this->_worker,
+                         &NormalWorker::progress,
+                         [this](int perc)
+        {
+            emit this->progress(perc);
+        });
+
+        QObject::connect(this->_worker,
+                         &NormalWorker::stopped,
+                         [this]() {
+                             this->generate();
+                         });
+
+        this->_normal_thread.start();
+    } else {
+        QMetaObject::invokeMethod(this->_worker, "stop", Qt::QueuedConnection);
+    }
+
+    this->_worker->set(&this->_height_map);
+    QMetaObject::invokeMethod(this->_worker, "generate", Qt::QueuedConnection);
 }
 
 

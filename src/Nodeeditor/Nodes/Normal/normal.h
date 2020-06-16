@@ -30,16 +30,23 @@ public slots:
     // Generate the normal map
     void generate();
 
+    // Stop generation
+    void stop();
+
 signals:
     // Progress updates
     void started();
     void progress(int perc);
     void done(QImage const &normal_map);
+    void stopped();
 
 private:
     // Helper function
     double _getHeightIntensity(int x, int y, IntensityMap *map);
     IntensityMap *_height_map = nullptr;
+
+    // Flag for interuption
+    bool _run = false;
 };
 
 /**
@@ -51,8 +58,10 @@ class NormalMapGenerator : public QObject
 {
     Q_OBJECT
 public:
-    // Create a new generator without a set height map.
+    // Create a normal map generator
     NormalMapGenerator();
+    // Safely delete the object
+    ~NormalMapGenerator();
 
     // Create a ne generator with a set height map.
     NormalMapGenerator(IntensityMap height_map);
@@ -83,6 +92,7 @@ private:
 
     // The thread the generation occurs in
     QThread _normal_thread;
+    NormalWorker *_worker = nullptr;
 
     // The resulting normal map.
     QImage _normal_map;
