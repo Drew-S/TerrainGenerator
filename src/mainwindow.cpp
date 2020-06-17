@@ -15,6 +15,8 @@
 #include <QFileDevice>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QHelpContentWidget>
+#include <QHelpEngine>
 #include <QImage>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -23,6 +25,9 @@
 #include <QObject>
 #include <QPushButton>
 #include <QRegExp>
+#include <QSplitter>
+#include <QTabWidget>
+#include <QTextBrowser>
 
 #include <json.hpp>
 #include <quazip/quazip.h>
@@ -243,6 +248,44 @@ void MainWindow::setup(Ui::MainWindow *ui)
                      &QCheckBox::clicked,
                      this,
                      &MainWindow::_saveAsTogglePack);
+
+    this->_help = new QDialog();
+    this->_help_ui.setupUi(this->_help);
+
+    QString docs = SETTINGS->getDocsDirectory().path();
+
+    QHelpEngine *help_engine = new QHelpEngine(
+        QDir::cleanPath(docs + "/help/help.qhc"));
+
+    help_engine->setupData();
+    
+    this->_help_ui.tab->addTab(help_engine->contentWidget(), "Contents");
+    // tab->addTab(help_engine->indexWidget(), "Index");
+
+    this->_help_ui.text->setSource(
+        QUrl(QDir::cleanPath(docs + "/help/"
+        + QUrl("qthelp://terraingenerator.help/doc/index.md").fileName())),
+        QTextDocument::MarkdownResource);
+
+    QObject::connect(help_engine->contentWidget(),
+                    &QHelpContentWidget::linkActivated,
+                    [this](const QUrl &link) {
+                        this->_help_ui.text->setSource(
+                            QUrl(QDir::cleanPath(docs + "/help/"
+                                 + link.fileName())),
+                            QTextDocument::MarkdownResource);
+                    });
+
+    // QObject::connect(help_engine->indexWidget(),
+    //                  &QHelpIndexWidget::linkActivated,
+    //                  text,
+    //                  &QTextBrowser::setSource);
+
+    QObject::connect(this->_main_ui->actionHelp,
+                    &QAction::triggered,
+                    this->_help,
+                    &QWidget::show);
+
 }
 
 /**

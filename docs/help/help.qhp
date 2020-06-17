@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>terraingenerator.help</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <filterSection>
+        <toc>
+            <section title="Index" ref="index.md">
+                <section title="Example" ref="test.md"></section>
+            </section>
+        </toc>
+        <files>
+            <file>*.md</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

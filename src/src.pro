@@ -22,7 +22,7 @@ DEFINES += QUAZIP_STATIC
 QMAKE_CXXFLAGS += -std=c++17
 
 # The QT libraries to be included
-QT += core gui opengl widgets
+QT += core gui opengl widgets help
 
 # Include third party libraries (nodeeditor)
 INCLUDEPATH += $$PWD/../lib/nodeeditor/include

@@ -26,6 +26,7 @@ public:
     // Getters
     QDir tmpDir(); // Get only
     std::vector<QDir> getAssetDirectories(); // Get only
+    QDir getDocsDirectory(); // Get only
 
     bool renderMode();
     int previewResolution();
@@ -69,8 +70,9 @@ private:
 
     // Settings
     QTemporaryDir *_tmp_dir;        // /tmp/TerrainGenerator_XXXXXX/
-    QDir _system_asset_directory;   // /user/share/TerrainGenerator/...
-    QDir _user_asset_directory;     // /home/<user>/.TerrainGenerator/...
+    QDir _system_asset_directory;   // /usr/share/TerrainGenerator/assets...
+    QDir _user_asset_directory;     // /home/<user>/.TerrainGenerator/asset...
+    QDir _doc_directory;            // /usr/share/TerrainGenerator/docs...
     int _mesh_resolution = 256;     // Vertices on OpenGL preview mesh
     int _preview_resolution = 256;  // Image resolution during design
     int _render_resolution = 1024;  // Image resolution when rendering/exporting

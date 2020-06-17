@@ -12,6 +12,9 @@ test/build/
 test/moc/
 test/objects/
 test/target_wrapper.sh
+docs/help/help.qch
+docs/help/help.qhc
+docs/uml/images
 
 .vscode/
 

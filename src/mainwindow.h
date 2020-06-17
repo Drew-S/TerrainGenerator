@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include <QDir>
+#include <QDockWidget>
 #include <QMainWindow>
 
 #include "Nodeeditor/nodeeditor.h"
@@ -9,6 +10,7 @@
 
 #include "ui_Main.h"
 #include "ui_SaveAsDialogue.h"
+#include "ui_Help.h"
 
 /**
  * MainWindow
@@ -56,7 +58,9 @@ private:
     // UI for main window and saving
     Ui::MainWindow *_main_ui;
     Ui::SaveAsDialogue *_save_ui;
+    Ui::Help _help_ui;
 
     // Dialogue for save as functions
     QDialog *_save_as_dialogue;
+    QDialog *_help;
 };
