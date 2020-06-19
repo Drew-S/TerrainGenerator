@@ -3,21 +3,47 @@
 if [ "$1" == "--clean" ]; then
     rm -rf uml/images
 
-    # for i in $(ls help/*.html); do
-    #     rm $i
-    # done
-
-    rm help/help.qhc
-    rm help/help.qch
+    rm ../assets/help/help.qhc
+    rm ../assets/help/help.qch
+    rm ../assets/help/*.md
 else
+    # Ensure we work from a clean setup
+    ./build.sh --clean
+
+    # Create images
     mkdir uml/images &>/dev/null
     plantuml -tsvg -o ../images uml/src
 
-    # for i in $(ls help/*.md); do
-    #     markdown $i > $(echo $i | sed 's/md$/html/g')
-    # done
-
+    # Build help pdf file
     pushd help &>/dev/null
+    for f in $(ls | egrep '[0-9]+.*'); do
+        cat $f >> help.md
+        echo -e "\n\n" >> help.md
+        # Copy files to help for internal application help
+        cp $f ../../assets/help/$f
+    done
+    sed -i 's/\[\([0-9a-zA-Z _-]\+\)\]([0-9a-zA-Z_-]\+\.md)/\1/g' help.md
+    pandoc --toc --toc-depth=6 help.md -o help.pdf
+    rm help.md
+    popd &>/dev/null
+
+    # Build markdown files for internal help
+    cat help/01_overview.md >> ../assets/help/index.md
+    echo -e "\n\n" >> ../assets/help/index.md
+    cat help/index.md >> ../assets/help/index.md
+
+    cat help/05_dataflow.md >> ../assets/help/05_dataflow.md
+    echo -e "\n\n" >> ../assets/help/05_dataflow.md
+    cat help/dataflow_nodes.md >> ../assets/help/05_dataflow.md
+
+    # Copy image assets for application
+    cp -r help/images ../assets/help
+    cp -r help/icons ../assets/help
+    
+    # Generate help for application
+    pushd ../assets/help &>/dev/null
+
     qcollectiongenerator help.qhcp
+
     popd &>/dev/null
 fi
