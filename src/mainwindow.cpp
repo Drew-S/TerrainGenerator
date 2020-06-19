@@ -255,7 +255,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
     QString docs = SETTINGS->getDocsDirectory().path();
 
     QHelpEngine *help_engine = new QHelpEngine(
-        QDir::cleanPath(docs + "/help/help.qhc"));
+        QDir::cleanPath(docs + "/help.qhc"));
 
     help_engine->setupData();
     
@@ -263,15 +263,15 @@ void MainWindow::setup(Ui::MainWindow *ui)
     // tab->addTab(help_engine->indexWidget(), "Index");
 
     this->_help_ui.text->setSource(
-        QUrl(QDir::cleanPath(docs + "/help/"
-        + QUrl("qthelp://terraingenerator.help/doc/index.md").fileName())),
+        QUrl(QDir::cleanPath(docs + "/"
+        + QUrl("qthelp://terraingenerator.doc/index.md").fileName())),
         QTextDocument::MarkdownResource);
 
     QObject::connect(help_engine->contentWidget(),
                     &QHelpContentWidget::linkActivated,
                     [this, docs](const QUrl &link) {
                         this->_help_ui.text->setSource(
-                            QUrl(QDir::cleanPath(docs + "/help/"
+                            QUrl(QDir::cleanPath(docs + "/"
                                  + link.fileName())),
                             QTextDocument::MarkdownResource);
                     });
@@ -280,7 +280,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
                      &QTextBrowser::anchorClicked,
                      [ this, docs ](const QUrl &link) {
                          this->_help_ui.text->setSource(
-                            QUrl(QDir::cleanPath(docs + "/help/"
+                            QUrl(QDir::cleanPath(docs + "/"
                                  + link.fileName())),
                             QTextDocument::MarkdownResource);
                      });

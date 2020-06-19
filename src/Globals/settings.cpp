@@ -28,12 +28,12 @@ Settings::Settings()
 
 #if (defined(DEVELOPMENT_MODE) || defined(TEST_MODE))
     this->_system_asset_directory = QDir(QDir::cleanPath(QString(PWD) + QString("/assets")));
-    this->_doc_directory = QDir(QDir::cleanPath(QString(PWD) + QString("/docs")));
+    this->_doc_directory = QDir(QDir::cleanPath(QString(PWD) + QString("/assets/help")));
     qDebug("Using development asset directory '%s'", qPrintable(this->_system_asset_directory.path()));
 #else
 #ifdef __linux
     this->_system_asset_directory = QDir("/usr/share/TerrainGenerator/assets");
-    this->_doc_directory = QDir("/usr/share/TerrainGenerator/docs")
+    this->_doc_directory = QDir("/usr/share/TerrainGenerator/assets/help")
     if (qgetenv("XDG_CONFIG_HOME") != "")
         this->_user_asset_directory = QDir(QDir::cleanPath(qgetenv("XDG_CONFIG_HOME") + QString("/TerrainGenerator/assets")));
     else
@@ -41,7 +41,7 @@ Settings::Settings()
 #elif __WIN32
     // Need to verify
     this->_system_asset_directory = QDir("C:/Program Files/TerrainGenerator/asset");
-    this->_doc_directory = QDir("C:/Program Files/TerrainGenerator/docs");
+    this->_doc_directory = QDir("C:/Program Files/TerrainGenerator/assets/help");
     this->_user_asset_directory = QDir(QDir::cleanPath(qgetenv("APPDATA")));
 #elif __APPLE__
     // Not defined, never used apple so need to look up differences
