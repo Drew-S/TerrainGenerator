@@ -1,8 +1,8 @@
-# Invert Node
+##### Invert Node
 
 ![invert](images/invert.png)
 
-Inverts an input [mono](types.md) map by applying the function 1 - *p* for each pixel *p*.
+Inverts an input [mono](28_types.md) map by applying the function 1 - *p* for each pixel *p*.
 
 ---
 

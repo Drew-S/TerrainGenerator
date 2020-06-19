@@ -1,4 +1,4 @@
-# Constant Value Node
+##### Constant Value Node
 
 ![constant Value](images/constantvalue.png)
 
@@ -10,7 +10,7 @@ The constant value node provides an output for a single constant value that can 
 
 The node has **0** input and **1** output port(s).
 
-- **Output 1** (*mono*): The selected value is outputted as [mono](types.md) data.
+- **Output 1** (*mono*): The selected value is outputted as [mono](28_types.md) data.
 
 ---
 

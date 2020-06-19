@@ -1,4 +1,4 @@
-# Output Node
+#### Output Node
 
 ![output](images/output.png)
 
@@ -10,5 +10,5 @@ The output node takes in a height map and generates its corresponding normal map
 
 The node has **2** input and **0** output port(s).
 
-- **Input 1** (*mono*): The height map input of type [mono](types.md).
-- **Input 2** (*rgba*): An optional colour map for colouring the terrain of type [rgba](types.md).
+- **Input 1** (*mono*): The height map input of type [mono](28_types.md).
+- **Input 2** (*rgba*): An optional colour map for colouring the terrain of type [rgba](28_types.md).

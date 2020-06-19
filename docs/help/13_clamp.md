@@ -1,4 +1,4 @@
-# Clamp Node
+##### Clamp Node
 
 ![clamp](images/clamp.png)
 

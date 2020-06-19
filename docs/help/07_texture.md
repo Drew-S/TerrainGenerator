@@ -1,4 +1,4 @@
-# Texture Node
+##### Texture Node
 
 ![texture](images/texture.png)
 
@@ -10,7 +10,7 @@ The texture node will be an input for loaded textures. Textures can be loaded fr
 
 The node has **0** input and **1** output port(s).
 
-- **Output 1** (*rgba*): The texture output of type [rgba](types.md).
+- **Output 1** (*rgba*): The texture output of type [rgba](28_types.md).
 
 ---
 

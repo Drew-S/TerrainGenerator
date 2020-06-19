@@ -1,8 +1,8 @@
-# Math Node
+##### Math Node
 
 ![math](images/math.png)
 
-The math node applies a variety of mathematical operations on the two input [mono](types.md) maps producing a single output map.
+The math node applies a variety of mathematical operations on the two input [mono](28_types.md) maps producing a single output map.
 
 ---
 

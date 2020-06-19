@@ -1,8 +1,8 @@
-# Vector Math Node
+##### Vector Math Node
 
 ![vector math](images/vectormath.png)
 
-Used to apply element-wise vector map operations on two [rgba](types.md) maps.
+Used to apply element-wise vector map operations on two [rgba](28_types.md) maps.
 
 ---
 

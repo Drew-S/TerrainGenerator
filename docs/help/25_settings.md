@@ -1,8 +1,8 @@
-# Settings Panel
+## Settings Panel
 
 ![settings](images/application-settings.png)
 
-The **settings** panel houses several project level options. These options are saved on a per project basis and determine the preview image resolution, the resulting output rendering resolution, and the number of vertices seen in the mesh inside the [preview panel](preview.md).
+The **settings** panel houses several project level options. These options are saved on a per project basis and determine the preview image resolution, the resulting output rendering resolution, and the number of vertices seen in the mesh inside the [preview panel](02_preview.md).
 
 1. Set the number of vertices the preview mesh uses.
 2. Set the pixel resolution for use during development of the terrain.

@@ -1,8 +1,8 @@
-# Vector To Intensity Map Node
+##### Vector To Intensity Map Node
 
 ![vectorintensity](images/vectorintensity.png)
 
-Converts an input [rgba](types.md) map to a [mono](types.md) map using a selected method of channel selection.
+Converts an input [rgba](28_types.md) map to a [mono](28_types.md) map using a selected method of channel selection.
 
 ---
 
@@ -11,7 +11,7 @@ Converts an input [rgba](types.md) map to a [mono](types.md) map using a selecte
 The node has **1** input and **1** output port(s).
 
 - **Input 1** (*rgba*): The input vector map.
-- **Output 1** (*mono*): The resulting [mono](types.md) map converted from the input map.
+- **Output 1** (*mono*): The resulting [mono](28_types.md) map converted from the input map.
 
 ---
 

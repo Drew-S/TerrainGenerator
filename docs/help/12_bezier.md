@@ -1,4 +1,4 @@
-# Slope and Curve Node
+##### Slope and Curve Node
 
 ![bezier](images/bezier.png)
 
@@ -10,8 +10,8 @@ The slope and curve node converts an input value to a new output value following
 
 The node has **1** input and **1** output port(s).
 
-- **Input 1** (*mono*): The input is of type [mono](types.md).
-- **Output 1** (*mono*): The output is of type [mono](types.md). The result of the transformation curve being applied on the input.
+- **Input 1** (*mono*): The input is of type [mono](28_types.md).
+- **Output 1** (*mono*): The output is of type [mono](28_types.md). The result of the transformation curve being applied on the input.
 
 ---
 

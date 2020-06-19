@@ -1,4 +1,4 @@
-# The Preview Panel
+## The Preview Panel
 
 ![preview](images/application-preview.png)
 

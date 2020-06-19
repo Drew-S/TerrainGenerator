@@ -1,4 +1,4 @@
-# Erosion Simulation Node
+##### Erosion Simulation Node
 
 ![erosion](images/erosion.png)
 
@@ -10,10 +10,10 @@ The erosion simulation node applies hydraulic erosion simulation by simulating r
 
 The node has **1** input and **3** output port(s).
 
-- **Input 1** (*mono*): The input height map to be simulated on of type [mono](types.md).
-- **Output 1** (*Height*): The resulting change in the height map of type [mono](types.md).
-- **Output 2** (*Sediment*): The culmination of where sediment is moved to of type [mono](types.md).
-- **Output 3** (*Erosion*): The culmination of where sediment is moved from of type [mono](types.md).
+- **Input 1** (*mono*): The input height map to be simulated on of type [mono](28_types.md).
+- **Output 1** (*Height*): The resulting change in the height map of type [mono](28_types.md).
+- **Output 2** (*Sediment*): The culmination of where sediment is moved to of type [mono](28_types.md).
+- **Output 3** (*Erosion*): The culmination of where sediment is moved from of type [mono](28_types.md).
 
 ---
 

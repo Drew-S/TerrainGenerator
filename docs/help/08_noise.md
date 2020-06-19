@@ -1,4 +1,4 @@
-# Simplex Noise Node
+##### Simplex Noise Node
 
 ![noise](images/noise.png)
 
@@ -10,11 +10,11 @@ The simplex noise node generates a noise texture with smooth varying results.
 
 The node has **4** input and **1** output port(s).
 
-- **Input 1** (*octives*): The number of increased detail levels of type [mono](types.md).
-- **Input 2** (*frequency*): The scale of the image of type [mono](types.md).
-- **Input 3** (*persistence*): The level of consistency of type [mono](types.md).
-- **Input 4** (*offset*): Shift of the image left/right (x), up/down (y), and in/out (z) of type [rgba](types.md).
-- **Output 1** (*mono*): The resulting simplex noise texture of type [mono](types.md).
+- **Input 1** (*octives*): The number of increased detail levels of type [mono](28_types.md).
+- **Input 2** (*frequency*): The scale of the image of type [mono](28_types.md).
+- **Input 3** (*persistence*): The level of consistency of type [mono](28_types.md).
+- **Input 4** (*offset*): Shift of the image left/right (x), up/down (y), and in/out (z) of type [rgba](28_types.md).
+- **Output 1** (*mono*): The resulting simplex noise texture of type [mono](28_types.md).
 
 ---
 
