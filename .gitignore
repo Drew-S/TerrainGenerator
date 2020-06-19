@@ -18,7 +18,7 @@ assets/help/icons/
 assets/help/images/
 assets/help/*.md
 docs/help/*.pdf
-docs/uml/images
+docs/source_code/uml/*.svg
 docs/source_code/html
 docs/source_code/latex
 

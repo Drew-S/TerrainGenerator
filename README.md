@@ -17,16 +17,27 @@
 
 **NOTE**: In order to fix a couple graphical problems with the nodeeditor library (at the cost of performance for large files) a couple of lines need to be commented out in the source code before being built:
 
-- File: `lib/nodeeditor/src/FlowView.cpp`, Line: `47`
-    - Comment out `setCacheMode(QGraphicsView::CacheBackground);`
-    - `// setCacheMode(QGraphicsView::CacheBackground);`
-- File: `lib/nodeeditor/src/NodeGraphicsObject.cpp`, Line: `38`
-    - Comment out `setCacheMode( QGraphicsItem::DeviceCoordinateCache );`
-    - `// setCacheMode( QGraphicsItem::DeviceCoordinateCache );`
+```diff
+lib/nodeeditor/src/FlowView.cpp
+
+Line 47
+
+-setCacheMode(QGraphicsView::CacheBackground);
++// setCacheMode(QGraphicsView::CacheBackground);
+```
+
+```diff
+lib/nodeeditor/src/NodeGraphicsObject.cpp
+
+Line 38
+
+-setCacheMode( QGraphicsItem::DeviceCoordinateCache );
++// setCacheMode( QGraphicsItem::DeviceCoordinateCache );
+```
 
 Performance should not dwindle until large dataflow diagrams are being used.
 
-```
+```shell
 cd lib
 git clone https://github.com/paceholder/nodeeditor.git
 
@@ -39,7 +50,7 @@ make
 
 ### Quazip
 
-```
+```shell
 cd lib
 git clone https://github.com/stachenov/quazip.git
 
@@ -50,7 +61,7 @@ make
 
 ### Simplex Noise
 
-```
+```shell
 cd lib
 git clone https://github.com/SRombauts/SimplexNoise.git
 ```
@@ -59,7 +70,7 @@ git clone https://github.com/SRombauts/SimplexNoise.git
 
 Qt json is only well designed for reading data
 
-```
+```shell
 cd lib
 git clone https://github.com/nlohmann/json.git
 ```
@@ -67,20 +78,21 @@ git clone https://github.com/nlohmann/json.git
 ## Building
 
 **Makefile**:
-```
+
+```shell
 qmake TerrainGenerator.pro
 make
 ```
 
 ## Running
 
-```
+```shell
 ./build/TerrainGenerator
 ```
 
 ## Unit Test
 
-```
+```shell
 ./test/build/test
 ```
 
