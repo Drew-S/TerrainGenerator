@@ -5,34 +5,34 @@
     <filterSection>
         <toc>
             <section title="Index" ref="index.md">
-            </section>
-            <section title="Preview Panel" ref="02_preview.md"></section>
-            <section title="Editor Panel" ref="03_editor.md">
-                <section title="Properties Panel" ref="04_properties.md"></section>
-                <section title="Dataflow Panel" ref="05_datflow.md">
-                    <section title="Texture Node" ref="07_texture.md"></section>
-                    <section title="Simplex Noise Node" ref="08_noise.md"></section>
-                    <section title="Constant Value Node" ref="09_constantvalue.md"></section>
-                    <section title="Constant Vector Node" ref="10_constantvector.md"></section>
-                    <section title="Bezier Node" ref="12_bezier.md"></section>
-                    <section title="Clamp Node" ref="13_clamp.md"></section>
-                    <section title="Colour Combine Node" ref="14_colorcombine.md"></section>
-                    <section title="Colour Split Node" ref="15_colorsplit.md"></section>
-                    <section title="Erosion Node" ref="16_erosion.md"></section>
-                    <section title="Invert Node" ref="17_invert.md"></section>
-                    <section title="Math Node" ref="18_math.md"></section>
-                    <section title="Normalize Node" ref="19_normalize.md"></section>
-                    <section title="Smooth Node" ref="20_smooth.md"></section>
-                    <section title="Vector Dot Node" ref="21_vectordot.md"></section>
-                    <section title="Vector To Intensity Node" ref="22_vectorintensity.md"></section>
-                    <section title="Vector Math Node" ref="23_vectormath.md"></section>
-                    <section title="Output Node" ref="24_output.md"></section>
+                <section title="Preview Panel" ref="02_preview.md"></section>
+                <section title="Editor Panel" ref="03_editor.md">
+                    <section title="Properties Panel" ref="04_properties.md"></section>
+                    <section title="Dataflow Panel" ref="05_datflow.md">
+                        <section title="Texture Node" ref="07_texture.md"></section>
+                        <section title="Simplex Noise Node" ref="08_noise.md"></section>
+                        <section title="Constant Value Node" ref="09_constantvalue.md"></section>
+                        <section title="Constant Vector Node" ref="10_constantvector.md"></section>
+                        <section title="Bezier Node" ref="12_bezier.md"></section>
+                        <section title="Clamp Node" ref="13_clamp.md"></section>
+                        <section title="Colour Combine Node" ref="14_colorcombine.md"></section>
+                        <section title="Colour Split Node" ref="15_colorsplit.md"></section>
+                        <section title="Erosion Node" ref="16_erosion.md"></section>
+                        <section title="Invert Node" ref="17_invert.md"></section>
+                        <section title="Math Node" ref="18_math.md"></section>
+                        <section title="Normalize Node" ref="19_normalize.md"></section>
+                        <section title="Smooth Node" ref="20_smooth.md"></section>
+                        <section title="Vector Dot Node" ref="21_vectordot.md"></section>
+                        <section title="Vector To Intensity Node" ref="22_vectorintensity.md"></section>
+                        <section title="Vector Math Node" ref="23_vectormath.md"></section>
+                        <section title="Output Node" ref="24_output.md"></section>
+                    </section>
                 </section>
+                <section title="Project Settings Panel" ref="25_settings.md"></section>
+                <section title="Drawing Dialogue" ref="26_drawing.md"></section>
+                <section title="Save Dialogue" ref="27_save.md"></section>
+                <section title="Types" ref="28_types.md"></section>
             </section>
-            <section title="Project Settings Panel" ref="25_settings.md"></section>
-            <section title="Drawing Dialogue" ref="26_drawing.md"></section>
-            <section title="Save Dialogue" ref="27_save.md"></section>
-            <section title="Types" ref="28_types.md"></section>
         </toc>
         <files>
             <file>*.md</file>
