@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$1" == "--clean" ]; then
-    rm -rf uml/images &>/dev/null
+    rm source_code/uml/*.svg
 
     rm ../assets/help/help.qhc &>/dev/null
     rm ../assets/help/help.qch &>/dev/null
@@ -13,8 +13,7 @@ else
     ./build.sh --clean
 
     # Create images
-    mkdir uml/images &>/dev/null
-    plantuml -tsvg -o ../images uml/src
+    plantuml -tsvg -o . source_code/uml
 
     # Build help pdf file
     pushd help &>/dev/null
