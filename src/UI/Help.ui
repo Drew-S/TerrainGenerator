@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>491</height>
+    <width>770</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,20 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
      </widget>
-     <widget class="QTextBrowser" name="text"/>
+     <widget class="QTextBrowser" name="text">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>

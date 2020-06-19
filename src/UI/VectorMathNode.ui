@@ -22,6 +22,9 @@
   <property name="toolTip">
    <string>Apply element wise operations over two vectors</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgba(0,0,0,0);</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

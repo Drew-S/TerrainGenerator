@@ -5,11 +5,38 @@
     <filterSection>
         <toc>
             <section title="Index" ref="index.md">
-                <section title="Example" ref="test.md"></section>
             </section>
+            <section title="Preview Panel" ref="preview.md"></section>
+            <section title="Editor Panel" ref="editor.md">
+                <section title="Properties Panel" ref="properties.md"></section>
+                <section title="Dataflow Panel" ref="datflow.md">
+                    <section title="Bezier Node" ref="bezier.md"></section>
+                    <section title="Clamp Node" ref="clamp.md"></section>
+                    <section title="Colour Combine Node" ref="colorcombine.md"></section>
+                    <section title="Colour Split Node" ref="colorsplit.md"></section>
+                    <section title="Constant Value Node" ref="constantvalue.md"></section>
+                    <section title="Constant Vector Node" ref="constantvector.md"></section>
+                    <section title="Erosion Node" ref="erosion.md"></section>
+                    <section title="Simplex Noise Node" ref="noise.md"></section>
+                    <section title="Texture Node" ref="texture.md"></section>
+                    <section title="Invert Node" ref="invert.md"></section>
+                    <section title="Math Node" ref="math.md"></section>
+                    <section title="Normalize Node" ref="normalize.md"></section>
+                    <section title="Output Node" ref="output.md"></section>
+                    <section title="Smooth Node" ref="smooth.md"></section>
+                    <section title="Vector Dot Node" ref="vectordot.md"></section>
+                    <section title="Vector To Intensity Node" ref="vectorintensity.md"></section>
+                    <section title="Vector Math Node" ref="vectormath.md"></section>
+                </section>
+                <section title="Types" ref="types.md"></section>
+            </section>
+            <section title="Project Settings Panel" ref="settings.md"></section>
         </toc>
         <files>
             <file>*.md</file>
+            <file>images/*.png</file>
+            <file>images/*.gif</file>
+            <file>icons/*.png</file>
         </files>
     </filterSection>
 </QtHelpProject>

@@ -269,12 +269,21 @@ void MainWindow::setup(Ui::MainWindow *ui)
 
     QObject::connect(help_engine->contentWidget(),
                     &QHelpContentWidget::linkActivated,
-                    [this](const QUrl &link) {
+                    [this, docs](const QUrl &link) {
                         this->_help_ui.text->setSource(
                             QUrl(QDir::cleanPath(docs + "/help/"
                                  + link.fileName())),
                             QTextDocument::MarkdownResource);
                     });
+                    
+    QObject::connect(this->_help_ui.text,
+                     &QTextBrowser::anchorClicked,
+                     [ this, docs ](const QUrl &link) {
+                         this->_help_ui.text->setSource(
+                            QUrl(QDir::cleanPath(docs + "/help/"
+                                 + link.fileName())),
+                            QTextDocument::MarkdownResource);
+                     });
 
     // QObject::connect(help_engine->indexWidget(),
     //                  &QHelpIndexWidget::linkActivated,
