@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ "$1" == "--build-debug" ]; then
+    ./build_tools --docs
+
+    pushd src &>/dev/null
+    qmake DEFINES+=DEVELOPMENT_MODE
+    make
+    popd &>/dev/null
+    ./build/TerrainGenerator -d --no-log
+
+elif [ "$1" == "--build-release" ]; then
+    ./build_tools --docs
+
+    pushd src &>/dev/null
+    qmake DEFINES+=QT_NO_DEBUG
+    make
+    popd &>/dev/null ./build/TerrainGenerator -d --no-log
+
+elif [ "$1" == "--build-test" ]; then
+    ./build_tools --docs
+
+    pushd test &>/dev/null
+    rm -rf moc
+    qmake
+    make
+    clear
+    ./test_wrapper.sh
+    popd &>/dev/null
+    
+elif [ "$1" == "--docs" ]; then
+    pushd docs &>/dev/null
+    ./build.sh
+    popd &>/dev/null
+
+elif [ "$1" == "--docs-clean" ]; then
+    pushd docs &>/dev/null
+    ./build.sh --clean
+    popd &>/dev/null
+fi
