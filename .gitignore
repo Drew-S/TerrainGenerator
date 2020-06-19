@@ -12,8 +12,12 @@ test/build/
 test/moc/
 test/objects/
 test/target_wrapper.sh
-docs/help/help.qch
-docs/help/help.qhc
+assets/help/help.qch
+assets/help/help.qhc
+assets/help/icons/
+assets/help/images/
+assets/help/*.md
+docs/help/*.pdf
 docs/uml/images
 
 .vscode/
