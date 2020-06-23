@@ -1,0 +1,26 @@
+@startuml
+MainWindow -> MainWindow : load(ZIPfile)
+activate MainWindow
+MainWindow -> MainWindow : Extract data.json
+loop over files in ZIPfile
+    alt file is image
+        MainWindow -> MainWindow : Extract image to /tmp directory
+        MainWindow -> TextureList : Add texture
+    end
+end
+MainWindow -> MainWindow : Extract settings from data.json
+MainWindow -> Nodeeditor : restore(data)
+activate Nodeeditor
+Nodeeditor -> "QtNodes::FlowScene" : restore(data)
+activate "QtNodes::FlowScene"
+loop over Node data
+    "QtNodes::FlowScene" -> Node : Create node
+    "QtNodes::FlowScene" -> Node : restore(node data)
+    note right: Nodes run generations as needed
+end
+"QtNodes::FlowScene" -> Nodeeditor : Done
+deactivate "QtNodes::FlowScene"
+Nodeeditor -> MainWindow : Done
+deactivate Nodeeditor
+deactivate MainWindow
+@enduml

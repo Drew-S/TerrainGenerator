@@ -1,0 +1,91 @@
+@startuml
+skinparam linetype ortho
+
+class DrawingDialogue << (s,#FF6600) Singleton >>
+class StencilList << (s,#FF6600) Singleton >>
+class TextureList << (s,#FF6600) Singleton >>
+class Settings << (s,#FF6600) Singleton >>
+
+namespace Ui {
+    class MainWindow << (U,#27940B) UI >>
+    class SaveAsDialogue << (U,#27940B) UI >>
+    class Help << (U,#27940B) UI >>
+    class OpenGLControls << (U,#27940B) UI >>
+    class SaveAsDialogue << (U,#27940B) UI >>
+    class TextureDrawing << (U,#27940B) UI >>
+    class TextureDrawingCancelDialogue << (U,#27940B) UI >>
+}
+
+namespace QtNodes {
+    class FlowView [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/FlowView.hpp]]
+    class FlowScene [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/FlowScene.hpp]]
+    class Node [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/Node.hpp]]
+    class DataModelRegistry [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/DataModelRegistry.hpp]]
+    class NodeDataModel [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/NodeDataModel.hpp]]
+}
+
+namespace Qt {
+    class QOpenGLWidget [[https://doc.qt.io/qt-5/qopenglwidget.html]]
+    class QMainWindow [[https://doc.qt.io/qt-5/qmainwindow.html]]
+    class QObject [[https://doc.qt.io/qt-5/qobject.html]]
+    class QGraphicsView [[https://doc.qt.io/qt-5/qgraphicsview.html]]
+    class QGraphicsScene [[https://doc.qt.io/qt-5/qgraphicsscene.html]]
+}
+
+' MainWindow
+Qt.QMainWindow <|-- MainWindow
+MainWindow *-- NodeEditor
+MainWindow *-- OpenGL
+MainWindow o.. Settings
+MainWindow o.. DrawingDialogue
+MainWindow o.. StencilList
+MainWindow o.. TextureList
+MainWindow ..> Ui.MainWindow
+MainWindow ..> Ui.SaveAsDialogue
+MainWindow ..> Ui.Help
+
+' Nodeeditor
+NodeEditor *-- QtNodes.FlowView
+NodeEditor *-- QtNodes.FlowScene
+NodeEditor --> QtNodes.DataModelRegistry
+NodeEditor ..> QtNodes.Node
+
+Qt.QGraphicsView <|-- QtNodes.FlowView
+Qt.QGraphicsScene <|-- QtNodes.FlowScene
+
+QtNodes.FlowView ..> QtNodes.FlowScene
+QtNodes.FlowScene ..> QtNodes.NodeDataModel
+
+class Node [[Classes_Node.svg]]
+
+QtNodes.NodeDataModel <|-- Node
+
+Node <|-- OutputNode
+
+NodeEditor ..> OutputNode : Active Output
+
+' OpenGL
+Qt.QOpenGLWidget <|-- OpenGL
+Qt.QObject <|-- Camera
+OpenGL *-- Camera
+OpenGL *-- Terrain
+OpenGL *-- Light
+OpenGL ..> Ui.OpenGLControls
+
+' DrawingDialogue
+DrawingDialogue o.. StencilList
+DrawingDialogue o.. TextureList
+DrawingDialogue ..> Stencil : Active Stencil
+DrawingDialogue ..> Texture : Active Texture
+
+DrawingDialogue ..> Ui.TextureDrawing
+DrawingDialogue ..> Ui.TextureDrawingCancelDialogue
+
+' StencilList
+StencilList *-- "1..*" Stencil
+
+' TextureList
+TextureList *-- "1..*" Texture
+
+hide members
+@enduml

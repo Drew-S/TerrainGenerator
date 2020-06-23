@@ -1,0 +1,87 @@
+@startuml
+skinparam linetype ortho
+
+namespace Ui {
+    class ClampNode << (U,#27940B) UI >> [[classUi_1_1ClampNode.html]]
+    class ColorCombineNode << (U,#27940B) UI >> [[classUi_1_1ColorCombineNode.html]]
+    class ConstantValue << (U,#27940B) UI >> [[classUi_1_1ConstantValue.html]]
+    class ConstantVector << (U,#27940B) UI >> [[classUi_1_1ConstantVector.html]]
+    class Erosion_Scroll << (U,#27940B) UI >> [[classUi_1_1Erosion_Scroll.html]]
+    class Erosion << (U,#27940B) UI >> [[classUi_1_1Erosion.html]]
+    class InputTextureNode << (U,#27940B) UI >> [[classUi_1_1InputTextureNode.html]]
+    class MathNode << (U,#27940B) UI >> [[classUi_1_1MathNode.html]]
+    class NewTextureDialogue << (U,#27940B) UI >> [[classUi_1_1NewTextureDialogue.html]]
+    class Output << (U,#27940B) UI >> [[classUi_1_1Output.html]]
+    class SimplexNoiseNode_no_scroll << (U,#27940B) UI >> [[classUi_1_1SimplexNoiseNode_no_scroll.html]]
+    class SimplexNoiseNode << (U,#27940B) UI >> [[classUi_1_1SimplexNoiseNode.html]]
+    class VectorDotProduct << (U,#27940B) UI >> [[classUi_1_1VectorDotProduct.html]]
+    class VectorIntensityNode << (U,#27940B) UI >> [[classUi_1_1VectorIntensityNode.html]]
+    class VectorMathNode << (U,#27940B) UI >> [[classUi_1_1VectorMathNode.html]]
+}
+
+namespace QtNodes {
+    class NodeDataModel [[https://github.com/paceholder/nodeeditor/blob/master/include/nodes/internal/NodeDataModel.hpp]]
+}
+
+class Node [[classNode.html]]
+
+class OutputNode [[classOutputNode.html]]
+
+class ConverterBezierCurveNode [[classConverterBezierCurveNode.html]]
+class ConverterClampNode [[classConverterClampNode.html]]
+class ConverterColorCombineNode [[classConverterColorCombineNode.html]]
+class ConverterColorSplitNode [[classConverterColorSplitNode.html]]
+class ConverterErosionNode [[classConverterErosionNode.html]]
+class ConverterInvertIntensityNode [[classConverterInvertIntensityNode.html]]
+class ConverterMathNode [[classConverterMathNode.html]]
+class ConverterSmoothNode [[classConverterSmoothNode.html]]
+class ConverterVectorDotNode [[classConverterVectorDotNode.html]]
+class ConverterVectorIntensityNode [[classConverterVectorIntensityNode.html]]
+class ConverterVectorMathNode [[classConverterVectorMathNode.html]]
+
+class InputSimplexNoiseNode [[classInputSimplexNoiseNode.html]]
+class InputTextureNode [[classInputTextureNode.html]]
+class InputConstantValueNode [[classInputConstantValueNode.html]]
+class InputConstantVectorNode [[classInputConstantVectorNode.html]]
+
+QtNodes.NodeDataModel <|-- Node
+
+Node <|-- OutputNode
+
+Node <|-- ConverterBezierCurveNode
+Node <|-- ConverterClampNode
+Node <|-- ConverterColorCombineNode
+Node <|-- ConverterColorSplitNode
+Node <|-- ConverterErosionNode
+Node <|-- ConverterInvertIntensityNode
+Node <|-- ConverterMathNode
+Node <|-- ConverterSmoothNode
+Node <|-- ConverterVectorDotNode
+Node <|-- ConverterVectorIntensityNode
+Node <|-- ConverterVectorMathNode
+
+Node <|-- InputSimplexNoiseNode
+Node <|-- InputTextureNode
+Node <|-- InputConstantValueNode
+Node <|-- InputConstantVectorNode
+
+OutputNode ..> Ui.Output
+
+ConverterClampNode ..> Ui.ClampNode
+ConverterColorCombineNode ..> Ui.ColorCombineNode
+ConverterErosionNode ..> Ui.Erosion_Scroll
+ConverterErosionNode ..> Ui.Erosion
+ConverterMathNode ..> Ui.MathNode
+ConverterVectorIntensityNode ..> Ui.VectorIntensityNode
+ConverterVectorDotNode ..> Ui.VectorDotProduct
+ConverterVectorMathNode ..> Ui.VectorMathNode
+
+InputSimplexNoiseNode ..> Ui.SimplexNoiseNode
+InputSimplexNoiseNode ..> Ui.SimplexNoiseNode_no_scroll
+InputConstantValueNode ..> Ui.ConstantValue
+InputConstantVectorNode ..> Ui.ConstantVector
+InputTextureNode ..> Ui.InputTextureNode
+InputTextureNode ..> Ui.NewTextureDialogue
+
+hide members
+@enduml
