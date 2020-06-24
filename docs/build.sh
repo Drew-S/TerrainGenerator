@@ -15,7 +15,9 @@ else
     ./build.sh --clean
 
     # Create images
-    plantuml -tsvg -o . source_code/uml
+    plantuml -tsvg source_code/uml
+
+    ls source_code/uml
 
     # Build help pdf file
     pushd help &>/dev/null
