@@ -42,6 +42,14 @@ else
     # Copy image assets for application
     cp -r help/images ../assets/help
     cp -r help/icons ../assets/help
+
+    if [ "$1" == "--wiki" ]; then
+        pushd ../assets/help &>/dev/null
+        for i in $(ls *.md); do
+            sed -i 's/(images\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/images\//g' $i
+        done    
+        popd &>/dev/null
+    fi
     
     # Generate help for application
     pushd ../assets/help &>/dev/null
