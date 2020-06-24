@@ -16,7 +16,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install plantuml doxygen
       
     - name: Build
-      run: pushd docs &>/dev/null && ./build.sh && popd &>/dev/null
+      run: pushd docs &>/dev/null && ./build.sh --wiki && popd &>/dev/null
       
     - name: Deploy Pages
       uses: peaceiris/actions-gh-pages@v3
