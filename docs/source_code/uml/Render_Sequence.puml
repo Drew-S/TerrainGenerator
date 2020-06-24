@@ -1,0 +1,36 @@
+@startuml
+MainWindow -> MainWindow : Render
+activate MainWindow
+note right: User selects output directory
+MainWindow -> MainWindow : Create output render directory
+MainWindow -> Settings : render()
+activate Settings
+Settings --> Node : emit renderStart()
+deactivate Settings
+activate Node
+loop each Node
+    Node -> Node : generate
+    Node --> Node : emit dataUpdated(port)
+end
+Node --> Nodeeditor : emit computingFinished()
+deactivate Node
+activate Nodeeditor
+note right
+OutputNode emits <b>computingFinished()</b>
+whether or not <b>Settings->finalRender()</b> is true.
+Nodeeditor runs this when <b>finalRender()</b> is <b>true</b>.
+Otherwise Nodeeditor just updates preview window.
+end note
+Nodeeditor -> Nodeeditor : Save height map
+Nodeeditor -> Nodeeditor : Save normal map
+alt OutputNode->albedoSet()
+    Nodeeditor -> Nodeeditor : Save albedo map
+end
+alt OutputNode->specularSet()
+    Nodeeditor -> Nodeeditor : Save specular map
+end
+Nodeeditor --> MainWindow : emit renderDone()
+deactivate Nodeeditor
+MainWindow -> MainWindow : Display render done message
+deactivate MainWindow
+@enduml

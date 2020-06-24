@@ -1,0 +1,55 @@
+@startuml
+start
+:Load Application;
+if (Load Save file) then (yes)
+    [[Load_Sequence.svg]]:MainWindow.load();
+endif
+repeat
+    if (user create node) then (yes)
+        :Create node;
+    elseif (user connect node) then (yes)
+        :Connect nodes;
+        fork
+            :Generate node data;
+            note left
+            If generation is to be done.
+            Runs in processing thread
+            does not block gui thread.
+            end note
+        end fork
+        split
+            :emit computingFinished>
+            note left: If node is OutputNode
+            :update preview<
+            detach
+        split again
+        end split
+    elseif (user edit node) then (yes)
+        :Edit node;
+        fork
+            :Generate node data;
+            note right
+            If generation is to be done.
+            Runs in processing thread
+            does not block gui thread.
+            end note
+        end fork
+        split
+            :emit computingFinished>
+            note left: If node is OutputNode
+            :update preview<
+            detach
+        split again
+        end split
+    elseif (user hits saves) then (yes)
+        [[Save_Sequence.svg]]:MainWindow.save();
+    elseif (user hits render) then (yes)
+        [[Render_Sequence.svg]]:MainWindow.render();
+    elseif (user interacts with preview) then (yes)
+        :Update preview;
+    elseif (user hits close) then (yes)
+        stop
+    endif
+repeat while (application open) is (yes)
+stop
+@enduml

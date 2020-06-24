@@ -1,6 +1,7 @@
 @startuml
-MainWindow -> MainWindow : load(ZIPfile)
+MainWindow -> MainWindow : load()
 activate MainWindow
+note right: User selects project file
 MainWindow -> MainWindow : Extract data.json
 loop over files in ZIPfile
     alt file is image
@@ -9,14 +10,19 @@ loop over files in ZIPfile
     end
 end
 MainWindow -> MainWindow : Extract settings from data.json
+MainWindow -> Settings : restore(settings)
+activate Settings
+Settings -> MainWindow : Done
+deactivate Settings
 MainWindow -> Nodeeditor : restore(data)
+note right: Restore node data from data.json 
 activate Nodeeditor
 Nodeeditor -> "QtNodes::FlowScene" : restore(data)
 activate "QtNodes::FlowScene"
 loop over Node data
     "QtNodes::FlowScene" -> Node : Create node
+    note right: Nodes run\ngeneration\nas needed
     "QtNodes::FlowScene" -> Node : restore(node data)
-    note right: Nodes run generations as needed
 end
 "QtNodes::FlowScene" -> Nodeeditor : Done
 deactivate "QtNodes::FlowScene"
