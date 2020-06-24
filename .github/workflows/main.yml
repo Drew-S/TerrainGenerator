@@ -18,8 +18,15 @@ jobs:
     - name: Build
       run: pushd docs &>/dev/null && ./build.sh && popd &>/dev/null
       
-    - name: Deploy
+    - name: Deploy Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/source_code/html
+
+    - name: Diploy Wiki
+      uses: SwiftDocOrg/github-wiki-publish-action@v1
+      with:
+        path: assets/help
+      env:
+        GH_PERSONAL_ACCESS_TOEK:  ${{ secrets.GH_REPO_WIKI_DEPLOY }}
