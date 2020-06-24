@@ -15,7 +15,7 @@ else
     ./build.sh --clean
 
     # Create images
-    plantuml -tsvg source_code/uml
+    plantuml -tsvg source_code/uml/*.puml
 
     ls source_code/uml
 
