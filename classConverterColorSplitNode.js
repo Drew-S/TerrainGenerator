@@ -1,0 +1,25 @@
+var classConverterColorSplitNode =
+[
+    [ "ConverterColorSplitNode", "classConverterColorSplitNode.html#a1892139bd568a5b61107b85b958b475a", null ],
+    [ "_generate", "classConverterColorSplitNode.html#afabcf4e68d5428d66fc7700fe225348d", null ],
+    [ "caption", "classConverterColorSplitNode.html#a076c6312bc08c4e5a426ec0b2ab58879", null ],
+    [ "created", "classConverterColorSplitNode.html#ab18de38503c2c0e61149cb0fc41a14d8", null ],
+    [ "dataType", "classConverterColorSplitNode.html#aadbbd8959fe945f2a47deebc284e46e7", null ],
+    [ "embeddedWidget", "classConverterColorSplitNode.html#a9131d2409a4257dfb3e19a4ca749c027", null ],
+    [ "hasShared", "classConverterColorSplitNode.html#a611eaee8827d5860d6ce8fa375be65cf", null ],
+    [ "inputConnectionDeleted", "classConverterColorSplitNode.html#a54d7135c881c04d14ab9cb4fb6fec185", null ],
+    [ "name", "classConverterColorSplitNode.html#a492b6b6750d57fe9f2244d50fb93a8b5", null ],
+    [ "nPorts", "classConverterColorSplitNode.html#a54522878902f021ebe623a19e84f52f4", null ],
+    [ "outData", "classConverterColorSplitNode.html#a65afe85cbf80f7468bdf94fc45251e5b", null ],
+    [ "restore", "classConverterColorSplitNode.html#a7270e71636a890f10101b3648c71630b", null ],
+    [ "save", "classConverterColorSplitNode.html#a98fd55040bff29b9c1ee050a47b1aeb7", null ],
+    [ "setInData", "classConverterColorSplitNode.html#a4674ddc829850ed40a08f1af62c24509", null ],
+    [ "sharedWidget", "classConverterColorSplitNode.html#af5afc673fe0515ce71d323e108f13ef9", null ],
+    [ "ConverterColorSplitNode_Test", "classConverterColorSplitNode.html#a540e02a44e9df2f71b9d475c588933b7", null ],
+    [ "_alpha", "classConverterColorSplitNode.html#ac7c7b771b96b27852f60d8a4633a3652", null ],
+    [ "_blue", "classConverterColorSplitNode.html#a46a0f8c1b4e6db692122d9cd873af7e4", null ],
+    [ "_green", "classConverterColorSplitNode.html#a9ed1735f59fb2c8046df4a271b88b92d", null ],
+    [ "_input", "classConverterColorSplitNode.html#aecbc6a7b89eeec4b92b0a03d8f805ba4", null ],
+    [ "_red", "classConverterColorSplitNode.html#a068ccfa7aacff768ed43c9de737d8f28", null ],
+    [ "_set", "classConverterColorSplitNode.html#ad010c1f665b99d86451562827fd34041", null ]
+];
