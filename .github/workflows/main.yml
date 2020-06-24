@@ -29,4 +29,4 @@ jobs:
       with:
         path: assets/help
       env:
-        GH_PERSONAL_ACCESS_TOEK:  ${{ secrets.GH_REPO_WIKI_DEPLOY }}
+        GH_PERSONAL_ACCESS_TOKEN:  ${{ secrets.GH_REPO_WIKI_DEPLOY }}
