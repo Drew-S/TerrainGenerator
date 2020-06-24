@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Install required packages
-      run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install plantuml doxygen
+      run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install graphviz plantuml doxygen
       
     - name: Build
       run: pushd docs &>/dev/null && ./build.sh --wiki && popd &>/dev/null
