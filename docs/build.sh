@@ -47,6 +47,7 @@ else
         pushd ../assets/help &>/dev/null
         for i in $(ls *.md); do
             sed -i 's/(images\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/images\//g' $i
+            sed -i 's/(icons\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/icons\//g' $i
         done    
         popd &>/dev/null
     fi
