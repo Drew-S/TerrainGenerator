@@ -44,11 +44,14 @@ else
     cp -r help/icons ../assets/help
 
     if [ "$1" == "--wiki" ]; then
+        cp Usage.md ../assets/help/00_usage.md
+        sed -i 's/(help\/images\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/images\//g' ../assets/help/00_usage.md
+        sed -i 's/(help\/icons\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/icons\//g' ../assets/help/00_usage.md
         pushd ../assets/help &>/dev/null
         for i in $(ls *.md); do
             sed -i 's/(images\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/images\//g' $i
             sed -i 's/(icons\//(https:\/\/github\.com\/Drew-S\/TerrainGenerator\/blob\/master\/docs\/help\/icons\//g' $i
-        done    
+        done
         popd &>/dev/null
     fi
     

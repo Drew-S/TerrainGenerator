@@ -19,10 +19,11 @@ jobs:
       run: pushd docs &>/dev/null && ./build.sh --wiki && popd &>/dev/null
       
     - name: Deploy Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/source_code/html
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs/source_code/html
 
     - name: Diploy Wiki
       uses: SwiftDocOrg/github-wiki-publish-action@v1
