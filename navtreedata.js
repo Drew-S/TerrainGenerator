@@ -32,8 +32,8 @@ var NAVTREEINDEX =
 "annotated.html",
 "classConverterErosionNode.html#acc836dba91635ad361184ac197ae3323",
 "classDrawingDialogue.html#a8ccb009d89b5d7baf89c5201b58c24e3",
-"classNormalWorker.html#a755df09eb5a5e7ed4b55e6016ff162db",
-"classVectorMapData.html"
+"classNormalMapGenerator.html#af629712abdba33513e99a66fc66a4f96",
+"classVectorMap.html#a9dbbf170a372da5f796e038f1af22af6"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -13,5 +13,6 @@ var searchData=
   ['rotatey',['rotateY',['../classCamera.html#a73fd2c7fbdf2006cdf9d3164402ada57',1,'Camera::rotateY()'],['../classLight.html#a16c018f29f6463f61c284a04d02cbdef',1,'Light::rotateY()']]],
   ['rotationmatrix',['rotationMatrix',['../classCamera.html#a4f58aa8128c7d02fbbee0424d300cab7',1,'Camera']]],
   ['rotationx',['rotationX',['../classCamera.html#a5eebcb6b706228ce641fd5894ef14ead',1,'Camera']]],
-  ['rotationy',['rotationY',['../classCamera.html#a58f15b74a4133406316365d794dfe3d9',1,'Camera']]]
+  ['rotationy',['rotationY',['../classCamera.html#a58f15b74a4133406316365d794dfe3d9',1,'Camera']]],
+  ['runrender',['runRender',['../classSettings.html#a0c7ff6354a8a208d4ebe01ab9ddabbe6',1,'Settings']]]
 ];

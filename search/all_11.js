@@ -26,6 +26,7 @@ var searchData=
   ['setresolution',['setResolution',['../classTerrain.html#a6e3cdc8da4399a6243ad2a690986a5f6',1,'Terrain']]],
   ['setrotationx',['setRotationX',['../classCamera.html#a30af5cfdab88f6acd2099ece3e52da4c',1,'Camera::setRotationX()'],['../classLight.html#a4f08d0d11363869c7e8b7ae721ffff16',1,'Light::setRotationX()']]],
   ['setrotationy',['setRotationY',['../classCamera.html#ab02846fd0fb7b39391dda09efab43c73',1,'Camera::setRotationY()'],['../classLight.html#aa9f8c1af78d4d18f86ac6fb6cee8be79',1,'Light::setRotationY()']]],
+  ['setrunrender',['setRunRender',['../classSettings.html#a453484b8bf9f386a1b82d04129b5e406',1,'Settings']]],
   ['setskycolor',['setSkyColor',['../classOpenGL.html#ae97f60705f464f260117bc8718eef8f2',1,'OpenGL']]],
   ['setterraincolor',['setTerrainColor',['../classOpenGL.html#a0de04d57e4fa57bed0257f170a88fc1a',1,'OpenGL::setTerrainColor()'],['../classTerrain.html#adb1e2d6e00b955dfdec0e3c7e89f2c6f',1,'Terrain::setTerrainColor()']]],
   ['setterraindrawlines',['setTerrainDrawLines',['../classOpenGL.html#a9509f835dda0d7c1996521835093b8b9',1,'OpenGL']]],
