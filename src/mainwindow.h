@@ -8,9 +8,11 @@
 #include "Nodeeditor/nodeeditor.h"
 #include "OpenGL/opengl.h"
 
-#include "ui_Main.h"
-#include "ui_SaveAsDialogue.h"
 #include "ui_Help.h"
+#include "ui_Main.h"
+#include "ui_Render.h"
+#include "ui_Render_Progress.h"
+#include "ui_SaveAsDialogue.h"
 
 /**
  * MainWindow
@@ -51,6 +53,8 @@ private:
     QString _save_as_filename = "";
     QString _save_as_directory = QDir::homePath();
 
+    QString _render_directory = QDir::homePath();
+
     // Containers for main componenets of application
     Nodeeditor *_editor;
     OpenGL *_open_gl;
@@ -59,8 +63,12 @@ private:
     Ui::MainWindow *_main_ui;
     Ui::SaveAsDialogue *_save_ui;
     Ui::Help _help_ui;
+    Ui::Render _render_ui;
+    Ui::Render_Progress _render_progress_ui;
 
     // Dialogue for save as functions
     QDialog *_save_as_dialogue;
     QDialog *_help;
+    QDialog *_render;
+    QDialog *_render_progress;
 };

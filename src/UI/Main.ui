@@ -511,6 +511,13 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QPushButton" name="render">
+          <property name="text">
+           <string>Render and Export</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>

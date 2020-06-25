@@ -86,11 +86,72 @@ void MainWindow::setup(Ui::MainWindow *ui)
                                    ui->NodePropertiesContainerWidget);
     this->_open_gl = this->_main_ui->OpenGLWidget;
 
+    this->_render = new QDialog();
+    this->_render_ui.setupUi(this->_render);
+
+    this->_render_ui.directory->setText(this->_render_directory);
+
+    this->_render_progress = new QDialog();
+    this->_render_progress_ui.setupUi(this->_render_progress);
+
+    QObject::connect(this->_render_ui.directory_select,
+                     &QPushButton::clicked,
+                     [this]() {
+                         QString dir = QFileDialog::getExistingDirectory(
+                             this, tr("Select Output Directory"),
+                             this->_render_directory
+                         );
+
+                         if (dir != "")
+                             this->_render_directory = dir;
+
+                         this->_render_ui.directory->setText(
+                             this->_render_directory);
+                     });
+
+    QObject::connect(this->_render_ui.cancel,
+                     &QPushButton::clicked,
+                     this->_render,
+                     &QWidget::hide);
+
+    QObject::connect(this->_render_ui.ok,
+                     &QPushButton::clicked,
+                     [this]() {
+                         Q_CHECK_PTR(SETTINGS);
+                         this->_render->hide();
+                         this->_render_progress->show();
+                         this->_render_progress_ui.progress->setValue(0);
+                         SETTINGS->setRunRender(true);
+                         SETTINGS->setRenderMode(true);
+                     });
+
     // Listen for editor to signal the dataflow diagram has updated the output
     QObject::connect(this->_editor,
                      &Nodeeditor::outputUpdated,
-                     this->_open_gl,
-                     &OpenGL::nodeeditorOutputUpdated);
+                     [this](QImage normal_map,
+                            QImage height_map,
+                            QImage albedo_map) {
+                         Q_CHECK_PTR(SETTINGS);
+                         if (SETTINGS->runRender())
+                         {
+                             normal_map.save(
+                                 QDir::cleanPath(
+                                     this->_render_directory + QString("/normalmap.png")));
+                             this->_render_progress_ui.progress->setValue(50);
+                             height_map.save(
+                                 QDir::cleanPath(
+                                     this->_render_directory + QString("/heightmap.png")));
+                             this->_render_progress_ui.progress->setValue(100);
+                             this->_render_progress->hide();
+                         }
+                         else
+                         {
+                             this->_open_gl->nodeeditorOutputUpdated(
+                                 normal_map,
+                                 height_map,
+                                 albedo_map);
+                         }
+                     });
 
     // Connect file actions to load and save files
     QObject::connect(this->_main_ui->actionSave_As,
@@ -209,6 +270,10 @@ void MainWindow::setup(Ui::MainWindow *ui)
                 color.blue()));
         }
     });
+    QObject::connect(this->_main_ui->render,
+                     &QPushButton::clicked,
+                     this->_render,
+                     &QWidget::show);
 
     // Fix Nodeeditor and OpenGL widget splitter size
     this->_main_ui->splitter_top_bottom->setSizes({300, 150});
@@ -294,7 +359,6 @@ void MainWindow::setup(Ui::MainWindow *ui)
                     &QAction::triggered,
                     this->_help,
                     &QWidget::show);
-
 }
 
 /**

@@ -17,8 +17,6 @@ else
     # Create images
     plantuml -tsvg source_code/uml/*.puml
 
-    ls source_code/uml
-
     # Build help pdf file
     pushd help &>/dev/null
     for f in $(ls | egrep '[0-9]+.*'); do

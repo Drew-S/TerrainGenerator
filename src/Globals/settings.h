@@ -38,6 +38,7 @@ public:
     // QColor terranLinesColor();
     bool packImages();
     bool percentProgressText();
+    bool runRender();
 
     // Setters
     void setRenderMode(bool mode);
@@ -50,6 +51,7 @@ public:
     // void terranLinesColor(QColor color);
     void setPackImages(bool mode);
     void setPercentProgressText(bool mode);
+    void setRunRender(bool mode);
 
     // QJsonObject save() const;
     // void restore(QJsonObject const &data);
@@ -62,6 +64,7 @@ signals:
     void meshResolutionChanged(int resolution);
     void packImagesChanged(bool mode);
     void percentProgressTextChanged(bool mode);
+    void runRenderChanged(bool mode);
 
 private:
     Settings();
@@ -77,6 +80,7 @@ private:
     int _preview_resolution = 256;  // Image resolution during design
     int _render_resolution = 1024;  // Image resolution when rendering/exporting
     bool _render_mode = false;      // Whether to use render resolution or not
+    bool _run_render = false; // Whether running export render to save files
     // QColor _sun{255, 255, 255};     // Sun light colour in OpenGL window
     // QColor _sky{196, 214, 252};     // Sky/ambient light colour in OpenGL window
     // QColor _terrain{191, 191, 191}; // Terrain colour in OpenGL window

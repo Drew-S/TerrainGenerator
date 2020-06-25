@@ -209,6 +209,18 @@ bool Settings::percentProgressText()
     return this->_percent_progress_text;
 }
 
+/**
+ * runRender
+ * 
+ * Whether or not the render mode should be saved to an output folder.
+ * 
+ * @returns bool : Wether or not run render save.
+ */
+bool Settings::runRender()
+{
+    return this->_run_render;
+}
+
 /******************************************************************************
  *                                 SETTERS                                    *
  ******************************************************************************/
@@ -333,5 +345,23 @@ void Settings::setPercentProgressText(bool mode)
         
 #ifndef TEST_MODE
     emit this->percentProgressTextChanged(this->_percent_progress_text);
+#endif
+}
+
+/**
+ * setRunRender
+ * 
+ * Set whether or not to run render and save output.
+ * 
+ * @param bool mode : Wether or not to run render and save.
+ */
+void Settings::setRunRender(bool mode)
+{
+    this->_run_render = mode;
+    qDebug("Show progress bar percents (%s)?",
+        this->_run_render ? "true" : "false");
+        
+#ifndef TEST_MODE
+    emit this->runRenderChanged(this->_run_render);
 #endif
 }
