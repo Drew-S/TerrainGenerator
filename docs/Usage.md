@@ -102,3 +102,9 @@ Selected load will provide a file dialogue that is used to select the saved proj
 
 
 ## Rendering
+
+To render the output of your terrain you can hit the `Render and Export` at the bottom of the settings panel. This will open up a dialogue to select for rendering and exporting your project.
+
+![render](help/images/render.png)
+
+In the render dialogue you select the output directory where you want to save the `heightmap.png` and the `normalmap.png` files. Ensure that the directory you select is either empty or does not contain files with the same name, these will be overwritten. Use the `Directory` button to select an output directory, hit `Ok` to begin the export progress, a progress dialogue will be shown. Hit `Cancel` to cancel this progress and return to the application.
