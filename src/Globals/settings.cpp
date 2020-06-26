@@ -33,7 +33,7 @@ Settings::Settings()
 #else
 #ifdef __linux
     this->_system_asset_directory = QDir("/usr/share/TerrainGenerator/assets");
-    this->_doc_directory = QDir("/usr/share/TerrainGenerator/assets/help")
+    this->_doc_directory = QDir("/usr/share/TerrainGenerator/assets/help");
     if (qgetenv("XDG_CONFIG_HOME") != "")
         this->_user_asset_directory = QDir(QDir::cleanPath(qgetenv("XDG_CONFIG_HOME") + QString("/TerrainGenerator/assets")));
     else

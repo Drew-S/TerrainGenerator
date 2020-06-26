@@ -65,6 +65,8 @@ using json = nlohmann::json;
  * 
  * @param Ui::MainWindow* ui : The ui (QWidget) created from Qt Designer that
  *                                is what is viewed.
+ * 
+ * TODO: Clean up, setup and lambdas are a bit larger -> add sub headers
  */
 void MainWindow::setup(Ui::MainWindow *ui)
 {
