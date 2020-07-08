@@ -198,33 +198,33 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
         switch((int)port)
         {
         case 0:
-            {
             // Cast pointer into IntensityMapData pointer
-            this->_input =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
+            if((this->_input =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                IntensityMap height_map = this->_input->intensityMap();
 
-            IntensityMap height_map = this->_input->intensityMap();
+                this->_height_map = height_map.toImage();
 
-            this->_height_map = height_map.toImage();
+                // Display preview image
+                this->_ui.height_label->setPixmap(
+                    height_map.toPixmap().scaled(
+                        this->_ui.height_label->width(),
+                        this->_ui.height_label->height(),
+                        Qt::KeepAspectRatio));
 
-            // Display preview image
-            this->_ui.height_label->setPixmap(
-                height_map.toPixmap().scaled(
-                    this->_ui.height_label->width(),
-                    this->_ui.height_label->height(),
-                    Qt::KeepAspectRatio));
-
-            // Emit that calculations are being made
-            this->_generateNormalMap(height_map);
+                // Emit that calculations are being made
+                this->_generateNormalMap(height_map);
             }
             break;
         case 1:
             // Cast pointer into VectorMapData pointer
-            this->_input_albedo =
-                std::dynamic_pointer_cast<VectorMapData>(node_data);
-
-            this->_albedo_map = this->_input_albedo->vectorMap().toImage();
-            emit this->computingFinished();
+            if((this->_input_albedo =
+                std::dynamic_pointer_cast<VectorMapData>(node_data)))
+            {
+                this->_albedo_map = this->_input_albedo->vectorMap().toImage();
+                emit this->computingFinished();
+            }
             break;
         default:
             Q_UNREACHABLE();
@@ -234,7 +234,6 @@ void OutputNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
     // No pixmap, set null image
     else
     {
-
         this->_ui.height_label->setText("Height map");
         this->_ui.normal_label->setText("Normal map");
     }

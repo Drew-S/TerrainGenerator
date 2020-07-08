@@ -301,12 +301,12 @@ void ConverterVectorMathNode::setInData(
         switch ((int)port)
         {
         case 0:
-            this->_in_0 = std::dynamic_pointer_cast<VectorMapData>(node_data);
-            this->_in_0_set = true;
+            if((this->_in_0 = std::dynamic_pointer_cast<VectorMapData>(node_data)))
+                this->_in_0_set = true;
             break;
         case 1:
-            this->_in_1 = std::dynamic_pointer_cast<VectorMapData>(node_data);
-            this->_in_1_set = true;
+            if((this->_in_1 = std::dynamic_pointer_cast<VectorMapData>(node_data)))
+                this->_in_1_set = true;
             break;
         default:
             Q_UNREACHABLE();

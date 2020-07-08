@@ -254,28 +254,30 @@ void ConverterClampNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
         {
         // Set input data
         case 0:
-            this->_input =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
+            if((this->_input =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+                    this->_set = true;
 
-            this->_set = true;
             break;
         // Set minimum data
         case 1:
-            this->_input_min =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_set_min = true;
-            this->_ui.spin_min->setReadOnly(true);
-            this->_shared_ui.spin_min->setReadOnly(true);
+            if((this->_input_min =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_set_min = true;
+                this->_ui.spin_min->setReadOnly(true);
+                this->_shared_ui.spin_min->setReadOnly(true);
+            }
             break;
         // Set maximum data
         case 2:
-            this->_input_max =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_set_max = true;
-            this->_ui.spin_max->setReadOnly(true);
-            this->_shared_ui.spin_max->setReadOnly(true);
+            if((this->_input_max =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_set_max = true;
+                this->_ui.spin_max->setReadOnly(true);
+                this->_shared_ui.spin_max->setReadOnly(true);
+            }
             break;
         default:
             Q_UNREACHABLE();

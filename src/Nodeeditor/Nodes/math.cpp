@@ -177,18 +177,20 @@ void ConverterMathNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data,
         switch (port)
         {
         case 0:
-            this->_in_0 =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_in_0_set = true;
-            this->_ui.val_in_0->setReadOnly(true);
+            if((this->_in_0 =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_in_0_set = true;
+                this->_ui.val_in_0->setReadOnly(true);
+            }
             break;
         case 1:
-            this->_in_1 =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_in_1_set = true;
-            this->_ui.val_in_1->setReadOnly(true);
+            if((this->_in_1 =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_in_1_set = true;
+                this->_ui.val_in_1->setReadOnly(true);
+            }
             break;
         default:
             Q_UNREACHABLE();

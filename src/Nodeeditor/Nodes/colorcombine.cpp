@@ -258,34 +258,40 @@ void ConverterColorCombineNode::setInData(
         switch ((int)port_index)
         {
         case 0:
-            this->_red = std::dynamic_pointer_cast<IntensityMapData>(node_data);
-            this->_red_set = true;
-            this->_ui.spin_red->setReadOnly(true);
-            this->_shared_ui.spin_red->setReadOnly(true);
+            if((this->_red =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_red_set = true;
+                this->_ui.spin_red->setReadOnly(true);
+                this->_shared_ui.spin_red->setReadOnly(true);
+            }
             break;
         case 1:
-            this->_green =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_green_set = true;
-            this->_ui.spin_green->setReadOnly(true);
-            this->_shared_ui.spin_green->setReadOnly(true);
+            if((this->_green =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_green_set = true;
+                this->_ui.spin_green->setReadOnly(true);
+                this->_shared_ui.spin_green->setReadOnly(true);
+            }
             break;
         case 2:
-            this->_blue =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_blue_set = true;
-            this->_ui.spin_blue->setReadOnly(true);
-            this->_shared_ui.spin_blue->setReadOnly(true);
+            if((this->_blue =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_blue_set = true;
+                this->_ui.spin_blue->setReadOnly(true);
+                this->_shared_ui.spin_blue->setReadOnly(true);
+            }
             break;
         case 3:
-            this->_alpha =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_alpha_set = true;
-            this->_ui.spin_alpha->setReadOnly(true);
-            this->_shared_ui.spin_alpha->setReadOnly(true);
+            if((this->_alpha =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_alpha_set = true;
+                this->_ui.spin_alpha->setReadOnly(true);
+                this->_shared_ui.spin_alpha->setReadOnly(true);
+            }
             break;
         default:
             Q_UNREACHABLE();

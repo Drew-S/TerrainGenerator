@@ -223,9 +223,8 @@ void ConverterVectorIntensityNode::setInData(
     QtNodes::PortIndex port_index)
 {
     Q_UNUSED(port_index);
-    if (node_data)
+    if (node_data && (this->_input = std::dynamic_pointer_cast<VectorMapData>(node_data)))
     {
-        this->_input = std::dynamic_pointer_cast<VectorMapData>(node_data);
         this->_set = true;
         this->_generate();
     }

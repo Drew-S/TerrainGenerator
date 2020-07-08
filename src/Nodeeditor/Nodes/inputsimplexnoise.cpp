@@ -583,42 +583,46 @@ void InputSimplexNoiseNode::setInData(
         switch ((int)port)
         {
         case 0:
-            this->_in_octives =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_in_octives_set = true;
-            this->_ui.spin_octives->setReadOnly(true);
-            this->_shared_ui.spin_octives->setReadOnly(true);
+            if((this->_in_octives =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_in_octives_set = true;
+                this->_ui.spin_octives->setReadOnly(true);
+                this->_shared_ui.spin_octives->setReadOnly(true);
+            }
             break;
         case 1:
-            this->_in_frequency =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_in_frequency_set = true;
-            this->_ui.spin_frequency->setReadOnly(true);
-            this->_shared_ui.spin_frequency->setReadOnly(true);
+            if((this->_in_frequency =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_in_frequency_set = true;
+                this->_ui.spin_frequency->setReadOnly(true);
+                this->_shared_ui.spin_frequency->setReadOnly(true);
+            }
             break;
         case 2:
-            this->_in_persistence =
-                std::dynamic_pointer_cast<IntensityMapData>(node_data);
-
-            this->_in_persistence_set = true;
-            this->_ui.spin_persistence->setReadOnly(true);
-            this->_shared_ui.spin_persistence->setReadOnly(true);
+            if((this->_in_persistence =
+                std::dynamic_pointer_cast<IntensityMapData>(node_data)))
+            {
+                this->_in_persistence_set = true;
+                this->_ui.spin_persistence->setReadOnly(true);
+                this->_shared_ui.spin_persistence->setReadOnly(true);
+            }
             break;
         case 3:
-            this->_in_offset =
-                std::dynamic_pointer_cast<VectorMapData>(node_data);
+            if((this->_in_offset =
+                std::dynamic_pointer_cast<VectorMapData>(node_data)))
+            {
+                this->_in_offset_set = true;
 
-            this->_in_offset_set = true;
+                this->_ui.spin_x->setReadOnly(true);
+                this->_ui.spin_y->setReadOnly(true);
+                this->_ui.spin_z->setReadOnly(true);
 
-            this->_ui.spin_x->setReadOnly(true);
-            this->_ui.spin_y->setReadOnly(true);
-            this->_ui.spin_z->setReadOnly(true);
-
-            this->_shared_ui.spin_x->setReadOnly(true);
-            this->_shared_ui.spin_y->setReadOnly(true);
-            this->_shared_ui.spin_z->setReadOnly(true);
+                this->_shared_ui.spin_x->setReadOnly(true);
+                this->_shared_ui.spin_y->setReadOnly(true);
+                this->_shared_ui.spin_z->setReadOnly(true);
+            }
             break;
         default:
             Q_UNREACHABLE();

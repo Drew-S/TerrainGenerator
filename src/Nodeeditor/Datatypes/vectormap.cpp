@@ -202,7 +202,7 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map,
                                       VectorMap::ColorMode mode)
 {
     qDebug("Converting Intensity Map to Vector Map");
-    VectorMap vec(map.width, map.height);
+    VectorMap vec(std::max(1, map.width), std::max(1, map.height));
     for (int y = 0; y < map.height; y++)
     {
         for (int x = 0; x < map.width; x++)
@@ -213,24 +213,29 @@ VectorMap VectorMap::fromIntensityMap(IntensityMap &map,
             case VectorMap::APPLY:
                 vec.append(color * v);
                 break;
+
             case VectorMap::OVERRIDE_COLOR:
                 vec.append(glm::dvec4(color.x * v,
                            color.y * v,
                            color.z * v,
                            color.a));
                 break;
+
             case VectorMap::OVERRIDE_MAP:
                 vec.append(glm::dvec4(color.x * v,
                                       color.y * v,
                                       color.z * v,
                                       v));
                 break;
+
             case VectorMap::MASK:
                 vec.append(glm::dvec4(color.x, color.y, color.z, v));
                 break;
+
             case VectorMap::MASK_ALPHA:
                 vec.append(glm::dvec4(color.x, color.y, color.z, v * color.a));
                 break;
+
             default:
                 Q_UNREACHABLE();
                 break;

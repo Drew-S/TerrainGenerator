@@ -295,20 +295,24 @@ void ConverterVectorDotNode::setInData(
         switch ((int)port_index)
         {
         case 0:
-            this->_in_0 = std::dynamic_pointer_cast<VectorMapData>(node_data);
-            this->_in_set_0 = true;
-            this->_ui.spin_x_0->setReadOnly(true);
-            this->_ui.spin_y_0->setReadOnly(true);
-            this->_ui.spin_z_0->setReadOnly(true);
-            this->_ui.spin_w_0->setReadOnly(true);
+            if((this->_in_0 = std::dynamic_pointer_cast<VectorMapData>(node_data)))
+            {
+                this->_in_set_0 = true;
+                this->_ui.spin_x_0->setReadOnly(true);
+                this->_ui.spin_y_0->setReadOnly(true);
+                this->_ui.spin_z_0->setReadOnly(true);
+                this->_ui.spin_w_0->setReadOnly(true);
+            }
             break;
         case 1:
-            this->_in_1 = std::dynamic_pointer_cast<VectorMapData>(node_data);
-            this->_in_set_1 = true;
-            this->_ui.spin_x_1->setReadOnly(true);
-            this->_ui.spin_y_1->setReadOnly(true);
-            this->_ui.spin_z_1->setReadOnly(true);
-            this->_ui.spin_w_1->setReadOnly(true);
+            if((this->_in_1 = std::dynamic_pointer_cast<VectorMapData>(node_data)))
+            {
+                this->_in_set_1 = true;
+                this->_ui.spin_x_1->setReadOnly(true);
+                this->_ui.spin_y_1->setReadOnly(true);
+                this->_ui.spin_z_1->setReadOnly(true);
+                this->_ui.spin_w_1->setReadOnly(true);
+            }
             break;
         default:
             Q_UNREACHABLE();

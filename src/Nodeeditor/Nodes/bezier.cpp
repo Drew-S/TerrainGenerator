@@ -54,7 +54,7 @@ void ConverterBezierCurveNode::created()
  * 
  * Return a string that is displayed on the node and in the properties.
  * 
- * @returns QString : The caption.
+ * @returns QString The caption.
  */
 QString ConverterBezierCurveNode::caption() const
 {
@@ -242,9 +242,8 @@ void ConverterBezierCurveNode::setInData(
 {
     Q_UNUSED(port);
 
-    if (node_data)
+    if (node_data && (this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data)))
     {
-        this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data);
         this->_set = true;
         this->_generate();
     }
@@ -271,7 +270,7 @@ void ConverterBezierCurveNode::_generate()
     else
     {
         this->_output = IntensityMap(map.width, map.height);
-
+        
         for (int y = 0; y < map.height; y++)
             for (int x = 0; x < map.width; x++)
                 this->_output.append(this->_widget->valueAt(map.at(x, y)));

@@ -111,9 +111,8 @@ void ConverterSmoothNode::setInData(std::shared_ptr<QtNodes::NodeData> node_data
                                   QtNodes::PortIndex port)
 {
     Q_UNUSED(port);
-    if (node_data)
+    if (node_data && (this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data)))
     {
-        this->_input = std::dynamic_pointer_cast<IntensityMapData>(node_data);
         this->_set = true;
         this->_generate();
     }
