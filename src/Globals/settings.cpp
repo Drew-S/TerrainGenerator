@@ -27,8 +27,8 @@ Settings::Settings()
     this->_tmp_dir = new QTemporaryDir(QDir::cleanPath(QDir::tempPath() + QString("/TerrainGenerator_XXXXXX")));
 
 #if (defined(DEVELOPMENT_MODE) || defined(TEST_MODE))
-    this->_system_asset_directory = QDir(QDir::cleanPath(QString(PWD) + QString("/assets")));
-    this->_doc_directory = QDir(QDir::cleanPath(QString(PWD) + QString("/assets/help")));
+    this->_system_asset_directory = QDir(QDir::cleanPath(QDir::currentPath() + QString("/assets")));
+    this->_doc_directory = QDir(QDir::cleanPath(QDir::currentPath() + QString("/assets/help")));
     qDebug("Using development asset directory '%s'", qPrintable(this->_system_asset_directory.path()));
 #else
 #ifdef __linux
