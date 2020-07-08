@@ -72,8 +72,8 @@ public:
     bool set(int x, int y, double value);
 
     // Storage of the intensity map data
-    int width;
-    int height;
+    int width = 1;
+    int height = 1;
     std::vector<double> values;
 
 private:

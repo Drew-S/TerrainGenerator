@@ -31,8 +31,7 @@ LIBS += -L$$PWD/../lib/nodeeditor/build/lib -lnodes
 # (quazip, zip files for saving/loading)
 INCLUDEPATH += $$PWD/../lib/quazip
 DEPENDPATH += $$PWD/../lib/quazip
-LIBS += -L$$PWD/../lib/quazip/quazip -lQt5Quazip
-LIBS += -Lz
+LIBS += -L$$PWD/../lib/quazip/quazip -lQt5Quazip -Lz
 
 # (simplex noise)
 SOURCES += $$PWD/../lib/SimplexNoise/src/SimplexNoise.cpp
