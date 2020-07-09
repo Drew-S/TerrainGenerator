@@ -302,65 +302,65 @@ void Terrain::_paintGL(QOpenGLFunctions *f,
     this->_program.setUniformValue("lines", lines_mode);
 
     // Attach textures
-    glActiveTexture(GL_TEXTURE0);
+    f->glActiveTexture(GL_TEXTURE0);
 
-    glBindTexture(GL_TEXTURE_2D, this->_height->textureId());
+    f->glBindTexture(GL_TEXTURE_2D, this->_height->textureId());
     // Set texture filtering
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_S,
                     GL_CLAMP_TO_EDGE);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_T,
                     GL_CLAMP_TO_EDGE);
 
-    glActiveTexture(GL_TEXTURE1);
+    f->glActiveTexture(GL_TEXTURE1);
                     
-    glBindTexture(GL_TEXTURE_2D, this->_normal->textureId());
+    f->glBindTexture(GL_TEXTURE_2D, this->_normal->textureId());
     
     // Set texture filtering
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_S,
                     GL_CLAMP_TO_EDGE);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_T,
                     GL_CLAMP_TO_EDGE);
 
-    glActiveTexture(GL_TEXTURE2);
+    f->glActiveTexture(GL_TEXTURE2);
                     
-    glBindTexture(GL_TEXTURE_2D, this->_albedo->textureId());
+    f->glBindTexture(GL_TEXTURE_2D, this->_albedo->textureId());
     
     // Set texture filtering
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_S,
                     GL_CLAMP_TO_EDGE);
 
-    glTexParameteri(GL_TEXTURE_2D,
+    f->glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_T,
                     GL_CLAMP_TO_EDGE);
 
