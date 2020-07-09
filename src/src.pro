@@ -5,6 +5,8 @@ CONFIG += debug
 
 TARGET = TerrainGenerator
 
+RESOURCES += ../assets/resources.qrc
+
 CONFIG += static
 # Get all the source code files recursively from the src directory
 SOURCES += $$files("*.cpp", true)

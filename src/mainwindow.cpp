@@ -34,6 +34,10 @@
 #include <quazip/quazipfile.h>
 #include <quazip/quazipnewinfo.h>
 
+#include <nodes/ConnectionStyle>
+#include <nodes/FlowViewStyle>
+#include <nodes/NodeStyle>
+
 #include "Globals/drawing.h"
 #include "Globals/settings.h"
 #include "Globals/stencillist.h"

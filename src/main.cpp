@@ -1,7 +1,5 @@
 #include "ui_Main.h"
 
-#include <nodes/ConnectionStyle>
-
 #include "mainwindow.h"
 
 #include "Nodeeditor/nodeeditor.h"
@@ -89,16 +87,6 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(messageHandler);
 
     QApplication app(argc, argv);
-
-    // Should colorize the connections between nodes based on their data type
-    // generated from the name of the data type (to fully customize I would
-    // need to change nodeeditor itself, which I may yet do)
-    QtNodes::ConnectionStyle::setConnectionStyle(
-        R"(
-            "ConnectionStyle": {
-                "UseDataDefinedColors": true
-            }
-        )");
 
     // Load ui for main window and attach it to custom QMainWindow
     Ui::MainWindow ui;

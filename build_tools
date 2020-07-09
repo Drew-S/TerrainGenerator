@@ -4,6 +4,7 @@ if [ "$1" == "--build-debug" ]; then
     ./build_tools --docs
 
     pushd src &>/dev/null
+    rm qrc_resources.cpp
     qmake DEFINES+=DEVELOPMENT_MODE
     make
     popd &>/dev/null
@@ -13,6 +14,7 @@ elif [ "$1" == "--build-release" ]; then
     ./build_tools --docs
 
     pushd src &>/dev/null
+    rm qrc_resources.cpp
     qmake DEFINES+=QT_NO_DEBUG
     make
     popd &>/dev/null ./build/TerrainGenerator -d --no-log
