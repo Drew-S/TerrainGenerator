@@ -1,5 +1,9 @@
 #include "camera.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #define Q_BETWEEN(low, v, hi) Q_ASSERT(low <= v && v <= hi)
 
 /**

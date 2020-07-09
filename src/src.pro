@@ -35,6 +35,10 @@ INCLUDEPATH += $$PWD/../lib/quazip
 DEPENDPATH += $$PWD/../lib/quazip
 LIBS += -L$$PWD/../lib/quazip/quazip -lQt5Quazip -Lz
 
+win32 {
+    LIBS += -lopengl32
+}
+
 # (simplex noise)
 SOURCES += $$PWD/../lib/SimplexNoise/src/SimplexNoise.cpp
 HEADERS += $$PWD/../lib/SimplexNoise/src/SimplexNoise.h
@@ -60,6 +64,3 @@ MOC_DIR = $$PWD/../build/moc
 
 # Where to place release object files
 OBJECTS_DIR = $$PWD/../build/objects
-
-CWD = $$PWD
-DEFINES += PWD=\\\"$$dirname(CWD)\\\"
