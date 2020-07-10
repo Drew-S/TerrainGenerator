@@ -152,8 +152,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>../../../../../../../../../usr/share/icons/breeze-dark/actions/24/edit-undo.svg</normaloff>../../../../../../../../../usr/share/icons/breeze-dark/actions/24/edit-undo.svg</iconset>
+             <iconset resource="../../assets/resources.qrc">
+              <normaloff>:/icons/Undo.png</normaloff>:/icons/Undo.png</iconset>
             </property>
            </widget>
           </item>
@@ -312,6 +312,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../assets/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

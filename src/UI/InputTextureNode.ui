@@ -87,7 +87,11 @@
           <string>Edit Texture</string>
          </property>
          <property name="text">
-          <string>...</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../assets/resources.qrc">
+           <normaloff>:/icons/Edit.png</normaloff>:/icons/Edit.png</iconset>
          </property>
          <property name="autoRepeatDelay">
           <number>296</number>
@@ -170,6 +174,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../assets/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

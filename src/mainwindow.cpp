@@ -334,8 +334,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
     // tab->addTab(help_engine->indexWidget(), "Index");
 
     this->_help_ui.text->setSource(
-        QUrl(QDir::cleanPath(docs + "/"
-        + QUrl("qthelp://terraingenerator.doc/index.md").fileName())),
+        QUrl::fromLocalFile(QDir::cleanPath(docs + "/index.md")),
         QTextDocument::MarkdownResource);
 
     QObject::connect(help_engine->contentWidget(),

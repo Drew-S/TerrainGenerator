@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/Edit.png</file>
+    <file>icons/Undo.png</file>
     <file>icons/Sun.png</file>
     <file>icons/Camera.png</file>
   </qresource>
