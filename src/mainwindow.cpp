@@ -342,7 +342,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
                     &QHelpContentWidget::linkActivated,
                     [this, docs](const QUrl &link) {
                         this->_help_ui.text->setSource(
-                            QUrl(QDir::cleanPath(docs + "/"
+                            QUrl::fromLocalFile(QDir::cleanPath(docs + "/"
                                  + link.fileName())),
                             QTextDocument::MarkdownResource);
                     });
@@ -351,7 +351,7 @@ void MainWindow::setup(Ui::MainWindow *ui)
                      &QTextBrowser::anchorClicked,
                      [ this, docs ](const QUrl &link) {
                          this->_help_ui.text->setSource(
-                            QUrl(QDir::cleanPath(docs + "/"
+                            QUrl::fromLocalFile(QDir::cleanPath(docs + "/"
                                  + link.fileName())),
                             QTextDocument::MarkdownResource);
                      });
