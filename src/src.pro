@@ -33,10 +33,26 @@ LIBS += -L$$PWD/../lib/nodeeditor/build/lib -lnodes
 # (quazip, zip files for saving/loading)
 INCLUDEPATH += $$PWD/../lib/quazip
 DEPENDPATH += $$PWD/../lib/quazip
-LIBS += -L$$PWD/../lib/quazip/quazip -lQt5Quazip -Lz
+unix {
+    LIBS += -L$$PWD/../lib/quazip/quazip -lQt5Quazip -Lz
+}
 
 win32 {
+    QT += svg
+
+    LIBS += -L$$PWD/../lib/quazip/quazip/release -lQt5Quazip -Lz
     LIBS += -lopengl32
+
+    # GLM not heavily used, going to remove in later version with a very
+    # lightweight custom version
+    HEADERS += $$files($$PWD/../lib/glm/glm, true)
+    INCLUDEPATH += $$PWD/../lib/glm
+
+    INCLUDEPATH += "C:\Program Files (x86)\GnuWin32\include"
+    HEADERS += "C:\Program Files (x86)\GnuWin32\include"
+    LIBS += -L"C:\Program Files (x86)\GnuWin32\lib"
+
+    INCLUDEPATH += -LC:\MinGW\include
 }
 
 # (simplex noise)
